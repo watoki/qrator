@@ -9,9 +9,9 @@ use watoki\scrut\Specification;
  * @property \spec\watoki\cqurator\fixtures\DispatcherFixture dispatcher <-
  * @property \spec\watoki\cqurator\fixtures\ClassFixture class <-
  */
-class ExecuteQueryTest extends Specification {
+class HandleActionsTest extends Specification {
 
-    function testQueryReachesHandlerObject() {
+    function testActionReachesHandlerObject() {
         $this->class->givenTheClass('some\MyQuery');
         $this->dispatcher->givenAnObject('myHandler');
         $this->dispatcher->givenIAdded_AsHandlerFor('myHandler', 'some\MyQuery');
@@ -20,7 +20,7 @@ class ExecuteQueryTest extends Specification {
         $this->dispatcher->thenTheMethod_Of_ShouldBeInvoked('myQuery', 'myHandler');
     }
 
-    function testQueryReachesHandlerClass() {
+    function testActionReachesHandlerClass() {
         $this->class->givenTheClass('classHandler\MyQuery');
         $this->class->givenTheClass_WithTheBody('classHandler\Handler', '
             public static $executed = false;
@@ -35,7 +35,7 @@ class ExecuteQueryTest extends Specification {
         $this->class->then_ShouldBe('classHandler\Handler::$executed', true);
     }
 
-    function testQueryReachesHandlerClosure() {
+    function testActionReachesHandlerClosure() {
         $this->class->givenTheClass('closureHandler\MyQuery');
         $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
             $GLOBALS['executed'] = true;
@@ -43,6 +43,15 @@ class ExecuteQueryTest extends Specification {
 
         $this->whenIExecuteTheQuery('closureHandler\MyQuery');
         $this->class->then_ShouldBe('$GLOBALS["executed"]', true);
+    }
+
+    function testActionIsPassedAsArgument() {
+        $this->class->givenTheClass('argument\MyQuery');
+        $this->dispatcher->givenAnObject('myHandler');
+        $this->dispatcher->givenIAdded_AsHandlerFor('myHandler', 'argument\MyQuery');
+
+        $this->whenIExecuteTheQuery('argument\MyQuery');
+        $this->dispatcher->thenTheMethodOf_ShouldBeInvokedWithAnInstanceOf('myHandler', 'argument\MyQuery');
     }
 
     ##########################################################################################

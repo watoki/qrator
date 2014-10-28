@@ -36,6 +36,10 @@ class DispatcherFixture extends Fixture {
     public function thenTheMethod_Of_ShouldBeInvoked($method, $object) {
         $this->spec->assertContains($method, $this->objects[$object]->called);
     }
+
+    public function thenTheMethodOf_ShouldBeInvokedWithAnInstanceOf($object, $class) {
+        $this->spec->assertInstanceOf($class, $this->objects[$object]->args[0][0]);
+    }
 }
 
 class TestObject {
