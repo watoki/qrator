@@ -37,25 +37,30 @@ class QueryResource {
         $properties = array();
 
         foreach ($object as $property => $value) {
-            $properties[] = [
-                'name' => $property,
-                'value' => print_r($value, true)
-            ];
+            $properties[] = $this->assembleProperty($property, $value);
         }
 
         $reflection = new \ReflectionClass($object);
         foreach ($reflection->getMethods() as $method) {
             if ($method->isPublic() && substr($method->getName(), 0, 3) == 'get') {
-                $properties[] = [
-                    'name' => substr($method->getName(), 3),
-                    'value' => $method->invoke($object)
-                ];
+                $properties[] = $this->assembleProperty(substr($method->getName(), 3), $method->invoke($object));
             }
         }
 
         return $properties ? [
             'property' => $properties
         ] : null;
+    }
+
+    private function assembleProperty($name, $value) {
+        if (is_object($value)) {
+            $representer = $this->registry->getRepresenter(get_class($value));
+            $value = $representer->render($value);
+        }
+        return [
+            'name' => $name,
+            'value' => $value
+        ];
     }
 
     private function assembleQueries($object) {

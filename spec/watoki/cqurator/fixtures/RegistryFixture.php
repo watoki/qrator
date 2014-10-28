@@ -33,4 +33,8 @@ class RegistryFixture extends Fixture {
         $this->representers[$class]->addCommand($command);
     }
 
+    public function givenIHaveTheTheRenderer_For($callable, $class) {
+        $this->representers[$class]->setRenderer($callable);
+    }
+
 } 

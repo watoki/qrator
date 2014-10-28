@@ -12,4 +12,10 @@ interface Representer {
      * @return Command[]
      */
     public function getCommands();
+
+    /**
+     * @param object $value
+     * @return string
+     */
+    public function render($value);
 }

@@ -58,8 +58,6 @@ class ShowQueryResultTest extends Specification {
             return $object;
         }, 'MyQuery');
 
-        $this->registry->givenIRegisteredARepresenterFor('DateTime');
-
         $this->whenIShowTheResultsOf('MyQuery');
         $this->thenThereShouldBe_Properties(2);
         $this->thenProperty_ShouldHaveTheName_AndValue(1, 'propertyOne', 'valueOne');
@@ -79,15 +77,26 @@ class ShowQueryResultTest extends Specification {
         ');
         $this->dispatcher->givenIAddedTheClass_AsHandlerFor('getters\MyHandler', 'MyQuery');
 
-        $this->registry->givenIRegisteredARepresenterFor('getters\MyClass');
-
         $this->whenIShowTheResultsOf('MyQuery');
         $this->thenThereShouldBe_Properties(3);
         $this->thenProperty_ShouldHaveTheName_AndValue(2, 'One', 'one');
     }
 
     function testRenderObjectProperties() {
-        $this->markTestIncomplete();
+        $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
+            $object = new \StdClass;
+            $object->one = new \DateTime('2012-03-04 15:16');
+            return $object;
+        }, 'MyQuery');
+
+        $this->registry->givenIRegisteredARepresenterFor('DateTime');
+        $this->registry->givenIHaveTheTheRenderer_For(function (\DateTime $d) {
+            return $d->format('Y-m-d H:i');
+        }, 'DateTime');
+
+        $this->whenIShowTheResultsOf('MyQuery');
+        $this->thenThereShouldBe_Properties(1);
+        $this->thenProperty_ShouldHaveTheName_AndValue(1, 'one', '2012-03-04 15:16');
     }
 
     function testDisplayCollection() {

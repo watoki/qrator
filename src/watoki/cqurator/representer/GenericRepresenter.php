@@ -11,6 +11,9 @@ class GenericRepresenter implements Representer {
     /** @var array|\watoki\cqurator\contracts\Command[] */
     private $commands = [];
 
+    /** @var null|callable */
+    private $renderer;
+
     /**
      * @param string $queryClass
      */
@@ -37,5 +40,20 @@ class GenericRepresenter implements Representer {
      */
     public function getCommands() {
         return $this->commands;
+    }
+
+    public function setRenderer($renderer) {
+        $this->renderer = $renderer;
+    }
+
+    /**
+     * @param object $value
+     * @return string
+     */
+    public function render($value) {
+        if ($this->renderer) {
+            return call_user_func($this->renderer, $value);
+        }
+        return print_r($value, true);
     }
 }
