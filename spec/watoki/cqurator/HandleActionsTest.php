@@ -1,6 +1,6 @@
 <?php
 namespace spec\watoki\cqurator;
-use watoki\cqurator\web\QueryResource;
+
 use watoki\scrut\Specification;
 
 /**
@@ -72,7 +72,6 @@ class HandleActionsTest extends Specification {
 
         $this->whenIDispatchTheAction('fail\MyAction');
         $this->thenTheResultShouldFailWith('Bam!');
-
     }
 
     ##########################################################################################
