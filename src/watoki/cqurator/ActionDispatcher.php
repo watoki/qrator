@@ -40,6 +40,6 @@ class ActionDispatcher implements Dispatcher {
      * @return \watoki\smokey\Result
      */
     public function fire($event) {
-        $this->dispatcher->fire($event);
+        return $this->dispatcher->fire($event);
     }
 }

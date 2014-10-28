@@ -12,53 +12,94 @@ use watoki\scrut\Specification;
 class HandleActionsTest extends Specification {
 
     function testActionReachesHandlerObject() {
-        $this->class->givenTheClass('some\MyQuery');
+        $this->class->givenTheClass('some\MyAction');
         $this->dispatcher->givenAnObject('myHandler');
-        $this->dispatcher->givenIAdded_AsHandlerFor('myHandler', 'some\MyQuery');
+        $this->dispatcher->givenIAdded_AsHandlerFor('myHandler', 'some\MyAction');
 
-        $this->whenIExecuteTheQuery('some\MyQuery');
-        $this->dispatcher->thenTheMethod_Of_ShouldBeInvoked('myQuery', 'myHandler');
+        $this->whenIDispatchTheAction('some\MyAction');
+        $this->dispatcher->thenTheMethod_Of_ShouldBeInvoked('myAction', 'myHandler');
     }
 
     function testActionReachesHandlerClass() {
-        $this->class->givenTheClass('classHandler\MyQuery');
+        $this->class->givenTheClass('classHandler\MyAction');
         $this->class->givenTheClass_WithTheBody('classHandler\Handler', '
             public static $executed = false;
 
-            function myQuery() {
+            function myAction() {
                 self::$executed = true;
             }
         ');
-        $this->dispatcher->givenIAddedTheClass_AsHandlerFor('classHandler\Handler', 'classHandler\MyQuery');
+        $this->dispatcher->givenIAddedTheClass_AsHandlerFor('classHandler\Handler', 'classHandler\MyAction');
 
-        $this->whenIExecuteTheQuery('classHandler\MyQuery');
+        $this->whenIDispatchTheAction('classHandler\MyAction');
         $this->class->then_ShouldBe('classHandler\Handler::$executed', true);
     }
 
     function testActionReachesHandlerClosure() {
-        $this->class->givenTheClass('closureHandler\MyQuery');
+        $this->class->givenTheClass('closureHandler\MyAction');
         $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
             $GLOBALS['executed'] = true;
-        }, 'closureHandler\MyQuery');
+        }, 'closureHandler\MyAction');
 
-        $this->whenIExecuteTheQuery('closureHandler\MyQuery');
+        $this->whenIDispatchTheAction('closureHandler\MyAction');
         $this->class->then_ShouldBe('$GLOBALS["executed"]', true);
     }
 
     function testActionIsPassedAsArgument() {
-        $this->class->givenTheClass('argument\MyQuery');
+        $this->class->givenTheClass('argument\MyAction');
         $this->dispatcher->givenAnObject('myHandler');
-        $this->dispatcher->givenIAdded_AsHandlerFor('myHandler', 'argument\MyQuery');
+        $this->dispatcher->givenIAdded_AsHandlerFor('myHandler', 'argument\MyAction');
 
-        $this->whenIExecuteTheQuery('argument\MyQuery');
-        $this->dispatcher->thenTheMethodOf_ShouldBeInvokedWithAnInstanceOf('myHandler', 'argument\MyQuery');
+        $this->whenIDispatchTheAction('argument\MyAction');
+        $this->dispatcher->thenTheMethodOf_ShouldBeInvokedWithAnInstanceOf('myHandler', 'argument\MyAction');
+    }
+
+    function testReturnedValueIsPassedBackAsSuccess() {
+        $this->class->givenTheClass('success\MyAction');
+        $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
+            return "Great Success!";
+        }, 'success\MyAction');
+
+        $this->whenIDispatchTheAction('success\MyAction');
+        $this->thenTheResultShouldBeSuccessfulWith('Great Success!');
+    }
+
+    function testExceptionIsPassedBackAsException() {
+        $this->class->givenTheClass('fail\MyAction');
+        $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
+            throw new \Exception("Bam!");
+        }, 'fail\MyAction');
+
+        $this->whenIDispatchTheAction('fail\MyAction');
+        $this->thenTheResultShouldFailWith('Bam!');
+
     }
 
     ##########################################################################################
 
-    private function whenIExecuteTheQuery($query) {
-        $resource = new QueryResource($this->dispatcher->dispatcher);
-        $resource->doGet($query);
+    /** @var \watoki\smokey\Result */
+    private $returned;
+
+    private function whenIDispatchTheAction($action) {
+        $this->returned = $this->dispatcher->dispatcher->fire(new $action);
+    }
+
+    private function thenTheResultShouldBeSuccessfulWith($value) {
+        $returned = null;
+        $this->returned->onSuccess(function ($found) use (&$returned) {
+            $returned = $found;
+        });
+        $this->assertEquals($value, $returned);
+    }
+
+    private function thenTheResultShouldFailWith($message) {
+        /** @var \Exception $exception */
+        $exception = null;
+        $this->returned->onException(function ($e) use (&$exception) {
+            $exception = $e;
+        });
+        $this->assertInstanceOf('Exception', $exception);
+        $this->assertEquals($message, $exception->getMessage());
     }
 
 } 
