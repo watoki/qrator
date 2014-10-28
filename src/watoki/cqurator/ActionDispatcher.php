@@ -29,7 +29,7 @@ class ActionDispatcher implements Dispatcher {
 
             $handler = function ($action) use ($handler, $methodName) {
                 $handler = is_object($handler) ? $handler : $this->factory->getInstance($handler);
-                call_user_func(array($handler, $methodName), $action);
+                return call_user_func(array($handler, $methodName), $action);
             };
         }
         $this->dispatcher->addListener($class, $handler);

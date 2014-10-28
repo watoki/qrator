@@ -50,7 +50,7 @@ class ShowQueryResultTest extends Specification {
         $this->thenCommand_ShouldLinkTo(1, '?action=CommandOne&do=post');
     }
 
-    function testDisplayProperties() {
+    function testDisplayDynamicProperties() {
         $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
             $object = new \StdClass();
             $object->propertyOne = 'valueOne';
@@ -63,6 +63,27 @@ class ShowQueryResultTest extends Specification {
         $this->whenIShowTheResultsOf('MyQuery');
         $this->thenThereShouldBe_Properties(2);
         $this->thenProperty_ShouldHaveTheName_AndValue(1, 'propertyOne', 'valueOne');
+    }
+
+    function testReadPropertiesFromGetters() {
+        $this->class->givenTheClass_WithTheBody('getters\MyClass', '
+            public $zero = "zero";
+            function getOne() { return "one";}
+            function getTwo() { return "two"; }
+            private function getNotMe() {}
+        ');
+        $this->class->givenTheClass_WithTheBody('getters\MyHandler', '
+            function myQuery() {
+                return new MyClass();
+            }
+        ');
+        $this->dispatcher->givenIAddedTheClass_AsHandlerFor('getters\MyHandler', 'MyQuery');
+
+        $this->registry->givenIRegisteredARepresenterFor('getters\MyClass');
+
+        $this->whenIShowTheResultsOf('MyQuery');
+        $this->thenThereShouldBe_Properties(3);
+        $this->thenProperty_ShouldHaveTheName_AndValue(2, 'One', 'one');
     }
 
     function testRenderObjectProperties() {

@@ -43,6 +43,16 @@ class QueryResource {
             ];
         }
 
+        $reflection = new \ReflectionClass($object);
+        foreach ($reflection->getMethods() as $method) {
+            if ($method->isPublic() && substr($method->getName(), 0, 3) == 'get') {
+                $properties[] = [
+                    'name' => substr($method->getName(), 3),
+                    'value' => $method->invoke($object)
+                ];
+            }
+        }
+
         return $properties ? [
             'property' => $properties
         ] : null;
