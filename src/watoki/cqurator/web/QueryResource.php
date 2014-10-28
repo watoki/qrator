@@ -14,6 +14,10 @@ class QueryResource {
 
 
     public function doGet($query) {
-        $this->dispatcher->fire(new $query);
+        return [
+            'properties' => [],
+            'queries' => [],
+            'commands' => []
+        ];
     }
 }

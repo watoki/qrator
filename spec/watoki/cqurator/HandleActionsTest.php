@@ -4,7 +4,7 @@ namespace spec\watoki\cqurator;
 use watoki\scrut\Specification;
 
 /**
- * A Query gets published over the ActionDispatcher and the resulting objects together with their Actions displayed.
+ * An Action gets published over the ActionDispatcher and the result is passed back via a Result object.
  *
  * @property \spec\watoki\cqurator\fixtures\DispatcherFixture dispatcher <-
  * @property \spec\watoki\cqurator\fixtures\ClassFixture class <-
