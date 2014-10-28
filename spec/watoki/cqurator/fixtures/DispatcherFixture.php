@@ -29,6 +29,10 @@ class DispatcherFixture extends Fixture {
         $this->dispatcher->addActionHandler($action, $class);
     }
 
+    public function givenIAddedTheClosure_AsHandlerFor($callable, $action) {
+        $this->dispatcher->addActionHandler($action, $callable);
+    }
+
     public function thenTheMethod_Of_ShouldBeInvoked($method, $object) {
         $this->spec->assertContains($method, $this->objects[$object]->called);
     }

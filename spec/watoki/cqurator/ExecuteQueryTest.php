@@ -35,6 +35,16 @@ class ExecuteQueryTest extends Specification {
         $this->class->then_ShouldBe('classHandler\Handler::$executed', true);
     }
 
+    function testQueryReachesHandlerClosure() {
+        $this->class->givenTheClass('closureHandler\MyQuery');
+        $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
+            $GLOBALS['executed'] = true;
+        }, 'closureHandler\MyQuery');
+
+        $this->whenIExecuteTheQuery('closureHandler\MyQuery');
+        $this->class->then_ShouldBe('$GLOBALS["executed"]', true);
+    }
+
     ##########################################################################################
 
     private function whenIExecuteTheQuery($query) {

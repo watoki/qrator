@@ -23,13 +23,16 @@ class ActionDispatcher implements Dispatcher {
      * @param object $handler
      */
     public function addActionHandler($class, $handler) {
-        $classReflection = new \ReflectionClass($class);
-        $methodName = lcfirst($classReflection->getShortName());
+        if (!is_callable($handler)) {
+            $classReflection = new \ReflectionClass($class);
+            $methodName = lcfirst($classReflection->getShortName());
 
-        $this->dispatcher->addListener($class, function ($action) use ($handler, $methodName) {
-            $handler = is_object($handler) ? $handler : $this->factory->getInstance($handler);
-            call_user_func(array($handler, $methodName), $action);
-        });
+            $handler = function ($action) use ($handler, $methodName) {
+                $handler = is_object($handler) ? $handler : $this->factory->getInstance($handler);
+                call_user_func(array($handler, $methodName), $action);
+            };
+        }
+        $this->dispatcher->addListener($class, $handler);
     }
 
     /**
