@@ -14,7 +14,7 @@ class DispatcherFixture extends Fixture {
 
     public function setUp() {
         parent::setUp();
-        $this->dispatcher = new ActionDispatcher();
+        $this->dispatcher = new ActionDispatcher($this->spec->factory);
     }
 
     public function givenAnObject($object) {
@@ -23,6 +23,10 @@ class DispatcherFixture extends Fixture {
 
     public function givenIAdded_AsHandlerFor($object, $action) {
         $this->dispatcher->addActionHandler($action, $this->objects[$object]);
+    }
+
+    public function givenIAddedTheClass_AsHandlerFor($class, $action) {
+        $this->dispatcher->addActionHandler($action, $class);
     }
 
     public function thenTheMethod_Of_ShouldBeInvoked($method, $object) {

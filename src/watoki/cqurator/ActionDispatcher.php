@@ -1,6 +1,7 @@
 <?php
 namespace watoki\cqurator;
 
+use watoki\factory\Factory;
 use watoki\smokey\Dispatcher;
 use watoki\smokey\EventDispatcher;
 
@@ -9,7 +10,11 @@ class ActionDispatcher implements Dispatcher {
     /** @var Dispatcher */
     private $dispatcher;
 
-    public function __construct() {
+    /** @var \watoki\factory\Factory */
+    private $factory;
+
+    public function __construct(Factory $factory) {
+        $this->factory = $factory;
         $this->dispatcher = new EventDispatcher();
     }
 
@@ -22,6 +27,7 @@ class ActionDispatcher implements Dispatcher {
         $methodName = lcfirst($classReflection->getShortName());
 
         $this->dispatcher->addListener($class, function ($action) use ($handler, $methodName) {
+            $handler = is_object($handler) ? $handler : $this->factory->getInstance($handler);
             call_user_func(array($handler, $methodName), $action);
         });
     }

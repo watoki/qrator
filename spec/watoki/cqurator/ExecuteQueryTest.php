@@ -20,6 +20,21 @@ class ExecuteQueryTest extends Specification {
         $this->dispatcher->thenTheMethod_Of_ShouldBeInvoked('myQuery', 'myHandler');
     }
 
+    function testQueryReachesHandlerClass() {
+        $this->class->givenTheClass('classHandler\MyQuery');
+        $this->class->givenTheClass_WithTheBody('classHandler\Handler', '
+            public static $executed = false;
+
+            function myQuery() {
+                self::$executed = true;
+            }
+        ');
+        $this->dispatcher->givenIAddedTheClass_AsHandlerFor('classHandler\Handler', 'classHandler\MyQuery');
+
+        $this->whenIExecuteTheQuery('classHandler\MyQuery');
+        $this->class->then_ShouldBe('classHandler\Handler::$executed', true);
+    }
+
     ##########################################################################################
 
     private function whenIExecuteTheQuery($query) {
