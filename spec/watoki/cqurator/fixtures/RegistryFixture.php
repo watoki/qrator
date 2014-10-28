@@ -29,4 +29,8 @@ class RegistryFixture extends Fixture {
         $this->representers[$class]->addQuery($query);
     }
 
+    public function givenIAddedTheCommand_ToTheRepresenterOf($command, $class) {
+        $this->representers[$class]->addCommand($command);
+    }
+
 } 

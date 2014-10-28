@@ -14,7 +14,13 @@ class ClassFixture extends Fixture {
         $name = array_pop($parts);
         $namespace = implode('\\', $parts);
 
-        $code = "namespace $namespace; class $name {
+        if (class_exists($name)) {
+            return;
+        }
+
+        $namespaceString = $namespace ? "namespace $namespace;" : '';
+
+        $code = "$namespaceString class $name {
             $body
         }";
         $evald = eval($code);

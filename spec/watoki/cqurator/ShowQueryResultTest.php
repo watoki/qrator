@@ -11,20 +11,37 @@ use watoki\scrut\Specification;
  */
 class ShowQueryResultTest extends Specification {
 
+    protected function background() {
+        $this->class->givenTheClass('MyQuery');
+    }
+
     function testNoActionsNorProperties() {
-        $this->class->givenTheClass('nothing\MyQuery');
         $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
             return new \StdClass;
-        }, 'nothing\MyQuery');
+        }, 'MyQuery');
 
-        $this->whenIShowTheResultsOf('nothing\MyQuery');
-        $this->thenThereShouldBe_Properties(0);
-        $this->thenThereShouldBe_Queries(0);
-        $this->thenThereShouldBe_Commands(0);
+        $this->whenIShowTheResultsOf('MyQuery');
+        $this->thenThereShouldBeNoProperties();
+        $this->thenThereShouldBeNoQueries();
+        $this->thenThereShouldBeNoCommands();
     }
 
     function testDisplayQueriesAndCommands() {
-        $this->markTestIncomplete();
+        $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
+            return new \DateTime();
+        }, 'MyQuery');
+
+        $this->registry->givenIRegisteredARepresenterFor('DateTime');
+
+        $this->registry->givenIAddedTheQuery_ToTheRepresenterOf('QueryOne', 'DateTime');
+        $this->registry->givenIAddedTheQuery_ToTheRepresenterOf('QueryTwo', 'DateTime');
+        $this->registry->givenIAddedTheCommand_ToTheRepresenterOf('CommandOne', 'DateTime');
+        $this->registry->givenIAddedTheCommand_ToTheRepresenterOf('CommandTwo', 'DateTime');
+        $this->registry->givenIAddedTheCommand_ToTheRepresenterOf('CommandThree', 'DateTime');
+
+        $this->whenIShowTheResultsOf('MyQuery');
+        $this->thenThereShouldBe_Queries(2);
+        $this->thenThereShouldBe_Commands(3);
     }
 
     function testDisplayProperties() {
@@ -44,20 +61,32 @@ class ShowQueryResultTest extends Specification {
     private $returned;
 
     private function whenIShowTheResultsOf($query) {
-        $resource = new QueryResource($this->dispatcher->dispatcher);
+        $resource = new QueryResource($this->dispatcher->dispatcher, $this->registry->registry);
         $this->returned = $resource->doGet($query);
     }
 
-    private function thenThereShouldBe_Queries($int) {
-        $this->assertCount($int, $this->returned['queries']);
+    private function thenThereShouldBe_Properties($int) {
+        $this->assertCount($int, $this->returned['properties']['property']);
     }
 
-    private function thenThereShouldBe_Properties($int) {
-        $this->assertCount($int, $this->returned['properties']);
+    private function thenThereShouldBe_Queries($int) {
+        $this->assertCount($int, $this->returned['queries']['action']);
     }
 
     private function thenThereShouldBe_Commands($int) {
-        $this->assertCount($int, $this->returned['commands']);
+        $this->assertCount($int, $this->returned['commands']['action']);
+    }
+
+    private function thenThereShouldBeNoProperties() {
+        $this->assertNull($this->returned['properties']);
+    }
+
+    private function thenThereShouldBeNoQueries() {
+        $this->assertNull($this->returned['queries']);
+    }
+
+    private function thenThereShouldBeNoCommands() {
+        $this->assertNull($this->returned['commands']);
     }
 
 } 
