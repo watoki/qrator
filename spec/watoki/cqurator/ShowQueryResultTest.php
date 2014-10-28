@@ -51,7 +51,18 @@ class ShowQueryResultTest extends Specification {
     }
 
     function testDisplayProperties() {
-        $this->markTestIncomplete();
+        $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
+            $object = new \StdClass();
+            $object->propertyOne = 'valueOne';
+            $object->propertyTwo = 'valueTwo';
+            return $object;
+        }, 'MyQuery');
+
+        $this->registry->givenIRegisteredARepresenterFor('DateTime');
+
+        $this->whenIShowTheResultsOf('MyQuery');
+        $this->thenThereShouldBe_Properties(2);
+        $this->thenProperty_ShouldHaveTheName_AndValue(1, 'propertyOne', 'valueOne');
     }
 
     function testRenderObjectProperties() {
@@ -109,6 +120,11 @@ class ShowQueryResultTest extends Specification {
 
     private function thenCommand_ShouldLinkTo($int, $string) {
         $this->assertEquals($string, $this->returned['commands']['action'][$int - 1]['link']['href']);
+    }
+
+    private function thenProperty_ShouldHaveTheName_AndValue($int, $name, $value) {
+        $this->assertEquals($name, $this->returned['properties']['property'][$int - 1]['name']);
+        $this->assertEquals($value, $this->returned['properties']['property'][$int - 1]['value']);
     }
 
 } 

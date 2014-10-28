@@ -27,10 +27,25 @@ class QueryResource {
             });
 
         return [
-            'properties' => null,
+            'properties' => $this->assembleProperties($result),
             'queries' => $this->assembleQueries($result),
             'commands' => $this->assembleCommands($result)
         ];
+    }
+
+    private function assembleProperties($object) {
+        $properties = array();
+
+        foreach ($object as $property => $value) {
+            $properties[] = [
+                'name' => $property,
+                'value' => print_r($value, true)
+            ];
+        }
+
+        return $properties ? [
+            'property' => $properties
+        ] : null;
     }
 
     private function assembleQueries($object) {
