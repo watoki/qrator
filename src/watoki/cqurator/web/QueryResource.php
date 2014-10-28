@@ -56,7 +56,7 @@ class QueryResource {
                 return [
                     'name' => $command,
                     'link' => [
-                        'href' => "?action=$command"
+                        'href' => "?action=$command&do=post"
                     ]
                 ];
             }, $commands),

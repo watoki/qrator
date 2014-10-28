@@ -42,6 +42,12 @@ class ShowQueryResultTest extends Specification {
         $this->whenIShowTheResultsOf('MyQuery');
         $this->thenThereShouldBe_Queries(2);
         $this->thenThereShouldBe_Commands(3);
+
+        $this->thenQuery_ShouldHaveTheName(1, 'QueryOne');
+        $this->thenQuery_ShouldLinkTo(1, '?action=QueryOne');
+
+        $this->thenCommand_ShouldHaveTheName(1, 'CommandOne');
+        $this->thenCommand_ShouldLinkTo(1, '?action=CommandOne&do=post');
     }
 
     function testDisplayProperties() {
@@ -87,6 +93,22 @@ class ShowQueryResultTest extends Specification {
 
     private function thenThereShouldBeNoCommands() {
         $this->assertNull($this->returned['commands']);
+    }
+
+    private function thenQuery_ShouldHaveTheName($int, $string) {
+        $this->assertEquals($string, $this->returned['queries']['action'][$int - 1]['name']);
+    }
+
+    private function thenQuery_ShouldLinkTo($int, $string) {
+        $this->assertEquals($string, $this->returned['queries']['action'][$int - 1]['link']['href']);
+    }
+
+    private function thenCommand_ShouldHaveTheName($int, $string) {
+        $this->assertEquals($string, $this->returned['commands']['action'][$int - 1]['name']);
+    }
+
+    private function thenCommand_ShouldLinkTo($int, $string) {
+        $this->assertEquals($string, $this->returned['commands']['action'][$int - 1]['link']['href']);
     }
 
 } 
