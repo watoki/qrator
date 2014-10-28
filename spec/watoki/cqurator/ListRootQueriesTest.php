@@ -6,6 +6,11 @@ use watoki\cqurator\representer\GenericRepresenter;
 use watoki\cqurator\RepresenterRegistry;
 use watoki\scrut\Specification;
 
+/**
+ * The Representer of class `null` is the *root Representer*. It's queries are listed if no Action is given.
+ *
+ * @property \spec\watoki\cqurator\fixtures\RegistryFixture registry <-
+ */
 class ListRootQueriesTest extends Specification {
 
     function testNoQueriesRegistered() {
@@ -14,9 +19,9 @@ class ListRootQueriesTest extends Specification {
     }
 
     function testTwoQueriesRegistered() {
-        $this->givenIRegisteredARepresenterFor(null);
-        $this->givenIAddedTheQuery_ToTheRepresenterOf('some\Query', null);
-        $this->givenIAddedTheQuery_ToTheRepresenterOf('other\Query', null);
+        $this->registry->givenIRegisteredARepresenterFor(null);
+        $this->registry->givenIAddedTheQuery_ToTheRepresenterOf('some\Query', null);
+        $this->registry->givenIAddedTheQuery_ToTheRepresenterOf('other\Query', null);
 
         $this->whenIOpenTheIndexResource();
         $this->thenThereShouldBe_Queries(2);
@@ -30,28 +35,8 @@ class ListRootQueriesTest extends Specification {
 
     private $returned;
 
-    /** @var RepresenterRegistry */
-    private $registry;
-
-    /** @var GenericRepresenter[] */
-    private $representers = array();
-
-    protected function setUp() {
-        parent::setUp();
-        $this->registry = new RepresenterRegistry($this->factory);
-    }
-
-    private function givenIRegisteredARepresenterFor($class) {
-        $this->representers[$class] = new GenericRepresenter($this->factory);
-        $this->registry->register($class, $this->representers[$class]);
-    }
-
-    private function givenIAddedTheQuery_ToTheRepresenterOf($query, $class) {
-        $this->representers[$class]->addQuery($query);
-    }
-
     private function whenIOpenTheIndexResource() {
-        $resource = new IndexResource($this->factory, $this->registry);
+        $resource = new IndexResource($this->factory, $this->registry->registry);
         $this->returned = $resource->doGet();
     }
 

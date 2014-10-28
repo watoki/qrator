@@ -22,7 +22,7 @@
     "autoload": {
         "psr-0": {
             "watoki\\cqurator": "src/",
-            "spec\\watoki\\qcurator": ""
+            "spec\\watoki\\cqurator": ""
         }
     },
     "minimum-stability": "dev"
