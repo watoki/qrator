@@ -81,7 +81,7 @@ class PrepareActionsTest extends Specification {
     private function whenIExecuteTheAction($action) {
         $this->resource->whenIDo_With(function (QueryResource $resource) use ($action) {
             return $resource->doGet($this->resource->request, $action);
-        }, new QueryResource($this->dispatcher->dispatcher, $this->registry->registry, $this->factory));
+        }, new QueryResource($this->factory, $this->dispatcher->dispatcher, $this->registry->registry));
     }
 
 } 

@@ -183,7 +183,7 @@ class ShowQueryResultTest extends Specification {
     private function whenIShowTheResultsOf($query) {
         $this->resource->whenIDo_With(function (QueryResource $resource) use ($query) {
             return $resource->doGet($this->resource->request, $query);
-        }, new QueryResource($this->dispatcher->dispatcher, $this->registry->registry, $this->factory));
+        }, new QueryResource($this->factory, $this->dispatcher->dispatcher, $this->registry->registry));
     }
 
     private function whenITryToShowTheResultsOf($query) {

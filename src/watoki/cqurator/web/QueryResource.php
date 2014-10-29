@@ -2,13 +2,12 @@
 namespace watoki\cqurator\web;
 
 use watoki\cqurator\RepresenterRegistry;
-use watoki\curir\protocol\Url;
-use watoki\curir\responder\Redirecter;
 use watoki\deli\Request;
 use watoki\factory\Factory;
 use watoki\smokey\Dispatcher;
 
-class QueryResource {
+class QueryResource extends ActionResource {
+
     const TYPE = 'query';
 
     /** @var \watoki\smokey\Dispatcher */
@@ -17,20 +16,17 @@ class QueryResource {
     /** @var RepresenterRegistry */
     private $registry;
 
-    /** @var \watoki\factory\Factory */
-    private $factory;
-
     /**
+     * @param Factory $factory <-
      * @param Dispatcher $dispatcher <-
      * @param RepresenterRegistry $registry <-
-     * @param Factory $factory <-
      */
-    function __construct(Dispatcher $dispatcher, RepresenterRegistry $registry, Factory $factory) {
+    function __construct(Factory $factory, Dispatcher $dispatcher, RepresenterRegistry $registry) {
+        parent::__construct($factory);
         $this->dispatcher = $dispatcher;
         $this->registry = $registry;
         $this->factory = $factory;
     }
-
 
     /**
      * @param Request $request <-
@@ -40,14 +36,11 @@ class QueryResource {
     public function doGet(Request $request, $query) {
         $result = null;
 
+        $action = $this->createAction($query);
         try {
-            $action = $this->createAction($request, $query);
+            $this->prepareAction($request, $action);
         } catch (\UnderflowException $e) {
-            $target = Url::fromString('prepare');
-            $target->getParameters()->set('action', $query);
-            $target->getParameters()->set('type', self::TYPE);
-            $target->getParameters()->merge($request->getArguments());
-            return new Redirecter($target);
+            return $this->redirectToPrepare($request, $query, self::TYPE);
         }
 
         $this->dispatcher->fire($action)
@@ -61,29 +54,6 @@ class QueryResource {
         return [
             'entity' => $this->assembleResult($result)
         ];
-    }
-
-    private function createAction(Request $request, $actionClass) {
-        $action = $this->factory->getInstance($actionClass);
-        $actionClass = get_class($action);
-
-        $getParameter = function ($property) use ($request, $actionClass) {
-            if (!$request->getArguments()->has($property)) {
-                throw new \UnderflowException("Property [$property] for action [$actionClass] missing");
-            }
-            return $request->getArguments()->get($property);
-        };
-
-        foreach ($action as $property => $value) {
-            $action->$property = $getParameter($property);
-        }
-        foreach (get_class_methods($actionClass) as $method) {
-            if (substr($method, 0, 3) == 'set') {
-                call_user_func(array($action, $method), $getParameter(lcfirst(substr($method, 3))));
-            }
-        }
-
-        return $action;
     }
 
     private function assembleResult($result) {
