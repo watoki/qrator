@@ -166,6 +166,15 @@ class ShowQueryResultTest extends Specification {
         $this->thenCommand_ShouldLinkTo(1, '?action=SomeCommand&do=post&id=73');
     }
 
+    function testInvalidResult() {
+        $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
+            return null;
+        }, 'MyQuery');
+
+        $this->whenITryToShowTheResultsOf('MyQuery');
+        $this->try->thenTheException_ShouldBeThrown('Action had no displayable result: NULL');
+    }
+
     ###########################################################################################
 
     private $returned;

@@ -39,8 +39,10 @@ class QueryResource {
             return array_map(function ($entity) {
                 return $this->assembleEntity($entity);
             }, $result);
-        } else {
+        } else if (is_object($result)) {
             return $this->assembleEntity($result);
+        } else {
+            throw new \InvalidArgumentException("Action had no displayable result: " . var_export($result, true));
         }
     }
 
