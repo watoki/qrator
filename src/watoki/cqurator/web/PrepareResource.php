@@ -37,7 +37,7 @@ class PrepareResource extends ActionResource {
         }
 
         return [
-            'form' => $this->assembleForm($object)
+            'form' => $this->assembleForm($object, $type)
         ];
     }
 
@@ -45,9 +45,14 @@ class PrepareResource extends ActionResource {
         return $this->doGet($request, $action, $type);
     }
 
-    private function assembleForm($action) {
+    private function assembleForm($action, $type) {
         $representer = $this->registry->getRepresenter(get_class($action));
         $form = [
+            'title' => $representer->toString($action),
+            'parameter' => [
+                ['name' => 'action', 'value' => get_class($action)],
+                ['name' => 'type', 'value' => $type],
+            ],
             'field' => $this->assembleFields($action, $representer)
         ];
         return $form;

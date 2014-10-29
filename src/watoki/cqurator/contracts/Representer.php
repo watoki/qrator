@@ -36,4 +36,10 @@ interface Representer {
      * @return array|mixed[] Indexed by property names
      */
     public function getPropertyValues($object);
+
+    /**
+     * @param object $object
+     * @return string
+     */
+    public function toString($object);
 }

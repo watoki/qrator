@@ -132,4 +132,12 @@ class GenericRepresenter implements Representer {
 
         return $properties;
     }
+
+    /**
+     * @param object $object
+     * @return string
+     */
+    public function toString($object) {
+        return get_class($object);
+    }
 }

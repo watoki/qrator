@@ -34,20 +34,14 @@ class ShowPreparationFormTest extends Specification {
 
         $this->whenIPrepare('PrepareAction');
 
+        $this->thenTheFormTitleShouldBe('PrepareAction');
+        $this->thenThereShouldBeAHiddenField_WithValue('action', 'PrepareAction');
+        $this->thenThereShouldBeAHiddenField_WithValue('type', 'query');
+
         $this->thenThereShouldBe_Fields(2);
         $this->thenField_ShouldHaveTheLabel(1, 'One');
         $this->thenField_ShouldBeRenderedAs(1, '<input type="text" name="one" value="uno"/>');
         $this->thenField_ShouldBeRenderedAs(2, '<input type="text" name="two"/>');
-    }
-
-    function testSubmitFilledAction() {
-        $this->givenIAmFillingOutTheQuery('PrepareAction');
-
-        $this->givenIFilled_With('one', 'eins');
-        $this->givenIFilled_With('two', 'zwei');
-
-        $this->whenISubmitTheAction();
-        $this->resource->thenIShouldBeRedirectedTo('?action=PrepareAction&type=query&one=eins&two=zwei');
     }
 
     function testGetFormDefinitionFromRepresenter() {
@@ -65,12 +59,6 @@ class ShowPreparationFormTest extends Specification {
         }, new PrepareResource($this->factory, $this->registry->registry));
     }
 
-    private function whenISubmitTheAction() {
-        $this->resource->whenIDo_With(function (PrepareResource $resource) {
-            return $resource->doPost($this->resource->request, $this->action, $this->type);
-        }, new PrepareResource($this->factory, $this->registry->registry));
-    }
-
     private function thenThereShouldBe_Fields($int) {
         $this->resource->thenThereShouldBe_Of($int, 'form/field');
     }
@@ -85,13 +73,18 @@ class ShowPreparationFormTest extends Specification {
         $this->resource->then_ShouldBe("form/field/$int/control", $string);
     }
 
-    private function givenIFilled_With($field, $value) {
-        $this->resource->givenTheRequestArgument_Is($field, $value);
+    private function thenTheFormTitleShouldBe($string) {
+        $this->resource->then_ShouldBe('form/title', $string);
     }
 
-    private function givenIAmFillingOutTheQuery($string) {
-        $this->action = $string;
-        $this->type = QueryResource::TYPE;
+    private function thenThereShouldBeAHiddenField_WithValue($name, $value) {
+        $parameters = $this->resource->get('form/parameter');
+        foreach ($parameters as $hidden) {
+            if ($hidden['name'] == $name && $hidden['value'] == $value) {
+                return;
+            }
+        }
+        $this->fail("Could not find parameter [$name] with value [$value] in " . print_r($parameters, true));
     }
 
 }
