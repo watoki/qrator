@@ -14,7 +14,8 @@
     ],
     "require": {
         "php": ">=5.4",
-		"watoki/factory": "*"
+		"watoki/factory": "*",
+        "watoki/curir": "*"
     },
     "require-dev": {
         "watoki/scrut": "*"
