@@ -94,10 +94,16 @@ class GenericRepresenter implements Representer {
      */
     public function getFields($object) {
         $fields = [];
-        foreach ($this->getPropertyValues($object) as $name => $value) {
-            $field = $this->getField($name, $value);
-            $field->setValue($value);
+        foreach ($this->getProperties($object) as $property) {
+            if (!$property->canSet()) {
+                continue;
+            }
+
+            $field = $this->getField($property->name);
             $fields[] = $field;
+            if ($property->canGet()) {
+                $field->setValue($property->get());
+            }
         }
         return $fields;
     }
@@ -106,7 +112,7 @@ class GenericRepresenter implements Representer {
      * @param $name
      * @return Field
      */
-    protected function getField($name) {
+    public function getField($name) {
         if (isset($this->fields[$name])) {
             return $this->fields[$name];
         }
@@ -123,34 +129,32 @@ class GenericRepresenter implements Representer {
 
     /**
      * @param object $object
-     * @throws \InvalidArgumentException
-     * @return array|\mixed[] Indexed by property names
+     * @return string
      */
-    public function getPropertyValues($object) {
+    public function toString($object) {
+        return get_class($object);
+    }
+
+    /**
+     * @param object $object
+     * @throws \InvalidArgumentException
+     * @return array|Property[]
+     */
+    public function getProperties($object) {
         if (!is_object($object)) {
             throw new \InvalidArgumentException("Not an object: " . var_export($object, true));
         }
         $properties = [];
 
-        foreach ($object as $name => $value) {
-            $properties[$name] = $value;
+        foreach ($object as $property => $value) {
+            $properties[] = new PublicProperty($object, $property);;
         }
-
-        $reflection = new \ReflectionClass($object);
-        foreach ($reflection->getMethods() as $method) {
-            if ($method->isPublic() && substr($method->getName(), 0, 3) == 'get') {
-                $properties[substr($method->getName(), 3)] = $method->invoke($object);
+        foreach (get_class_methods(get_class($object)) as $method) {
+            if (substr($method, 0, 3) == 'set' || substr($method, 0, 3) == 'get') {
+                $properties[] = new AccessorProperty($object, lcfirst(substr($method, 3)));
             }
         }
 
         return $properties;
-    }
-
-    /**
-     * @param object $object
-     * @return string
-     */
-    public function toString($object) {
-        return get_class($object);
     }
 }

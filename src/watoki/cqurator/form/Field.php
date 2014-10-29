@@ -17,4 +17,10 @@ interface Field {
      * @param mixed $value
      */
     public function setValue($value);
+
+    /**
+     * @param string $value
+     * @return mixed
+     */
+    public function inflate($value);
 }

@@ -70,9 +70,10 @@ class ShowQueryResultTest extends Specification {
 
     function testReadPropertiesFromGetters() {
         $this->class->givenTheClass_WithTheBody('getters\MyClass', '
-            public $zero = "zero";
-            function getOne() { return "one";}
-            function getTwo() { return "two"; }
+            public $zero = "null";
+            function getOne() { return "uno";}
+            function getTwo() { return "dos"; }
+            function setThree() { }
             private function getNotMe() {}
         ');
         $this->class->givenTheClass_WithTheBody('getters\MyHandler', '
@@ -84,7 +85,9 @@ class ShowQueryResultTest extends Specification {
 
         $this->whenIShowTheResultsOf('MyQuery');
         $this->thenThereShouldBe_Properties(3);
-        $this->thenProperty_ShouldHaveTheName_AndValue(2, 'One', 'one');
+        $this->thenProperty_ShouldHaveTheName_AndValue(1, 'zero', 'null');
+        $this->thenProperty_ShouldHaveTheName_AndValue(2, 'one', 'uno');
+        $this->thenProperty_ShouldHaveTheName_AndValue(3, 'two', 'dos');
     }
 
     function testRenderObjectProperties() {
@@ -115,7 +118,7 @@ class ShowQueryResultTest extends Specification {
 
         $this->whenIShowTheResultsOf('MyQuery');
         $this->thenThereShouldBe_Entities(3);
-        $this->thenEntity_ShouldHave_Properties(1, 7);
+        $this->thenEntity_ShouldHave_Properties(1, 9);
     }
 
     function testThrowExceptions() {

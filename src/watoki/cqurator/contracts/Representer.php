@@ -33,13 +33,19 @@ interface Representer {
 
     /**
      * @param object $object
-     * @return array|mixed[] Indexed by property names
-     */
-    public function getPropertyValues($object);
-
-    /**
-     * @param object $object
      * @return string
      */
     public function toString($object);
+
+    /**
+     * @param object $object
+     * @return array|\watoki\cqurator\representer\Property[]
+     */
+    public function getProperties($object);
+
+    /**
+     * @param string $name
+     * @return \watoki\cqurator\form\Field
+     */
+    public function getField($name);
 }

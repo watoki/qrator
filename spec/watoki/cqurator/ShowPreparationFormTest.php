@@ -49,6 +49,7 @@ class ShowPreparationFormTest extends Specification {
             public function getLabel() { return "Some Label"; }
             public function render() { return "Hello World"; }
             public function setValue($value) {}
+            public function inflate($value) { return $value; }
         ');
         $this->registry->givenIRegisteredARepresenterFor('PrepareAction');
         $this->givenISetTheFieldFor_To_For('one', 'MySpecialField', 'PrepareAction');

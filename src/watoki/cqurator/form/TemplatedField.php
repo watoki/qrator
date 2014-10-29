@@ -6,7 +6,7 @@ use watoki\curir\rendering\Locatable;
 use watoki\curir\rendering\PhpRenderer;
 use watoki\factory\Factory;
 
-class TemplatedField implements Locatable, Field {
+abstract class TemplatedField implements Locatable, Field {
 
     /** @var string */
     private $name;

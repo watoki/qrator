@@ -13,19 +13,14 @@ class QueryResource extends ActionResource {
     /** @var \watoki\smokey\Dispatcher */
     private $dispatcher;
 
-    /** @var RepresenterRegistry */
-    private $registry;
-
     /**
      * @param Factory $factory <-
      * @param Dispatcher $dispatcher <-
      * @param RepresenterRegistry $registry <-
      */
     function __construct(Factory $factory, Dispatcher $dispatcher, RepresenterRegistry $registry) {
-        parent::__construct($factory);
+        parent::__construct($factory, $registry);
         $this->dispatcher = $dispatcher;
-        $this->registry = $registry;
-        $this->factory = $factory;
     }
 
     /**
@@ -82,8 +77,10 @@ class QueryResource extends ActionResource {
         $properties = [];
 
         $representer = $this->registry->getRepresenter(get_class($object));
-        foreach ($representer->getPropertyValues($object) as $name => $value) {
-            $properties[] = $this->assembleProperty($name, $value);
+        foreach ($representer->getProperties($object) as $property) {
+            if ($property->canGet()) {
+                $properties[] = $this->assembleProperty($property->name, $property->get());
+            }
         }
 
         return $properties ? [

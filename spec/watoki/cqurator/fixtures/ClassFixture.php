@@ -49,6 +49,6 @@ class ClassFixture extends Fixture {
     }
 
     public function then_ShouldBe($expression, $value) {
-        $this->spec->assertEquals($value, eval("return $expression;"));
+        $this->spec->assertEquals($value, eval("return $expression;"), "Not [" . var_export($value, true) . "]: " . $expression);
     }
 }

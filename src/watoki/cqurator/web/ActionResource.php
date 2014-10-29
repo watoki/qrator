@@ -1,6 +1,7 @@
 <?php
 namespace watoki\cqurator\web;
 
+use watoki\cqurator\RepresenterRegistry;
 use watoki\curir\Container;
 use watoki\curir\protocol\Url;
 use watoki\curir\responder\Redirecter;
@@ -12,12 +13,19 @@ abstract class ActionResource extends Container {
     /** @var \watoki\factory\Factory */
     protected $factory;
 
+    /** @var RepresenterRegistry */
+    protected $registry;
+
     /**
      * @param Factory $factory <-
+     * @param RepresenterRegistry $registry <-
      */
-    function __construct(Factory $factory) {
+    function __construct(Factory $factory, RepresenterRegistry $registry) {
+        parent::__construct($factory);
+        $this->registry = $registry;
         $this->factory = $factory;
     }
+
 
     protected function createAction($action) {
         return $this->factory->getInstance($action);
@@ -29,20 +37,17 @@ abstract class ActionResource extends Container {
 
     protected function prepareAction(Request $request, $action) {
         $actionClass = get_class($action);
+        $representer = $this->registry->getRepresenter($actionClass);
 
-        $getParameter = function ($property) use ($request, $actionClass) {
-            if (!$request->getArguments()->has($property)) {
-                throw new \UnderflowException("Property [$property] for action [$actionClass] missing");
-            }
-            return $request->getArguments()->get($property);
-        };
+        foreach ($representer->getProperties($action) as $property) {
+            if ($property->canSet()) {
 
-        foreach ($action as $property => $value) {
-            $action->$property = $getParameter($property);
-        }
-        foreach (get_class_methods($actionClass) as $method) {
-            if (substr($method, 0, 3) == 'set') {
-                call_user_func(array($action, $method), $getParameter(lcfirst(substr($method, 3))));
+                if (!$request->getArguments()->has($property->name)) {
+                    throw new \UnderflowException("Property [{$property->name}] for action [$actionClass] missing");
+                }
+                $value = $request->getArguments()->get($property->name);
+                $inflated = $representer->getField($property->name)->inflate($value);
+                $property->set($inflated);
             }
         }
     }

@@ -9,14 +9,6 @@ use watoki\factory\Factory;
 
 class PrepareResource extends ActionResource {
 
-    /** @var RepresenterRegistry */
-    private $registry;
-
-    function __construct(Factory $factory, RepresenterRegistry $registry) {
-        parent::__construct($factory);
-        $this->registry = $registry;
-    }
-
     protected function redirectToPrepare(Request $request, $action, $type) {
         throw new \LogicException('Cannot redirect. Already at prepare.');
     }
