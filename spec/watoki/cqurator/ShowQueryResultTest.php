@@ -5,6 +5,8 @@ use watoki\cqurator\web\QueryResource;
 use watoki\scrut\Specification;
 
 /**
+ * Queries are executed and the object or array ob objects presented together with their actions.
+ *
  * @property \spec\watoki\cqurator\fixtures\RegistryFixture registry <-
  * @property \spec\watoki\cqurator\fixtures\DispatcherFixture dispatcher <-
  * @property \spec\watoki\cqurator\fixtures\ClassFixture class <-
