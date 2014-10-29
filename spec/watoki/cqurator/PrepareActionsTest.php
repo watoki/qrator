@@ -65,7 +65,14 @@ class PrepareActionsTest extends Specification {
     }
 
     function testGetActionInstanceFromFactory() {
-        $this->markTestIncomplete();
+        $this->class->givenTheClass('OtherClass');
+        $this->givenISetAnInstanceOf_AsSingletonFor('OtherClass', 'ComplexAction');
+        $this->dispatcher->givenAnObject('myHandler');
+        $this->dispatcher->givenIAdded_AsHandlerFor('myHandler', 'OtherClass');
+
+        $this->whenIExecuteTheAction('ComplexAction');
+        $this->thenTheResultShouldBeDisplayed();
+        $this->dispatcher->thenTheMethodOf_ShouldBeInvokedWithAnInstanceOf('myHandler', 'OtherClass');
     }
 
     ####################################################################################
@@ -84,12 +91,19 @@ class PrepareActionsTest extends Specification {
         $this->request->getArguments()->set($key, $value);
     }
 
+    private function givenISetAnInstanceOf_AsSingletonFor($class, $action) {
+        $this->factory->setSingleton($action, new $class);
+    }
+
     private function whenIExecuteTheAction($action) {
-        $resource = new QueryResource($this->dispatcher->dispatcher, $this->registry->registry);
+        $resource = new QueryResource($this->dispatcher->dispatcher, $this->registry->registry, $this->factory);
         $this->returned = $resource->doGet($this->request, $action);
     }
 
     private function thenTheResultShouldBeDisplayed() {
+        if (!is_array($this->returned)) {
+            $this->fail('Was probably redirected: ' . print_r($this->returned, true));
+        }
         $this->assertNotNull($this->returned['entity']);
     }
 

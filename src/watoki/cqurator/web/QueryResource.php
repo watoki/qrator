@@ -5,6 +5,7 @@ use watoki\cqurator\RepresenterRegistry;
 use watoki\curir\protocol\Url;
 use watoki\curir\responder\Redirecter;
 use watoki\deli\Request;
+use watoki\factory\Factory;
 use watoki\smokey\Dispatcher;
 
 class QueryResource {
@@ -16,9 +17,18 @@ class QueryResource {
     /** @var RepresenterRegistry */
     private $registry;
 
-    function __construct(Dispatcher $dispatcher, RepresenterRegistry $registry) {
+    /** @var \watoki\factory\Factory */
+    private $factory;
+
+    /**
+     * @param Dispatcher $dispatcher <-
+     * @param RepresenterRegistry $registry <-
+     * @param Factory $factory <-
+     */
+    function __construct(Dispatcher $dispatcher, RepresenterRegistry $registry, Factory $factory) {
         $this->dispatcher = $dispatcher;
         $this->registry = $registry;
+        $this->factory = $factory;
     }
 
 
@@ -54,7 +64,8 @@ class QueryResource {
     }
 
     private function createAction(Request $request, $actionClass) {
-        $action = new $actionClass;
+        $action = $this->factory->getInstance($actionClass);
+        $actionClass = get_class($action);
 
         $getParameter = function ($property) use ($request, $actionClass) {
             if (!$request->getArguments()->has($property)) {

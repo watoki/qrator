@@ -183,7 +183,7 @@ class ShowQueryResultTest extends Specification {
 
     private function whenIShowTheResultsOf($query) {
         $request = new Request(new Path(), new Path());
-        $resource = new QueryResource($this->dispatcher->dispatcher, $this->registry->registry);
+        $resource = new QueryResource($this->dispatcher->dispatcher, $this->registry->registry, $this->factory);
         $this->returned = $resource->doGet($request, $query);
     }
 

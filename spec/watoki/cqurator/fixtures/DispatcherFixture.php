@@ -51,6 +51,7 @@ class TestObject {
     function __call($name, $arguments) {
         $this->called[] = $name;
         $this->args[] = $arguments;
+        return new \StdClass();
     }
 
 
