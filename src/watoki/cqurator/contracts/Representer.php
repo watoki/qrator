@@ -18,4 +18,10 @@ interface Representer {
      * @return string
      */
     public function render($value);
+
+    /**
+     * @param object $object
+     * @return mixed
+     */
+    public function getId($object);
 }

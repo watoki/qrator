@@ -86,30 +86,32 @@ class QueryResource {
     private function assembleQueries($object) {
         $class = get_class($object);
         $queries = $this->registry->getRepresenter($class)->getQueries();
-        return $queries ? [
-            'action' => array_map(function ($query) use ($class) {
-                return [
-                    'name' => $query,
-                    'link' => [
-                        'href' => "?action=$query"
-                    ]
-                ];
-            }, $queries),
-        ] : null;
+        return $this->assembleActions($queries, $object);
     }
 
     private function assembleCommands($object) {
         $class = get_class($object);
         $commands = $this->registry->getRepresenter($class)->getCommands();
-        return $commands ? [
-            'action' => array_map(function ($command) use ($class) {
+        return $this->assembleActions($commands, $object, '&do=post');
+    }
+
+    private function assembleActions($actions, $object, $urlSuffix = '') {
+        if (!$actions) {
+            return null;
+        }
+
+        $representer = $this->registry->getRepresenter(get_class($object));
+        $id = $representer->getId($object);
+
+        return [
+            'action' => array_map(function ($query) use ($urlSuffix, $id) {
                 return [
-                    'name' => $command,
+                    'name' => $query,
                     'link' => [
-                        'href' => "?action=$command&do=post"
+                        'href' => "?action=$query" . $urlSuffix . ($id ? '&id=' . $id : '')
                     ]
                 ];
-            }, $commands),
-        ] : null;
+            }, $actions),
+        ];
     }
 }

@@ -56,4 +56,18 @@ class GenericRepresenter implements Representer {
         }
         return print_r($value, true);
     }
+
+    /**
+     * @param object $object
+     * @return mixed
+     */
+    public function getId($object) {
+        if (isset($object->id)) {
+            return $object->id;
+        } else if (method_exists($object, 'getId')) {
+            return $object->getId();
+        } else {
+            return null;
+        }
+    }
 }

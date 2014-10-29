@@ -126,6 +126,46 @@ class ShowQueryResultTest extends Specification {
         $this->try->thenTheException_ShouldBeThrown('Something went wrong');
     }
 
+    function testEntityActionsWithProperty() {
+        $this->class->givenTheClass_WithTheBody('property\Entity', '
+            public $id = "42";
+        ');
+        $this->class->givenTheClass_WithTheBody('property\MyHandler', '
+            function myQuery() {
+                return new Entity();
+            }
+        ');
+        $this->dispatcher->givenIAddedTheClass_AsHandlerFor('property\MyHandler', 'MyQuery');
+
+        $this->registry->givenIRegisteredARepresenterFor('property\Entity');
+        $this->registry->givenIAddedTheQuery_ToTheRepresenterOf('SomeQuery', 'property\Entity');
+        $this->registry->givenIAddedTheCommand_ToTheRepresenterOf('SomeCommand', 'property\Entity');
+
+        $this->whenIShowTheResultsOf('MyQuery');
+        $this->thenQuery_ShouldLinkTo(1, '?action=SomeQuery&id=42');
+        $this->thenCommand_ShouldLinkTo(1, '?action=SomeCommand&do=post&id=42');
+    }
+
+    function testEntityActionWithMethods() {
+        $this->class->givenTheClass_WithTheBody('methods\Entity', '
+            public function getId() { return "73"; }
+        ');
+        $this->class->givenTheClass_WithTheBody('methods\MyHandler', '
+            function myQuery() {
+                return new Entity();
+            }
+        ');
+        $this->dispatcher->givenIAddedTheClass_AsHandlerFor('methods\MyHandler', 'MyQuery');
+
+        $this->registry->givenIRegisteredARepresenterFor('methods\Entity');
+        $this->registry->givenIAddedTheQuery_ToTheRepresenterOf('SomeQuery', 'methods\Entity');
+        $this->registry->givenIAddedTheCommand_ToTheRepresenterOf('SomeCommand', 'methods\Entity');
+
+        $this->whenIShowTheResultsOf('MyQuery');
+        $this->thenQuery_ShouldLinkTo(1, '?action=SomeQuery&id=73');
+        $this->thenCommand_ShouldLinkTo(1, '?action=SomeCommand&do=post&id=73');
+    }
+
     ###########################################################################################
 
     private $returned;
