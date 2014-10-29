@@ -27,9 +27,25 @@ class QueryResource {
             });
 
         return [
-            'properties' => $this->assembleProperties($result),
-            'queries' => $this->assembleQueries($result),
-            'commands' => $this->assembleCommands($result)
+            'entity' => $this->assembleResult($result)
+        ];
+    }
+
+    private function assembleResult($result) {
+        if (is_array($result)) {
+            return array_map(function ($entity) {
+                return $this->assembleEntity($entity);
+            }, $result);
+        } else {
+            return $this->assembleEntity($result);
+        }
+    }
+
+    private function assembleEntity($entity) {
+        return [
+            'properties' => $this->assembleProperties($entity),
+            'queries' => $this->assembleQueries($entity),
+            'commands' => $this->assembleCommands($entity)
         ];
     }
 

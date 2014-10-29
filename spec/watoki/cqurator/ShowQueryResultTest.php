@@ -100,7 +100,17 @@ class ShowQueryResultTest extends Specification {
     }
 
     function testDisplayCollection() {
-        $this->markTestIncomplete();
+        $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
+            return [new \DateTime(), new \DateTime(), new \DateTime()];
+        }, 'MyQuery');
+
+        $this->registry->givenIRegisteredARepresenterFor('DateTime');
+        $this->registry->givenIAddedTheQuery_ToTheRepresenterOf('QueryOne', 'DateTime');
+        $this->registry->givenIAddedTheCommand_ToTheRepresenterOf('CommandOne', 'DateTime');
+
+        $this->whenIShowTheResultsOf('MyQuery');
+        $this->thenThereShouldBe_Entities(3);
+        $this->thenEntity_ShouldHave_Properties(1, 7);
     }
 
     ###########################################################################################
@@ -113,48 +123,56 @@ class ShowQueryResultTest extends Specification {
     }
 
     private function thenThereShouldBe_Properties($int) {
-        $this->assertCount($int, $this->returned['properties']['property']);
+        $this->assertCount($int, $this->returned['entity']['properties']['property']);
     }
 
     private function thenThereShouldBe_Queries($int) {
-        $this->assertCount($int, $this->returned['queries']['action']);
+        $this->assertCount($int, $this->returned['entity']['queries']['action']);
     }
 
     private function thenThereShouldBe_Commands($int) {
-        $this->assertCount($int, $this->returned['commands']['action']);
+        $this->assertCount($int, $this->returned['entity']['commands']['action']);
     }
 
     private function thenThereShouldBeNoProperties() {
-        $this->assertNull($this->returned['properties']);
+        $this->assertNull($this->returned['entity']['properties']);
     }
 
     private function thenThereShouldBeNoQueries() {
-        $this->assertNull($this->returned['queries']);
+        $this->assertNull($this->returned['entity']['queries']);
     }
 
     private function thenThereShouldBeNoCommands() {
-        $this->assertNull($this->returned['commands']);
+        $this->assertNull($this->returned['entity']['commands']);
     }
 
     private function thenQuery_ShouldHaveTheName($int, $string) {
-        $this->assertEquals($string, $this->returned['queries']['action'][$int - 1]['name']);
+        $this->assertEquals($string, $this->returned['entity']['queries']['action'][$int - 1]['name']);
     }
 
     private function thenQuery_ShouldLinkTo($int, $string) {
-        $this->assertEquals($string, $this->returned['queries']['action'][$int - 1]['link']['href']);
+        $this->assertEquals($string, $this->returned['entity']['queries']['action'][$int - 1]['link']['href']);
     }
 
     private function thenCommand_ShouldHaveTheName($int, $string) {
-        $this->assertEquals($string, $this->returned['commands']['action'][$int - 1]['name']);
+        $this->assertEquals($string, $this->returned['entity']['commands']['action'][$int - 1]['name']);
     }
 
     private function thenCommand_ShouldLinkTo($int, $string) {
-        $this->assertEquals($string, $this->returned['commands']['action'][$int - 1]['link']['href']);
+        $this->assertEquals($string, $this->returned['entity']['commands']['action'][$int - 1]['link']['href']);
     }
 
     private function thenProperty_ShouldHaveTheName_AndValue($int, $name, $value) {
-        $this->assertEquals($name, $this->returned['properties']['property'][$int - 1]['name']);
-        $this->assertEquals($value, $this->returned['properties']['property'][$int - 1]['value']);
+        $this->assertEquals($name, $this->returned['entity']['properties']['property'][$int - 1]['name']);
+        $this->assertEquals($value, $this->returned['entity']['properties']['property'][$int - 1]['value']);
+    }
+
+    private function thenThereShouldBe_Entities($int) {
+        $this->assertCount($int, $this->returned['entity']);
+    }
+
+    private function thenEntity_ShouldHave_Properties($pos, $count) {
+        $this->assertCount($count, $this->returned['entity'][$pos - 1]['properties']['property']);
     }
 
 } 
