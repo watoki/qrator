@@ -2,6 +2,7 @@
 namespace spec\watoki\cqurator;
 
 use watoki\cqurator\web\PrepareResource;
+use watoki\cqurator\web\QueryResource;
 use watoki\scrut\Specification;
 
 /**
@@ -13,11 +14,14 @@ use watoki\scrut\Specification;
  */
 class ShowPreparationFormTest extends Specification {
 
-    function testAllPropertiesProvided() {
+    protected function background() {
         $this->class->givenTheClass_WithTheBody('PrepareAction', '
             public $one;
             public $two;
         ');
+    }
+
+    function testAllPropertiesProvided() {
         $this->resource->givenTheRequestArgument_Is('one', 'uno');
         $this->resource->givenTheRequestArgument_Is('two', 'dos');
 
@@ -26,10 +30,6 @@ class ShowPreparationFormTest extends Specification {
     }
 
     function testInputForMissingProperties() {
-        $this->class->givenTheClass_WithTheBody('PrepareAction', '
-            public $one;
-            public $two;
-        ');
         $this->resource->givenTheRequestArgument_Is('one', 'uno');
 
         $this->whenIPrepare('PrepareAction');
@@ -41,7 +41,13 @@ class ShowPreparationFormTest extends Specification {
     }
 
     function testSubmitFilledAction() {
-        $this->markTestIncomplete();
+        $this->givenIAmFillingOutTheQuery('PrepareAction');
+
+        $this->givenIFilled_With('one', 'eins');
+        $this->givenIFilled_With('two', 'zwei');
+
+        $this->whenISubmitTheAction();
+        $this->resource->thenIShouldBeRedirectedTo('?action=PrepareAction&type=query&one=eins&two=zwei');
     }
 
     function testGetFormDefinitionFromRepresenter() {
@@ -50,9 +56,18 @@ class ShowPreparationFormTest extends Specification {
 
     ###############################################################################################
 
+    private $action;
+    private $type;
+
     private function whenIPrepare($action) {
         $this->resource->whenIDo_With(function (PrepareResource $resource) use ($action) {
             return $resource->doGet($this->resource->request, $action, 'query');
+        }, new PrepareResource($this->factory, $this->registry->registry));
+    }
+
+    private function whenISubmitTheAction() {
+        $this->resource->whenIDo_With(function (PrepareResource $resource) {
+            return $resource->doPost($this->resource->request, $this->action, $this->type);
         }, new PrepareResource($this->factory, $this->registry->registry));
     }
 
@@ -68,6 +83,15 @@ class ShowPreparationFormTest extends Specification {
     private function thenField_ShouldBeRenderedAs($int, $string) {
         $int--;
         $this->resource->then_ShouldBe("form/field/$int/control", $string);
+    }
+
+    private function givenIFilled_With($field, $value) {
+        $this->resource->givenTheRequestArgument_Is($field, $value);
+    }
+
+    private function givenIAmFillingOutTheQuery($string) {
+        $this->action = $string;
+        $this->type = QueryResource::TYPE;
     }
 
 }

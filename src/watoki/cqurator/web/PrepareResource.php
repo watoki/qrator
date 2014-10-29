@@ -41,6 +41,10 @@ class PrepareResource extends ActionResource {
         ];
     }
 
+    public function doPost(Request $request, $action, $type) {
+        return $this->doGet($request, $action, $type);
+    }
+
     private function assembleForm($action) {
         $representer = $this->registry->getRepresenter(get_class($action));
         $form = [
