@@ -13,6 +13,7 @@ use watoki\scrut\Specification;
  * @property \spec\watoki\cqurator\fixtures\DispatcherFixture dispatcher <-
  * @property \spec\watoki\cqurator\fixtures\ClassFixture class <-
  * @property \watoki\scrut\ExceptionFixture try <-
+ * @property \spec\watoki\cqurator\fixtures\ResourceFixture resource <-
  */
 class ShowQueryResultTest extends Specification {
 
@@ -179,12 +180,10 @@ class ShowQueryResultTest extends Specification {
 
     ###########################################################################################
 
-    private $returned;
-
     private function whenIShowTheResultsOf($query) {
-        $request = new Request(new Path(), new Path());
-        $resource = new QueryResource($this->dispatcher->dispatcher, $this->registry->registry, $this->factory);
-        $this->returned = $resource->doGet($request, $query);
+        $this->resource->whenIDo_With(function (QueryResource $resource) use ($query) {
+            return $resource->doGet($this->resource->request, $query);
+        }, new QueryResource($this->dispatcher->dispatcher, $this->registry->registry, $this->factory));
     }
 
     private function whenITryToShowTheResultsOf($query) {
@@ -194,60 +193,66 @@ class ShowQueryResultTest extends Specification {
     }
 
     private function thenTheNameShouldBe($string) {
-        $this->assertEquals($string, $this->returned['entity']['name']);
+        $this->resource->then_ShouldBe('entity/name', $string);
     }
 
     private function thenThereShouldBe_Properties($int) {
-        $this->assertCount($int, $this->returned['entity']['properties']['property']);
+        $this->resource->thenThereShouldBe_Of($int, 'entity/properties/property');
     }
 
     private function thenThereShouldBe_Queries($int) {
-        $this->assertCount($int, $this->returned['entity']['queries']['action']);
+        $this->resource->thenThereShouldBe_Of($int, 'entity/queries/action');
     }
 
     private function thenThereShouldBe_Commands($int) {
-        $this->assertCount($int, $this->returned['entity']['commands']['action']);
+        $this->resource->thenThereShouldBe_Of($int, 'entity/commands/action');
     }
 
     private function thenThereShouldBeNoProperties() {
-        $this->assertNull($this->returned['entity']['properties']);
+        $this->resource->then_ShouldBe('entity/properties', null);
     }
 
     private function thenThereShouldBeNoQueries() {
-        $this->assertNull($this->returned['entity']['queries']);
+        $this->resource->then_ShouldBe('entity/queries', null);
     }
 
     private function thenThereShouldBeNoCommands() {
-        $this->assertNull($this->returned['entity']['commands']);
+        $this->resource->then_ShouldBe('entity/commands', null);
     }
 
     private function thenQuery_ShouldHaveTheName($int, $string) {
-        $this->assertEquals($string, $this->returned['entity']['queries']['action'][$int - 1]['name']);
+        $int--;
+        $this->resource->then_ShouldBe("entity/queries/action/$int/name", $string);
     }
 
     private function thenQuery_ShouldLinkTo($int, $string) {
-        $this->assertEquals($string, $this->returned['entity']['queries']['action'][$int - 1]['link']['href']);
+        $int--;
+        $this->resource->then_ShouldBe("entity/queries/action/$int/link/href", $string);
     }
 
     private function thenCommand_ShouldHaveTheName($int, $string) {
-        $this->assertEquals($string, $this->returned['entity']['commands']['action'][$int - 1]['name']);
+        $int--;
+        $this->resource->then_ShouldBe("entity/commands/action/$int/name", $string);
     }
 
     private function thenCommand_ShouldLinkTo($int, $string) {
-        $this->assertEquals($string, $this->returned['entity']['commands']['action'][$int - 1]['link']['href']);
+        $int--;
+        $this->resource->then_ShouldBe("entity/commands/action/$int/link/href", $string);
     }
 
     private function thenProperty_ShouldHaveTheName_AndValue($int, $name, $value) {
-        $this->assertEquals($name, $this->returned['entity']['properties']['property'][$int - 1]['name']);
-        $this->assertEquals($value, $this->returned['entity']['properties']['property'][$int - 1]['value']);
+        $int--;
+        $this->resource->then_ShouldBe("entity/properties/property/$int/name", $name);
+        $this->resource->then_ShouldBe("entity/properties/property/$int/value", $value);
     }
 
     private function thenThereShouldBe_Entities($int) {
-        $this->assertCount($int, $this->returned['entity']);
+        $this->resource->thenThereShouldBe_Of($int, "entity");
     }
 
     private function thenEntity_ShouldHave_Properties($pos, $count) {
-        $this->assertCount($count, $this->returned['entity'][$pos - 1]['properties']['property']);
+        $pos--;
+        $this->resource->thenThereShouldBe_Of($count, "entity/$pos/properties/property");
     }
 
 } 

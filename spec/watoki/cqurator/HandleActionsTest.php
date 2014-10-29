@@ -77,15 +77,15 @@ class HandleActionsTest extends Specification {
     ##########################################################################################
 
     /** @var \watoki\smokey\Result */
-    private $returned;
+    private $result;
 
     private function whenIDispatchTheAction($action) {
-        $this->returned = $this->dispatcher->dispatcher->fire(new $action);
+        $this->result = $this->dispatcher->dispatcher->fire(new $action);
     }
 
     private function thenTheResultShouldBeSuccessfulWith($value) {
         $returned = null;
-        $this->returned->onSuccess(function ($found) use (&$returned) {
+        $this->result->onSuccess(function ($found) use (&$returned) {
             $returned = $found;
         });
         $this->assertEquals($value, $returned);
@@ -94,7 +94,7 @@ class HandleActionsTest extends Specification {
     private function thenTheResultShouldFailWith($message) {
         /** @var \Exception $exception */
         $exception = null;
-        $this->returned->onException(function ($e) use (&$exception) {
+        $this->result->onException(function ($e) use (&$exception) {
             $exception = $e;
         });
         $this->assertInstanceOf('Exception', $exception);

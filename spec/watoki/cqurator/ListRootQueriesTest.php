@@ -10,6 +10,7 @@ use watoki\scrut\Specification;
  * The Representer of class `null` is the *root Representer*. It's queries are listed if no Action is given.
  *
  * @property \spec\watoki\cqurator\fixtures\RegistryFixture registry <-
+ * @property \spec\watoki\cqurator\fixtures\ResourceFixture resource <-
  */
 class ListRootQueriesTest extends Specification {
 
@@ -33,11 +34,10 @@ class ListRootQueriesTest extends Specification {
 
     ####################################################################################################
 
-    private $returned;
-
     private function whenIOpenTheIndexResource() {
-        $resource = new IndexResource($this->factory, $this->registry->registry);
-        $this->returned = $resource->doGet();
+        $this->resource->whenIDo_With(function (IndexResource $resource) {
+            return $resource->doGet();
+        }, new IndexResource($this->factory, $this->registry->registry));
     }
 
     private function thenThereShouldBeNoQueries() {
@@ -45,15 +45,17 @@ class ListRootQueriesTest extends Specification {
     }
 
     private function thenThereShouldBe_Queries($int) {
-        $this->assertCount($int, $this->returned['query']);
+        $this->resource->thenThereShouldBe_Of($int, 'query');
     }
 
     private function thenQuery_ShouldBe($pos, $string) {
-        $this->assertEquals($string, $this->returned['query'][$pos - 1]['name']);
+        $pos--;
+        $this->resource->then_ShouldBe("query/$pos/name", $string);
     }
 
     private function thenQuery_ShouldLinkTo($pos, $string) {
-        $this->assertEquals($string, $this->returned['query'][$pos - 1]['link']['href']);
+        $pos--;
+        $this->resource->then_ShouldBe("query/$pos/link/href", $string);
     }
 
 } 
