@@ -17,7 +17,7 @@ use watoki\scrut\Specification;
  */
 class PrepareActionsTest extends Specification {
 
-    protected function background() {
+    public function background() {
         $this->class->givenTheClass_WithTheBody('ComplexAction', '
             public $one;
             public $two;

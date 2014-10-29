@@ -2,8 +2,6 @@
 namespace spec\watoki\cqurator;
 
 use watoki\cqurator\web\QueryResource;
-use watoki\deli\Path;
-use watoki\deli\Request;
 use watoki\scrut\Specification;
 
 /**
@@ -17,7 +15,7 @@ use watoki\scrut\Specification;
  */
 class ShowQueryResultTest extends Specification {
 
-    protected function background() {
+    public function background() {
         $this->class->givenTheClass('MyQuery');
     }
 
