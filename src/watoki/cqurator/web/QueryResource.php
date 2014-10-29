@@ -78,17 +78,11 @@ class QueryResource extends ActionResource {
     }
 
     private function assembleProperties($object) {
-        $properties = array();
+        $properties = [];
 
-        foreach ($object as $property => $value) {
-            $properties[] = $this->assembleProperty($property, $value);
-        }
-
-        $reflection = new \ReflectionClass($object);
-        foreach ($reflection->getMethods() as $method) {
-            if ($method->isPublic() && substr($method->getName(), 0, 3) == 'get') {
-                $properties[] = $this->assembleProperty(substr($method->getName(), 3), $method->invoke($object));
-            }
+        $representer = $this->registry->getRepresenter(get_class($object));
+        foreach ($representer->getPropertyValues($object) as $name => $value) {
+            $properties[] = $this->assembleProperty($name, $value);
         }
 
         return $properties ? [

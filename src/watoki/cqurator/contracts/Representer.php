@@ -24,4 +24,16 @@ interface Representer {
      * @return mixed
      */
     public function getId($object);
+
+    /**
+     * @param object $object
+     * @return array|\watoki\cqurator\form\Field[]
+     */
+    public function getFields($object);
+
+    /**
+     * @param object $object
+     * @return array|mixed[] Indexed by property names
+     */
+    public function getPropertyValues($object);
 }

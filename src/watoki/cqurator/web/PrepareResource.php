@@ -1,9 +1,25 @@
 <?php
 namespace watoki\cqurator\web;
 
+use watoki\cqurator\contracts\Representer;
+use watoki\cqurator\form\Field;
+use watoki\cqurator\RepresenterRegistry;
 use watoki\deli\Request;
+use watoki\factory\Factory;
 
 class PrepareResource extends ActionResource {
+
+    /** @var RepresenterRegistry */
+    private $registry;
+
+    function __construct(Factory $factory, RepresenterRegistry $registry) {
+        parent::__construct($factory);
+        $this->registry = $registry;
+    }
+
+    protected function redirectToPrepare(Request $request, $action, $type) {
+        throw new \LogicException('Cannot redirect. Already at prepare.');
+    }
 
     /**
      * @param Request $request <-
@@ -19,19 +35,26 @@ class PrepareResource extends ActionResource {
         } catch (\UnderflowException $e) {
             // That's why we are here
         }
-        return [];
+
+        return [
+            'form' => $this->assembleForm($object)
+        ];
     }
 
-    protected function redirectToPrepare(Request $request, $action, $type) {
-        throw new \LogicException('Cannot redirect. Already at prepare.');
+    private function assembleForm($action) {
+        $representer = $this->registry->getRepresenter(get_class($action));
+        $form = [
+            'field' => $this->assembleFields($action, $representer)
+        ];
+        return $form;
     }
 
-    /**
-     * @return string
-     */
-    protected function getType() {
-    }
-
-    private function redirectToAction($request, $action, $type) {
+    private function assembleFields($action, Representer $representer) {
+        return array_map(function (Field $field) {
+            return [
+                'label' => ucfirst($field->getLabel()),
+                'control' => $field->render()
+            ];
+        }, $representer->getFields($action));
     }
 }
