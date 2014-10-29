@@ -69,8 +69,9 @@ class QueryResource extends ActionResource {
     }
 
     private function assembleEntity($entity) {
+        $representer = $this->registry->getRepresenter(get_class($entity));
         return [
-            'name' => get_class($entity),
+            'name' => $representer->toString($entity),
             'properties' => $this->assembleProperties($entity),
             'queries' => $this->assembleQueries($entity),
             'commands' => $this->assembleCommands($entity)
