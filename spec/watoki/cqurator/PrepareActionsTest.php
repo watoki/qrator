@@ -3,6 +3,7 @@ namespace spec\watoki\cqurator;
 
 use watoki\cqurator\web\QueryResource;
 use watoki\curir\delivery\WebRequest;
+use watoki\curir\responder\Redirecter;
 use watoki\deli\Path;
 use watoki\deli\Request;
 use watoki\scrut\Specification;
@@ -56,7 +57,11 @@ class PrepareActionsTest extends Specification {
     }
 
     function testMissingProperty() {
-        $this->markTestIncomplete();
+        $this->givenTheRequestParameter_Is('one', 'uno');
+        $this->givenTheRequestParameter_Is('three', 'tres');
+
+        $this->whenIExecuteTheAction('ComplexAction');
+        $this->thenIShouldBeRedirectedTo('prepare?action=ComplexAction&type=query&one=uno&three=tres');
     }
 
     function testGetActionInstanceFromFactory() {
@@ -86,6 +91,14 @@ class PrepareActionsTest extends Specification {
 
     private function thenTheResultShouldBeDisplayed() {
         $this->assertNotNull($this->returned['entity']);
+    }
+
+    private function thenIShouldBeRedirectedTo($url) {
+        if ($this->returned instanceof Redirecter) {
+            $this->assertEquals($url, $this->returned->getTarget()->toString());
+        } else {
+            $this->fail('Was not redirected');
+        }
     }
 
 } 

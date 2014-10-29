@@ -2,10 +2,13 @@
 namespace watoki\cqurator\web;
 
 use watoki\cqurator\RepresenterRegistry;
+use watoki\curir\protocol\Url;
+use watoki\curir\responder\Redirecter;
 use watoki\deli\Request;
 use watoki\smokey\Dispatcher;
 
 class QueryResource {
+    const TYPE = 'query';
 
     /** @var \watoki\smokey\Dispatcher */
     private $dispatcher;
@@ -27,7 +30,17 @@ class QueryResource {
     public function doGet(Request $request, $query) {
         $result = null;
 
-        $this->dispatcher->fire($this->createAction($request, $query))
+        try {
+            $action = $this->createAction($request, $query);
+        } catch (\UnderflowException $e) {
+            $target = Url::fromString('prepare');
+            $target->getParameters()->set('action', $query);
+            $target->getParameters()->set('type', self::TYPE);
+            $target->getParameters()->merge($request->getArguments());
+            return new Redirecter($target);
+        }
+
+        $this->dispatcher->fire($action)
             ->onSuccess(function ($returned) use (&$result) {
                 $result = $returned;
             })
@@ -42,15 +55,23 @@ class QueryResource {
 
     private function createAction(Request $request, $actionClass) {
         $action = new $actionClass;
+
+        $getParameter = function ($property) use ($request, $actionClass) {
+            if (!$request->getArguments()->has($property)) {
+                throw new \UnderflowException("Property [$property] for action [$actionClass] missing");
+            }
+            return $request->getArguments()->get($property);
+        };
+
         foreach ($action as $property => $value) {
-            $action->$property = $request->getArguments()->get($property);
+            $action->$property = $getParameter($property);
         }
         foreach (get_class_methods($actionClass) as $method) {
             if (substr($method, 0, 3) == 'set') {
-                $property = lcfirst(substr($method, 3));
-                call_user_func(array($action, $method), $request->getArguments()->get($property));
+                call_user_func(array($action, $method), $getParameter(lcfirst(substr($method, 3))));
             }
         }
+
         return $action;
     }
 
