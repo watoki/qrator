@@ -3,8 +3,8 @@ namespace spec\watoki\cqurator;
 
 use watoki\cqurator\web\QueryResource;
 use watoki\curir\delivery\WebRequest;
-use watoki\curir\protocol\Url;
 use watoki\deli\Path;
+use watoki\deli\Request;
 use watoki\scrut\Specification;
 
 /**
@@ -23,7 +23,10 @@ class PrepareActionsTest extends Specification {
         $this->class->givenTheClass_WithTheBody('ComplexAction', '
             public $one;
             public $two;
-            public function setThree() {}
+
+            private $that;
+            public function setThree($v) { $this->that = $v; }
+            public function getThat() { return $this->that; }
         ');
         $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
             return new \StdClass();
@@ -35,8 +38,21 @@ class PrepareActionsTest extends Specification {
         $this->givenTheRequestParameter_Is('two', 'dos');
         $this->givenTheRequestParameter_Is('three', 'tres');
 
+        $this->class->givenTheClass_WithTheBody('allGiven\MyHandler', '
+            public static $action;
+            public function complexAction($action) {
+                self::$action = $action;
+                return new \StdClass();
+            }
+        ');
+        $this->dispatcher->givenIAddedTheClass_AsHandlerFor('allGiven\MyHandler', 'ComplexAction');
+
         $this->whenIExecuteTheAction('ComplexAction');
         $this->thenTheResultShouldBeDisplayed();
+
+        $this->class->then_ShouldBe('allGiven\MyHandler::$action->one', 'uno');
+        $this->class->then_ShouldBe('allGiven\MyHandler::$action->two', 'dos');
+        $this->class->then_ShouldBe('allGiven\MyHandler::$action->getThat()', 'tres');
     }
 
     function testMissingProperty() {
@@ -56,7 +72,7 @@ class PrepareActionsTest extends Specification {
 
     protected function setUp() {
         parent::setUp();
-        $this->request = new WebRequest(Url::fromString('http://cqurator.com'), new Path());
+        $this->request = new Request(new Path(), new Path());
     }
 
     private function givenTheRequestParameter_Is($key, $value) {
@@ -65,7 +81,7 @@ class PrepareActionsTest extends Specification {
 
     private function whenIExecuteTheAction($action) {
         $resource = new QueryResource($this->dispatcher->dispatcher, $this->registry->registry);
-        $this->returned = $resource->doGet($action);
+        $this->returned = $resource->doGet($this->request, $action);
     }
 
     private function thenTheResultShouldBeDisplayed() {

@@ -2,6 +2,7 @@
 namespace watoki\cqurator\web;
 
 use watoki\cqurator\RepresenterRegistry;
+use watoki\deli\Request;
 use watoki\smokey\Dispatcher;
 
 class QueryResource {
@@ -18,10 +19,15 @@ class QueryResource {
     }
 
 
-    public function doGet($query) {
+    /**
+     * @param Request $request <-
+     * @param string $query
+     * @return array
+     */
+    public function doGet(Request $request, $query) {
         $result = null;
 
-        $this->dispatcher->fire(new $query)
+        $this->dispatcher->fire($this->createAction($request, $query))
             ->onSuccess(function ($returned) use (&$result) {
                 $result = $returned;
             })
@@ -32,6 +38,20 @@ class QueryResource {
         return [
             'entity' => $this->assembleResult($result)
         ];
+    }
+
+    private function createAction(Request $request, $actionClass) {
+        $action = new $actionClass;
+        foreach ($action as $property => $value) {
+            $action->$property = $request->getArguments()->get($property);
+        }
+        foreach (get_class_methods($actionClass) as $method) {
+            if (substr($method, 0, 3) == 'set') {
+                $property = lcfirst(substr($method, 3));
+                call_user_func(array($action, $method), $request->getArguments()->get($property));
+            }
+        }
+        return $action;
     }
 
     private function assembleResult($result) {

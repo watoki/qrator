@@ -2,6 +2,8 @@
 namespace spec\watoki\cqurator;
 
 use watoki\cqurator\web\QueryResource;
+use watoki\deli\Path;
+use watoki\deli\Request;
 use watoki\scrut\Specification;
 
 /**
@@ -180,8 +182,9 @@ class ShowQueryResultTest extends Specification {
     private $returned;
 
     private function whenIShowTheResultsOf($query) {
+        $request = new Request(new Path(), new Path());
         $resource = new QueryResource($this->dispatcher->dispatcher, $this->registry->registry);
-        $this->returned = $resource->doGet($query);
+        $this->returned = $resource->doGet($request, $query);
     }
 
     private function whenITryToShowTheResultsOf($query) {
