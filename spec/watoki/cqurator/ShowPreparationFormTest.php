@@ -45,7 +45,17 @@ class ShowPreparationFormTest extends Specification {
     }
 
     function testGetFormDefinitionFromRepresenter() {
-        $this->markTestIncomplete();
+        $this->class->givenTheClass_Implementing_WithTheBody('MySpecialField', '\watoki\cqurator\form\Field', '
+            public function getLabel() { return "Some Label"; }
+            public function render() { return "Hello World"; }
+            public function setValue($value) {}
+        ');
+        $this->registry->givenIRegisteredARepresenterFor('PrepareAction');
+        $this->givenISetTheFieldFor_To_For('one', 'MySpecialField', 'PrepareAction');
+
+        $this->whenIPrepare('PrepareAction');
+        $this->thenField_ShouldHaveTheLabel(1, 'Some Label');
+        $this->thenField_ShouldBeRenderedAs(1, 'Hello World');
     }
 
     ###############################################################################################
@@ -85,6 +95,10 @@ class ShowPreparationFormTest extends Specification {
             }
         }
         $this->fail("Could not find parameter [$name] with value [$value] in " . print_r($parameters, true));
+    }
+
+    private function givenISetTheFieldFor_To_For($field, $class, $representedClass) {
+        $this->registry->representers[$representedClass]->setField($field, new $class);
     }
 
 }

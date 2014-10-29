@@ -20,6 +20,9 @@ class GenericRepresenter implements Representer {
     /** @var Factory */
     private $factory;
 
+    /** @var array|Field[] */
+    private $fields = [];
+
     /**
      * @param Factory $factory <-
      */
@@ -101,11 +104,21 @@ class GenericRepresenter implements Representer {
 
     /**
      * @param $name
-     * @param $value
      * @return Field
      */
-    protected function getField($name, $value) {
+    protected function getField($name) {
+        if (isset($this->fields[$name])) {
+            return $this->fields[$name];
+        }
         return new StringField($this->factory, $name);
+    }
+
+    /**
+     * @param string $name
+     * @param Field $field
+     */
+    public function setField($name, Field $field) {
+        $this->fields[$name] = $field;
     }
 
     /**

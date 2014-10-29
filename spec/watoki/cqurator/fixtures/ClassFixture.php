@@ -20,9 +20,28 @@ class ClassFixture extends Fixture {
 
         $namespaceString = $namespace ? "namespace $namespace;" : '';
 
-        $code = "$namespaceString class $name {
+        $this->evalCode("$namespaceString class $name {
             $body
-        }";
+        }");
+    }
+
+    public function givenTheClass_Implementing_WithTheBody($fqn, $interface, $body) {
+        $parts = explode('\\', $fqn);
+        $name = array_pop($parts);
+        $namespace = implode('\\', $parts);
+
+        if (class_exists($name)) {
+            return;
+        }
+
+        $namespaceString = $namespace ? "namespace $namespace;" : '';
+
+        $this->evalCode("$namespaceString class $name implements $interface {
+            $body
+        }");
+    }
+
+    private function evalCode($code) {
         $evald = eval($code);
         if (!$evald === false) {
             throw new \Exception("Could not eval: \n\n" . $code);
