@@ -46,6 +46,7 @@ class QueryResource {
 
     private function assembleEntity($entity) {
         return [
+            'name' => get_class($entity),
             'properties' => $this->assembleProperties($entity),
             'queries' => $this->assembleQueries($entity),
             'commands' => $this->assembleCommands($entity)

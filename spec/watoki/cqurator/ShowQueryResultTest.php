@@ -22,6 +22,7 @@ class ShowQueryResultTest extends Specification {
         }, 'MyQuery');
 
         $this->whenIShowTheResultsOf('MyQuery');
+        $this->thenTheNameShouldBe('stdClass');
         $this->thenThereShouldBeNoProperties();
         $this->thenThereShouldBeNoQueries();
         $this->thenThereShouldBeNoCommands();
@@ -136,6 +137,10 @@ class ShowQueryResultTest extends Specification {
         $this->try->tryTo(function () use ($query) {
             $this->whenIShowTheResultsOf($query);
         });
+    }
+
+    private function thenTheNameShouldBe($string) {
+        $this->assertEquals($string, $this->returned['entity']['name']);
     }
 
     private function thenThereShouldBe_Properties($int) {
