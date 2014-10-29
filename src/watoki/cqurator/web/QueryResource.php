@@ -24,6 +24,9 @@ class QueryResource {
         $this->dispatcher->fire(new $query)
             ->onSuccess(function ($returned) use (&$result) {
                 $result = $returned;
+            })
+            ->onException(function (\Exception $e) {
+                throw $e;
             });
 
         return [

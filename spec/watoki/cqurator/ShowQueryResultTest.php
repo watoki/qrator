@@ -8,6 +8,7 @@ use watoki\scrut\Specification;
  * @property \spec\watoki\cqurator\fixtures\RegistryFixture registry <-
  * @property \spec\watoki\cqurator\fixtures\DispatcherFixture dispatcher <-
  * @property \spec\watoki\cqurator\fixtures\ClassFixture class <-
+ * @property \watoki\scrut\ExceptionFixture try <-
  */
 class ShowQueryResultTest extends Specification {
 
@@ -113,6 +114,15 @@ class ShowQueryResultTest extends Specification {
         $this->thenEntity_ShouldHave_Properties(1, 7);
     }
 
+    function testThrowExceptions() {
+        $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
+            throw new \Exception('Something went wrong');
+        }, 'MyQuery');
+
+        $this->whenITryToShowTheResultsOf('MyQuery');
+        $this->try->thenTheException_ShouldBeThrown('Something went wrong');
+    }
+
     ###########################################################################################
 
     private $returned;
@@ -120,6 +130,12 @@ class ShowQueryResultTest extends Specification {
     private function whenIShowTheResultsOf($query) {
         $resource = new QueryResource($this->dispatcher->dispatcher, $this->registry->registry);
         $this->returned = $resource->doGet($query);
+    }
+
+    private function whenITryToShowTheResultsOf($query) {
+        $this->try->tryTo(function () use ($query) {
+            $this->whenIShowTheResultsOf($query);
+        });
     }
 
     private function thenThereShouldBe_Properties($int) {
