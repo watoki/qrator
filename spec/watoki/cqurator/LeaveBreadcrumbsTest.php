@@ -1,6 +1,7 @@
 <?php
 namespace spec\watoki\cqurator;
 
+use watoki\collections\Map;
 use watoki\cqurator\RepresenterRegistry;
 use watoki\cqurator\web\QueryResource;
 use watoki\curir\cookie\Cookie;
@@ -21,11 +22,11 @@ class LeaveBreadcrumbsTest extends Specification {
     }
 
     function testStoreBreadcrumbsInCookie() {
-        $this->resource->givenTheRequestArgument_Is('foo', 'bar');
+        $this->resource->givenTheActionArgument_Is('foo', 'bar');
 
         $this->whenIExecuteTheQuery('test\SomeQuery');
         $this->thenTheBreadcrumbs_ShouldBeStored([
-            ['SomeQuery', 'query?action=test%5CSomeQuery&foo=bar']
+            ['SomeQuery', 'test\SomeQuery', ['foo' => 'bar']]
         ]);
     }
 
@@ -37,38 +38,38 @@ class LeaveBreadcrumbsTest extends Specification {
 
     function testShowBreadcrumbs() {
         $this->givenTheStoredBreadcrumbs([
-            ['one', 'first'],
-            ['two', 'second']
+            ['one', 'first', []],
+            ['two', 'second', []]
         ]);
 
         $this->whenIExecuteTheQuery('test\SomeQuery');
         $this->thenThereShouldBe_Breadcrumbs(2);
         $this->thenBreadcrumb_ShouldHaveTheCaption(1, 'one');
-        $this->thenBreadcrumb_ShouldHaveTheLinkTarget(1, 'first');
+        $this->thenBreadcrumb_ShouldHaveTheLinkTarget(1, 'query?action=first');
     }
 
     function testPushQuery() {
         $this->givenTheStoredBreadcrumbs([
-            ['one', 'first']
+            ['one', 'first', []]
         ]);
         $this->whenIExecuteTheQuery('test\SomeQuery');
         $this->thenTheBreadcrumbs_ShouldBeStored([
-            ['one', 'first'],
-            ['SomeQuery', 'query?action=test%5CSomeQuery']
+            ['one', 'first', []],
+            ['SomeQuery', 'test\SomeQuery', []]
         ]);
     }
 
     function testPopQuery() {
         $this->givenTheStoredBreadcrumbs([
-            ['one', 'first'],
-            ['SomeQuery', 'query?action=test%5CSomeQuery'],
-            ['SomeQuery', 'query?action=test%5CSomeQuery&foo=bar'],
-            ['two', 'second']
+            ['one', 'first', []],
+            ['SomeQuery', 'test\SomeQuery', []],
+            ['SomeQuery', 'test\SomeQuery', ['foo' => 'bar']],
+            ['two', '?action=second']
         ]);
         $this->whenIExecuteTheQuery('test\SomeQuery');
         $this->thenTheBreadcrumbs_ShouldBeStored([
-            ['one', 'first'],
-            ['SomeQuery', 'query?action=test%5CSomeQuery']
+            ['one', 'first', []],
+            ['SomeQuery', 'test\SomeQuery', []]
         ]);
     }
 
@@ -80,12 +81,12 @@ class LeaveBreadcrumbsTest extends Specification {
     protected function setUp() {
         parent::setUp();
         $this->cookies = new CookieStore(new SerializerRepository(), []);
+        $this->args = new Map();
     }
 
     private function whenIExecuteTheQuery($query) {
         $this->resource->whenIDo_With(function (QueryResource $resource) use ($query) {
-            $this->resource->request->getArguments()->set('action', $query);
-            return $resource->doGet($this->resource->request, $query);
+            return $resource->doGet($query, $this->resource->args);
         }, new QueryResource($this->factory, $this->dispatcher->dispatcher, new RepresenterRegistry(), $this->cookies));
     }
 

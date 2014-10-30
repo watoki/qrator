@@ -30,12 +30,14 @@ class CommandResource extends ActionResource {
     }
 
     /**
-     * @param Request $request <-
-     * @param $action
+     * @param string $action
+     * @param \watoki\collections\Map|null $args
      * @return \watoki\curir\Responder
      */
-    public function doPost(Request $request, $action) {
-        $returned = $this->doAction($this->dispatcher, $request, $action, self::TYPE);
+    public function doPost($action, Map $args = null) {
+
+        $returned = $this->doAction($this->dispatcher, $args, $action, self::TYPE);
+
         if ($returned instanceof Responder) {
             return $returned;
         }
@@ -45,7 +47,7 @@ class CommandResource extends ActionResource {
 
             $url = Url::fromString('query');
             $url->getParameters()->set('action', $lastQuery['action']);
-            $url->getParameters()->merge(new Map($lastQuery['arguments']));
+            $url->getParameters()->set('args', new Map($lastQuery['arguments']));
 
             return new Redirecter($url);
         }

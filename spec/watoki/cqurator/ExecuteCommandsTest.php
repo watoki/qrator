@@ -37,8 +37,8 @@ class ExecuteCommandsTest extends Specification {
         $this->dispatcher->givenAnObject('myHandler');
         $this->dispatcher->givenIAdded_AsHandlerFor('myHandler', 'MyQuery');
 
-        $this->resource->givenTheRequestArgument_Is('one', 'uno');
-        $this->resource->givenTheRequestArgument_Is('two', 'dos');
+        $this->resource->givenTheActionArgument_Is('one', 'uno');
+        $this->resource->givenTheActionArgument_Is('two', 'dos');
 
         $this->whenIExecuteTheQuery('MyQuery');
         $this->thenTheCookie_WithTheValue_ShouldBeStored('lastQuery', [
@@ -62,7 +62,7 @@ class ExecuteCommandsTest extends Specification {
         ]);
 
         $this->whenIExecuteTheCommand('MyCommand');
-        $this->resource->thenIShouldBeRedirectedTo('query?action=MyQuery&one=eins&two=zwei');
+        $this->resource->thenIShouldBeRedirectedTo('query?action=MyQuery&args[one]=eins&args[two]=zwei');
     }
 
     ####################################################################################################
@@ -77,13 +77,13 @@ class ExecuteCommandsTest extends Specification {
 
     private function whenIExecuteTheCommand($command) {
         $this->resource->whenIDo_With(function (CommandResource $resource) use ($command) {
-            return $resource->doPost($this->resource->request, $command);
+            return $resource->doPost($command, $this->resource->args);
         }, new CommandResource($this->factory, $this->dispatcher->dispatcher, $this->registry->registry, $this->cookies));
     }
 
     private function whenIExecuteTheQuery($query) {
         $this->resource->whenIDo_With(function (QueryResource $resource) use ($query) {
-            return $resource->doGet($this->resource->request, $query);
+            return $resource->doGet($query, $this->resource->args);
         }, new QueryResource($this->factory, $this->dispatcher->dispatcher, $this->registry->registry, $this->cookies));
     }
 

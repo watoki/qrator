@@ -1,28 +1,28 @@
 <?php
 namespace watoki\cqurator\web;
 
+use watoki\collections\Map;
+use watoki\cqurator\form\Field;
 use watoki\cqurator\form\PreFilling;
 use watoki\cqurator\Representer;
-use watoki\cqurator\form\Field;
-use watoki\deli\Request;
 
 class PrepareResource extends ActionResource {
 
-    protected function redirectToPrepare(Request $request, $action, $type) {
+    protected function redirectToPrepare(Map $args, $action, $type) {
         throw new \LogicException('Cannot redirect. Already at prepare.');
     }
 
     /**
-     * @param Request $request <-
      * @param string $action
      * @param string $type
+     * @param null|\watoki\collections\Map $args
      * @return array
      */
-    public function doGet(Request $request, $action, $type) {
+    public function doGet($action, $type, Map $args = null) {
         $object = $this->createAction($action);
         try {
-            $this->prepareAction($request, $object);
-            return $this->redirectTo($type, $request, array('action' => $action));
+            $this->prepareAction($args, $object);
+            return $this->redirectTo($type, $args, array('action' => $action));
         } catch (\UnderflowException $e) {
             // That's why we are here
         }
@@ -45,7 +45,7 @@ class PrepareResource extends ActionResource {
             'parameter' => [
                 ['name' => 'action', 'value' => get_class($action)],
                 ['name' => 'type', 'value' => $type],
-                ['name' => 'id', 'value' => $representer->getId($action)]
+                ['name' => 'args[id]', 'value' => $representer->getId($action)]
             ],
             'field' => $this->assembleFields($action, $representer)
         ];

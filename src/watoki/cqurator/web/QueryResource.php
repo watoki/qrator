@@ -1,6 +1,7 @@
 <?php
 namespace watoki\cqurator\web;
 
+use watoki\collections\Map;
 use watoki\cqurator\ActionDispatcher;
 use watoki\cqurator\RepresenterRegistry;
 use watoki\curir\cookie\Cookie;
@@ -31,20 +32,22 @@ class QueryResource extends ActionResource {
     }
 
     /**
-     * @param Request $request <-
      * @param string $action
+     * @param \watoki\collections\Map|null $args
      * @return array
      */
-    public function doGet(Request $request, $action) {
-        $this->storeLastQuery($request, $action);
+    public function doGet($action, Map $args = null) {
+        $args = $args ? : new Map();
 
-        $result = $this->doAction($this->dispatcher, $request, $action, self::TYPE);
+        $this->storeLastQuery($args, $action);
+
+        $result = $this->doAction($this->dispatcher, $args, $action, self::TYPE);
 
         if ($result instanceof Responder) {
             return $result;
         }
 
-        $crumbs = $this->storeBreadcrumb($request, $action);
+        $crumbs = $this->updateBreadcrumb($args, $action);
         $breadcrumbs = $this->assembleBreadcrumbs($crumbs);
 
         return [
@@ -127,29 +130,29 @@ class QueryResource extends ActionResource {
                     'link' => [
                         'href' => "$type?action=$query"
                             . ($type == self::TYPE ? '' : '&do=post')
-                            . ($id ? '&id=' . $id : '')
+                            . ($id ? '&args[id]=' . $id : '')
                     ]
                 ];
             }, $actions),
         ];
     }
 
-    private function storeLastQuery(Request $request, $action) {
+    private function storeLastQuery(Map $args, $action) {
         $this->cookies->create(new Cookie([
             'action' => $action,
-            'arguments' => $request->getArguments()->toArray()
+            'arguments' => $args->toArray()
         ]), self::LAST_QUERY_COOKIE);
     }
 
-    private function storeBreadcrumb(Request $request, $action) {
+    private function updateBreadcrumb(Map $args, $action) {
         $crumbs = [];
         if ($this->cookies->hasKey(self::BREADCRUMB_COOKIE)) {
             $crumbs = $this->cookies->read(self::BREADCRUMB_COOKIE)->payload;
 
             $newCrumbs = [];
             foreach ($crumbs as $crumb) {
-                $url = Url::fromString($crumb[1]);
-                if ($this->matchesTarget($request, $url)) {
+                list($label, $crumbAction, $crumbArgs) = $crumb;
+                if ($action == $crumbAction && $args->toArray() == $crumbArgs) {
                     break;
                 }
                 $newCrumbs[] = $crumb;
@@ -157,29 +160,14 @@ class QueryResource extends ActionResource {
             $crumbs = $newCrumbs;
         }
 
-        $breadcrumbUrl = Url::fromString('query');
-        $breadcrumbUrl->getParameters()->set('action', $action);
-        $breadcrumbUrl->getParameters()->merge($request->getArguments());
-
         $representer = $this->registry->getRepresenter($action);
-        $object = $this->createAction($action);
-        $this->prepareAction($request, $object);
-        $caption = $representer->toString($object);
+        $caption = $representer->toString($action);
 
-        $crumbs[] = [$caption, $breadcrumbUrl->toString()];
+        $crumbs[] = [$caption, $action, $args->toArray()];
 
         $this->cookies->create(new Cookie($crumbs), self::BREADCRUMB_COOKIE);
 
         return $crumbs;
-    }
-
-    private function matchesTarget(Request $request, Url $url) {
-        foreach ($request->getArguments() as $key => $value) {
-            if (!$url->getParameters()->has($key) || $url->getParameters()->get($key) != $value) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private function assembleBreadcrumbs($crumbs) {
@@ -187,10 +175,13 @@ class QueryResource extends ActionResource {
 
         return [
             'breadcrumb' => array_map(function ($crumb) {
-                list($caption, $target) = $crumb;
+                list($caption, $action, $args) = $crumb;
+                $url = Url::fromString('query');
+                $url->getParameters()->set('action', $action);
+                $url->getParameters()->set('args', new Map($args));
                 return [
                     'caption' => $caption,
-                    'link' => ['href' => $target]
+                    'link' => ['href' => $url->toString()]
                 ];
             }, $crumbs),
             'current' => $last[0]

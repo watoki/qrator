@@ -39,14 +39,14 @@ abstract class ActionResource extends Container {
         return new TempanRenderer();
     }
 
-    protected function doAction(Dispatcher $dispatcher, Request $request, $actionClass, $type) {
+    protected function doAction(Dispatcher $dispatcher, Map $args, $actionClass, $type) {
         $result = null;
 
         $action = $this->createAction($actionClass);
         try {
-            $this->prepareAction($request, $action);
+            $this->prepareAction($args, $action);
         } catch (\UnderflowException $e) {
-            return $this->redirectToPrepare($request, $actionClass, $type);
+            return $this->redirectToPrepare($args, $actionClass, $type);
         }
 
         $dispatcher->fire($action)
@@ -63,34 +63,34 @@ abstract class ActionResource extends Container {
         return $this->factory->getInstance($action);
     }
 
-    protected function redirectToPrepare(Request $request, $action, $type) {
-        return $this->redirectTo('prepare', $request, array(
+    protected function redirectToPrepare(Map $args, $action, $type) {
+        return $this->redirectTo('prepare', $args, array(
             'action' => $action,
             'type' => $type
         ));
     }
 
-    protected function prepareAction(Request $request, $action) {
+    protected function prepareAction(Map $args, $action) {
         $actionClass = get_class($action);
         $representer = $this->registry->getRepresenter($actionClass);
 
         foreach ($representer->getProperties($action) as $property) {
             if ($property->canSet()) {
 
-                if (!$request->getArguments()->has($property->name)) {
+                if (!$args->has($property->name)) {
                     throw new \UnderflowException("Property [{$property->name}] for action [$actionClass] missing");
                 }
-                $value = $request->getArguments()->get($property->name);
+                $value = $args->get($property->name);
                 $inflated = $representer->getField($property->name)->inflate($value);
                 $property->set($inflated);
             }
         }
     }
 
-    protected function redirectTo($resource, Request $request, $params = array()) {
+    protected function redirectTo($resource, Map $args, $params = array()) {
         $target = Url::fromString($resource);
         $target->getParameters()->merge(new Map($params));
-        $target->getParameters()->merge($request->getArguments());
+        $target->getParameters()->set('args', $args);
         return new Redirecter($target);
     }
 

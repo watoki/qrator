@@ -1,6 +1,7 @@
 <?php
 namespace spec\watoki\cqurator\fixtures;
 
+use watoki\collections\Map;
 use watoki\curir\delivery\WebRequest;
 use watoki\curir\protocol\Url;
 use watoki\curir\responder\Redirecter;
@@ -15,13 +16,17 @@ class ResourceFixture extends Fixture {
     /** @var mixed|\watoki\curir\Responder */
     public $returned;
 
+    /** @var Map */
+    public $args;
+
     public function setUp() {
         parent::setUp();
         $this->request = new WebRequest(Url::fromString('http://example.com'), new Path());
+        $this->args = new Map();
     }
 
-    public function givenTheRequestArgument_Is($key, $value) {
-        $this->request->getArguments()->set($key, $value);
+    public function givenTheActionArgument_Is($key, $value) {
+        $this->args->set($key, $value);
     }
 
     public function whenIDo_With($callback, $resource) {

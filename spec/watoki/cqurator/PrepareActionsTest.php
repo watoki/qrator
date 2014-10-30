@@ -34,9 +34,9 @@ class PrepareActionsTest extends Specification {
     }
 
     function testAllPropertiesGiven() {
-        $this->resource->givenTheRequestArgument_Is('one', 'uno');
-        $this->resource->givenTheRequestArgument_Is('two', 'dos');
-        $this->resource->givenTheRequestArgument_Is('three', 'tres');
+        $this->resource->givenTheActionArgument_Is('one', 'uno');
+        $this->resource->givenTheActionArgument_Is('two', 'dos');
+        $this->resource->givenTheActionArgument_Is('three', 'tres');
 
         $this->class->givenTheClass_WithTheBody('allGiven\MyHandler', '
             public static $action;
@@ -56,11 +56,11 @@ class PrepareActionsTest extends Specification {
     }
 
     function testMissingProperty() {
-        $this->resource->givenTheRequestArgument_Is('one', 'uno');
-        $this->resource->givenTheRequestArgument_Is('three', 'tres');
+        $this->resource->givenTheActionArgument_Is('one', 'uno');
+        $this->resource->givenTheActionArgument_Is('three', 'tres');
 
         $this->whenIExecuteTheAction('ComplexAction');
-        $this->resource->thenIShouldBeRedirectedTo('prepare?action=ComplexAction&type=query&one=uno&three=tres');
+        $this->resource->thenIShouldBeRedirectedTo('prepare?action=ComplexAction&type=query&args[one]=uno&args[three]=tres');
     }
 
     function testGetActionInstanceFromFactory() {
@@ -98,7 +98,7 @@ class PrepareActionsTest extends Specification {
         ');
 
         $this->dispatcher->givenIAddedTheClass_AsHandlerFor('inflateArgs\MyHandler', 'inflateArgs\InflatableAction');
-        $this->resource->givenTheRequestArgument_Is('inflateMe', '2012-03-04 15:16');
+        $this->resource->givenTheActionArgument_Is('inflateMe', '2012-03-04 15:16');
 
         $this->registry->givenIRegisteredARepresenterFor('inflateArgs\InflatableAction');
         $this->givenISetTheField_Of_ToBeAnInstanceOf('inflateMe', 'inflateArgs\InflatableAction', 'inflateArgs\MySpecialField');
@@ -118,7 +118,7 @@ class PrepareActionsTest extends Specification {
         $cookies = new CookieStore(new SerializerRepository(), array());
 
         $this->resource->whenIDo_With(function (QueryResource $resource) use ($action) {
-            return $resource->doGet($this->resource->request, $action);
+            return $resource->doGet($action, $this->resource->args);
         }, new QueryResource($this->factory, $this->dispatcher->dispatcher, $this->registry->registry, $cookies));
     }
 

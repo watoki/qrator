@@ -148,8 +148,8 @@ class ShowQueryResultTest extends Specification {
         $this->registry->givenIAddedTheCommand_ToTheRepresenterOf('SomeCommand', 'property\Entity');
 
         $this->whenIShowTheResultsOf('MyQuery');
-        $this->thenQuery_ShouldLinkTo(1, 'query?action=SomeQuery&id=42');
-        $this->thenCommand_ShouldLinkTo(1, 'command?action=SomeCommand&do=post&id=42');
+        $this->thenQuery_ShouldLinkTo(1, 'query?action=SomeQuery&args[id]=42');
+        $this->thenCommand_ShouldLinkTo(1, 'command?action=SomeCommand&do=post&args[id]=42');
     }
 
     function testEntityActionWithMethods() {
@@ -168,8 +168,8 @@ class ShowQueryResultTest extends Specification {
         $this->registry->givenIAddedTheCommand_ToTheRepresenterOf('SomeCommand', 'methods\Entity');
 
         $this->whenIShowTheResultsOf('MyQuery');
-        $this->thenQuery_ShouldLinkTo(1, 'query?action=SomeQuery&id=73');
-        $this->thenCommand_ShouldLinkTo(1, 'command?action=SomeCommand&do=post&id=73');
+        $this->thenQuery_ShouldLinkTo(1, 'query?action=SomeQuery&args[id]=73');
+        $this->thenCommand_ShouldLinkTo(1, 'command?action=SomeCommand&do=post&args[id]=73');
     }
 
     function testInvalidResult() {
@@ -187,7 +187,7 @@ class ShowQueryResultTest extends Specification {
         $cookies = new CookieStore(new SerializerRepository(), array());
 
         $this->resource->whenIDo_With(function (QueryResource $resource) use ($query) {
-            return $resource->doGet($this->resource->request, $query);
+            return $resource->doGet($query, $this->resource->args);
         }, new QueryResource($this->factory, $this->dispatcher->dispatcher, $this->registry->registry, $cookies));
     }
 

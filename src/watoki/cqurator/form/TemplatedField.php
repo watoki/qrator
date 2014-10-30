@@ -68,7 +68,7 @@ abstract class TemplatedField implements Field {
      */
     protected function getModel() {
         return [
-            'name' => $this->getLabel(),
+            'name' => "args[{$this->name}]",
             'value' => $this->getValue()
         ];
     }

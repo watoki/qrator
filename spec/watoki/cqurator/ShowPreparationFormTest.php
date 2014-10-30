@@ -22,15 +22,15 @@ class ShowPreparationFormTest extends Specification {
     }
 
     function testAllPropertiesProvided() {
-        $this->resource->givenTheRequestArgument_Is('one', 'uno');
-        $this->resource->givenTheRequestArgument_Is('two', 'dos');
+        $this->resource->givenTheActionArgument_Is('one', 'uno');
+        $this->resource->givenTheActionArgument_Is('two', 'dos');
 
         $this->whenIPrepare('PrepareAction');
-        $this->resource->thenIShouldBeRedirectedTo('query?action=PrepareAction&one=uno&two=dos');
+        $this->resource->thenIShouldBeRedirectedTo('query?action=PrepareAction&args[one]=uno&args[two]=dos');
     }
 
     function testInputForMissingProperties() {
-        $this->resource->givenTheRequestArgument_Is('one', 'uno');
+        $this->resource->givenTheActionArgument_Is('one', 'uno');
 
         $this->whenIPrepare('PrepareAction');
 
@@ -40,8 +40,8 @@ class ShowPreparationFormTest extends Specification {
 
         $this->thenThereShouldBe_Fields(2);
         $this->thenField_ShouldHaveTheLabel(1, 'One');
-        $this->thenField_ShouldBeRenderedAs(1, '<input type="text" name="one" value="uno"/>');
-        $this->thenField_ShouldBeRenderedAs(2, '<input type="text" name="two"/>');
+        $this->thenField_ShouldBeRenderedAs(1, '<input type="text" name="args[one]" value="uno"/>');
+        $this->thenField_ShouldBeRenderedAs(2, '<input type="text" name="args[two]"/>');
     }
 
     function testGetFormDefinitionFromRepresenter() {
@@ -70,8 +70,8 @@ class ShowPreparationFormTest extends Specification {
         ');
 
         $this->whenIPrepare('PreFillingAction');
-        $this->thenField_ShouldBeRenderedAs(1, '<input type="text" name="one" value="Fourtytwo"/>');
-        $this->thenField_ShouldBeRenderedAs(2, '<input type="text" name="two"/>');
+        $this->thenField_ShouldBeRenderedAs(1, '<input type="text" name="args[one]" value="Fourtytwo"/>');
+        $this->thenField_ShouldBeRenderedAs(2, '<input type="text" name="args[two]"/>');
     }
 
     function testSubmitQueriesWithGet() {
@@ -87,7 +87,7 @@ class ShowPreparationFormTest extends Specification {
     }
 
     function testHideIdField() {
-        $this->resource->givenTheRequestArgument_Is('id', '42');
+        $this->resource->givenTheActionArgument_Is('id', '42');
         $this->class->givenTheClass_WithTheBody('ActionWithId', '
             public $id;
             public $other;
@@ -96,7 +96,7 @@ class ShowPreparationFormTest extends Specification {
         $this->whenIPrepare('ActionWithId');
 
         $this->thenThereShouldBe_Fields(1);
-        $this->thenThereShouldBeAHiddenField_WithValue('id', '42');
+        $this->thenThereShouldBeAHiddenField_WithValue('args[id]', '42');
 
     }
 
@@ -104,7 +104,7 @@ class ShowPreparationFormTest extends Specification {
 
     private function whenIPrepare($action, $type = 'query') {
         $this->resource->whenIDo_With(function (PrepareResource $resource) use ($action, $type) {
-            return $resource->doGet($this->resource->request, $action, $type);
+            return $resource->doGet($action, $type, $this->resource->args);
         }, new PrepareResource($this->factory, $this->registry->registry, new ActionDispatcher($this->factory)));
     }
 
