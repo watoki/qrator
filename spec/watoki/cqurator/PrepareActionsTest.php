@@ -2,6 +2,8 @@
 namespace spec\watoki\cqurator;
 
 use watoki\cqurator\web\QueryResource;
+use watoki\curir\cookie\CookieStore;
+use watoki\curir\cookie\SerializerRepository;
 use watoki\scrut\Specification;
 
 /**
@@ -113,9 +115,11 @@ class PrepareActionsTest extends Specification {
     }
 
     private function whenIExecuteTheAction($action) {
+        $cookies = new CookieStore(new SerializerRepository(), array());
+
         $this->resource->whenIDo_With(function (QueryResource $resource) use ($action) {
             return $resource->doGet($this->resource->request, $action);
-        }, new QueryResource($this->factory, $this->dispatcher->dispatcher, $this->registry->registry));
+        }, new QueryResource($this->factory, $this->dispatcher->dispatcher, $this->registry->registry, $cookies));
     }
 
     private function givenISetTheField_Of_ToBeAnInstanceOf($field, $class, $fieldClass) {

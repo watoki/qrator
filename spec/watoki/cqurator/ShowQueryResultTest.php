@@ -2,6 +2,8 @@
 namespace spec\watoki\cqurator;
 
 use watoki\cqurator\web\QueryResource;
+use watoki\curir\cookie\CookieStore;
+use watoki\curir\cookie\SerializerRepository;
 use watoki\scrut\Specification;
 
 /**
@@ -182,9 +184,11 @@ class ShowQueryResultTest extends Specification {
     ###########################################################################################
 
     private function whenIShowTheResultsOf($query) {
+        $cookies = new CookieStore(new SerializerRepository(), array());
+
         $this->resource->whenIDo_With(function (QueryResource $resource) use ($query) {
             return $resource->doGet($this->resource->request, $query);
-        }, new QueryResource($this->factory, $this->dispatcher->dispatcher, $this->registry->registry));
+        }, new QueryResource($this->factory, $this->dispatcher->dispatcher, $this->registry->registry, $cookies));
     }
 
     private function whenITryToShowTheResultsOf($query) {

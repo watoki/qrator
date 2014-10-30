@@ -2,7 +2,11 @@
 namespace watoki\cqurator\web;
 
 use watoki\cqurator\RepresenterRegistry;
+use watoki\curir\cookie\Cookie;
+use watoki\curir\cookie\CookieStore;
+use watoki\curir\protocol\Url;
 use watoki\curir\Responder;
+use watoki\deli\Path;
 use watoki\deli\Request;
 use watoki\factory\Factory;
 use watoki\smokey\Dispatcher;
@@ -10,18 +14,24 @@ use watoki\smokey\Dispatcher;
 class QueryResource extends ActionResource {
 
     const TYPE = 'query';
+    const LAST_QUERY_COOKIE = 'lastQuery';
 
     /** @var \watoki\smokey\Dispatcher */
     private $dispatcher;
+
+    /** @var \watoki\curir\cookie\CookieStore */
+    private $cookies;
 
     /**
      * @param Factory $factory <-
      * @param Dispatcher $dispatcher <-
      * @param RepresenterRegistry $registry <-
+     * @param \watoki\curir\cookie\CookieStore $cookies <-
      */
-    function __construct(Factory $factory, Dispatcher $dispatcher, RepresenterRegistry $registry) {
+    function __construct(Factory $factory, Dispatcher $dispatcher, RepresenterRegistry $registry, CookieStore $cookies) {
         parent::__construct($factory, $registry);
         $this->dispatcher = $dispatcher;
+        $this->cookies = $cookies;
     }
 
     /**
@@ -30,6 +40,11 @@ class QueryResource extends ActionResource {
      * @return array
      */
     public function doGet(Request $request, $query) {
+        $this->cookies->create(new Cookie([
+            'action' => $query,
+            'arguments' => $request->getArguments()->toArray()
+        ]), self::LAST_QUERY_COOKIE);
+
         $result = $this->doAction($this->dispatcher, $request, $query, self::TYPE);
 
         if ($result instanceof Responder) {

@@ -60,4 +60,8 @@ class ResourceFixture extends Fixture {
         return $model;
     }
 
+    public function thenItShouldReturn($value) {
+        $this->spec->assertEquals($value, $this->returned);
+    }
+
 } 
