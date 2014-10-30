@@ -21,6 +21,9 @@ class GenericRepresenter implements Representer {
     /** @var array|Field[] */
     private $fields = [];
 
+    /** @var null|callable */
+    private $stringifier;
+
     /**
      * @param string $queryClass
      */
@@ -123,8 +126,18 @@ class GenericRepresenter implements Representer {
      * @return string
      */
     public function toString($object) {
+        if ($this->stringifier) {
+            return call_user_func($this->stringifier, $object);
+        }
         $class = new \ReflectionClass($object);
         return $class->getShortName();
+    }
+
+    /**
+     * @param callable $callback
+     */
+    public function setStringifier($callback) {
+        $this->stringifier = $callback;
     }
 
     /**
