@@ -2,6 +2,7 @@
 namespace watoki\cqurator\web;
 
 use watoki\cqurator\RepresenterRegistry;
+use watoki\curir\Responder;
 use watoki\deli\Request;
 use watoki\factory\Factory;
 use watoki\smokey\Dispatcher;
@@ -29,22 +30,11 @@ class QueryResource extends ActionResource {
      * @return array
      */
     public function doGet(Request $request, $query) {
-        $result = null;
+        $result = $this->doAction($this->dispatcher, $request, $query, self::TYPE);
 
-        $action = $this->createAction($query);
-        try {
-            $this->prepareAction($request, $action);
-        } catch (\UnderflowException $e) {
-            return $this->redirectToPrepare($request, $query, self::TYPE);
+        if ($result instanceof Responder) {
+            return $result;
         }
-
-        $this->dispatcher->fire($action)
-            ->onSuccess(function ($returned) use (&$result) {
-                $result = $returned;
-            })
-            ->onException(function (\Exception $e) {
-                throw $e;
-            });
 
         return [
             'entity' => $this->assembleResult($result)

@@ -8,6 +8,7 @@ use watoki\curir\protocol\Url;
 use watoki\curir\responder\Redirecter;
 use watoki\deli\Request;
 use watoki\factory\Factory;
+use watoki\smokey\Dispatcher;
 
 abstract class ActionResource extends Container {
 
@@ -27,6 +28,25 @@ abstract class ActionResource extends Container {
         $this->factory = $factory;
     }
 
+    protected function doAction(Dispatcher $dispatcher, Request $request, $actionClass, $type) {
+        $result = null;
+
+        $action = $this->createAction($actionClass);
+        try {
+            $this->prepareAction($request, $action);
+        } catch (\UnderflowException $e) {
+            return $this->redirectToPrepare($request, $actionClass, $type);
+        }
+
+        $dispatcher->fire($action)
+            ->onSuccess(function ($returned) use (&$result) {
+                $result = $returned;
+            })
+            ->onException(function (\Exception $e) {
+                throw $e;
+            });
+        return $result;
+    }
 
     protected function createAction($action) {
         return $this->factory->getInstance($action);
