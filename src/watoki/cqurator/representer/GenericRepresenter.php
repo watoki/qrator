@@ -1,16 +1,18 @@
 <?php
 namespace watoki\cqurator\representer;
 
-use watoki\cqurator\contracts\Representer;
+use watoki\cqurator\Representer;
 use watoki\cqurator\form\Field;
 use watoki\cqurator\form\StringField;
+use watoki\cqurator\representer\property\AccessorProperty;
+use watoki\cqurator\representer\property\PublicProperty;
 
 class GenericRepresenter implements Representer {
 
-    /** @var array|\watoki\cqurator\contracts\Query[] */
+    /** @var array|string[] */
     private $queries = [];
 
-    /** @var array|\watoki\cqurator\contracts\Command[] */
+    /** @var array|string[] */
     private $commands = [];
 
     /** @var null|callable */
@@ -34,14 +36,14 @@ class GenericRepresenter implements Representer {
     }
 
     /**
-     * @return array|\watoki\cqurator\contracts\Query[]
+     * @return array|string[]
      */
     public function getQueries() {
         return $this->queries;
     }
 
     /**
-     * @return array|\watoki\cqurator\contracts\Command[]
+     * @return array|string[]
      */
     public function getCommands() {
         return $this->commands;

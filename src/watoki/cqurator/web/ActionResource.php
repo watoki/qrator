@@ -2,6 +2,7 @@
 namespace watoki\cqurator\web;
 
 use watoki\collections\Map;
+use watoki\cqurator\ActionDispatcher;
 use watoki\cqurator\RepresenterRegistry;
 use watoki\curir\Container;
 use watoki\curir\protocol\Url;
@@ -18,14 +19,19 @@ abstract class ActionResource extends Container {
     /** @var RepresenterRegistry */
     protected $registry;
 
+    /** @var Dispatcher */
+    protected $dispatcher;
+
     /**
      * @param Factory $factory <-
      * @param RepresenterRegistry $registry <-
+     * @param ActionDispatcher $dispatcher <-
      */
-    function __construct(Factory $factory, RepresenterRegistry $registry) {
+    function __construct(Factory $factory, RepresenterRegistry $registry, ActionDispatcher $dispatcher) {
         parent::__construct($factory);
         $this->registry = $registry;
         $this->factory = $factory;
+        $this->dispatcher = $dispatcher;
     }
 
     protected function doAction(Dispatcher $dispatcher, Request $request, $actionClass, $type) {

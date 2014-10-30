@@ -1,11 +1,10 @@
 <?php
 namespace watoki\cqurator\web;
 
-use watoki\cqurator\contracts\Representer;
+use watoki\cqurator\form\PreFilling;
+use watoki\cqurator\Representer;
 use watoki\cqurator\form\Field;
-use watoki\cqurator\RepresenterRegistry;
 use watoki\deli\Request;
-use watoki\factory\Factory;
 
 class PrepareResource extends ActionResource {
 
@@ -38,6 +37,10 @@ class PrepareResource extends ActionResource {
     }
 
     private function assembleForm($action, $type) {
+        if ($action instanceof PreFilling) {
+            $action->preFill($this->dispatcher);
+        }
+
         $representer = $this->registry->getRepresenter(get_class($action));
         $form = [
             'title' => $representer->toString($action),

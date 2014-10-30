@@ -2,6 +2,7 @@
 namespace watoki\cqurator\web;
 
 use watoki\collections\Map;
+use watoki\cqurator\ActionDispatcher;
 use watoki\cqurator\RepresenterRegistry;
 use watoki\curir\cookie\CookieStore;
 use watoki\curir\protocol\Url;
@@ -15,21 +16,17 @@ class CommandResource extends ActionResource {
 
     const TYPE = 'command';
 
-    /** @var \watoki\smokey\Dispatcher */
-    private $dispatcher;
-
     /** @var \watoki\curir\cookie\CookieStore */
     private $cookies;
 
     /**
      * @param Factory $factory <-
-     * @param Dispatcher $dispatcher <-
+     * @param ActionDispatcher $dispatcher <-
      * @param RepresenterRegistry $registry <-
      * @param \watoki\curir\cookie\CookieStore $cookies <-
      */
-    function __construct(Factory $factory, Dispatcher $dispatcher, RepresenterRegistry $registry, CookieStore $cookies) {
-        parent::__construct($factory, $registry);
-        $this->dispatcher = $dispatcher;
+    function __construct(Factory $factory, ActionDispatcher $dispatcher, RepresenterRegistry $registry, CookieStore $cookies) {
+        parent::__construct($factory, $registry, $dispatcher);
         $this->cookies = $cookies;
     }
 

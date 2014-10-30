@@ -1,8 +1,8 @@
 <?php
 namespace spec\watoki\cqurator;
 
+use watoki\cqurator\ActionDispatcher;
 use watoki\cqurator\web\PrepareResource;
-use watoki\cqurator\web\QueryResource;
 use watoki\scrut\Specification;
 
 /**
@@ -59,15 +59,27 @@ class ShowPreparationFormTest extends Specification {
         $this->thenField_ShouldBeRenderedAs(1, 'Hello World');
     }
 
-    ###############################################################################################
+    function testPreFillForm() {
+        $this->class->givenTheClass_Implementing_WithTheBody('PreFillingAction', '\watoki\cqurator\form\PreFilling', '
+            public $one;
+            public $two;
 
-    private $action;
-    private $type;
+            public function preFill(\watoki\smokey\Dispatcher $dispatcher) {
+                $this->one = "Fourtytwo";
+            }
+        ');
+
+        $this->whenIPrepare('PreFillingAction');
+        $this->thenField_ShouldBeRenderedAs(1, '<input type="text" name="one" value="Fourtytwo"/>');
+        $this->thenField_ShouldBeRenderedAs(2, '<input type="text" name="two"/>');
+    }
+
+    ###############################################################################################
 
     private function whenIPrepare($action) {
         $this->resource->whenIDo_With(function (PrepareResource $resource) use ($action) {
             return $resource->doGet($this->resource->request, $action, 'query');
-        }, new PrepareResource($this->factory, $this->registry->registry));
+        }, new PrepareResource($this->factory, $this->registry->registry, new ActionDispatcher($this->factory)));
     }
 
     private function thenThereShouldBe_Fields($int) {

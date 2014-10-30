@@ -1,9 +1,8 @@
 <?php
 namespace watoki\cqurator;
 
-use watoki\cqurator\contracts\Representer;
+use watoki\cqurator\Representer;
 use watoki\cqurator\representer\GenericRepresenter;
-use watoki\factory\Factory;
 
 class RepresenterRegistry {
 

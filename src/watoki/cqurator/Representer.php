@@ -1,15 +1,15 @@
 <?php
-namespace watoki\cqurator\contracts;
+namespace watoki\cqurator;
 
 interface Representer {
 
     /**
-     * @return Query[]
+     * @return \string[]
      */
     public function getQueries();
 
     /**
-     * @return Command[]
+     * @return \string[]
      */
     public function getCommands();
 

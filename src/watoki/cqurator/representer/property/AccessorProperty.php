@@ -1,5 +1,7 @@
 <?php
-namespace watoki\cqurator\representer;
+namespace watoki\cqurator\representer\property;
+
+use watoki\cqurator\representer\Property;
 
 class AccessorProperty extends Property {
 
