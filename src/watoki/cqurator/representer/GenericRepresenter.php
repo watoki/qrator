@@ -4,7 +4,6 @@ namespace watoki\cqurator\representer;
 use watoki\cqurator\contracts\Representer;
 use watoki\cqurator\form\Field;
 use watoki\cqurator\form\StringField;
-use watoki\factory\Factory;
 
 class GenericRepresenter implements Representer {
 
@@ -17,19 +16,8 @@ class GenericRepresenter implements Representer {
     /** @var null|callable */
     private $renderer;
 
-    /** @var Factory */
-    private $factory;
-
     /** @var array|Field[] */
     private $fields = [];
-
-    /**
-     * @param Factory $factory <-
-     */
-    public function __construct(Factory $factory) {
-        $this->factory = $factory;
-    }
-
 
     /**
      * @param string $queryClass
@@ -116,7 +104,7 @@ class GenericRepresenter implements Representer {
         if (isset($this->fields[$name])) {
             return $this->fields[$name];
         }
-        return new StringField($this->factory, $name);
+        return new StringField($name);
     }
 
     /**

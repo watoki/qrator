@@ -10,16 +10,6 @@ class RepresenterRegistry {
     /** @var array|Representer[] */
     private $representers = [];
 
-    /** @var Factory */
-    private $factory;
-
-    /**
-     * @param Factory $factory <-
-     */
-    public function __construct(Factory $factory) {
-        $this->factory = $factory;
-    }
-
     /**
      * @param string|null $class
      * @param Representer $representer
@@ -36,7 +26,7 @@ class RepresenterRegistry {
         if (isset($this->representers[$class])) {
             return $this->representers[$class];
         } else {
-            return new GenericRepresenter($this->factory);
+            return new GenericRepresenter();
         }
     }
 }

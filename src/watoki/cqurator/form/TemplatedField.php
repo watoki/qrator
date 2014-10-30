@@ -1,12 +1,10 @@
 <?php
 namespace watoki\cqurator\form;
 
-use watoki\curir\rendering\ClassTemplateLocator;
-use watoki\curir\rendering\Locatable;
+use watoki\curir\rendering\locating\ClassTemplateLocator;
 use watoki\curir\rendering\PhpRenderer;
-use watoki\factory\Factory;
 
-abstract class TemplatedField implements Locatable, Field {
+abstract class TemplatedField implements Field {
 
     /** @var string */
     private $name;
@@ -14,15 +12,10 @@ abstract class TemplatedField implements Locatable, Field {
     /** @var null|mixed */
     private $value;
 
-    /** @var Factory */
-    private $factory;
-
     /**
-     * @param Factory $factory <-
      * @param string $name
      */
-    public function __construct(Factory $factory, $name) {
-        $this->factory = $factory;
+    public function __construct($name) {
         $this->name = $name;
     }
 
@@ -51,7 +44,7 @@ abstract class TemplatedField implements Locatable, Field {
      * @return string
      */
     public function render() {
-        $locator = new ClassTemplateLocator($this, $this->factory);
+        $locator = new ClassTemplateLocator($this);
         $renderer = $this->createRenderer();
         return $renderer->render($locator->find($this->getTemplateExtension()), $this->getModel());
     }
@@ -78,21 +71,5 @@ abstract class TemplatedField implements Locatable, Field {
             'name' => $this->getLabel(),
             'value' => $this->getValue()
         ];
-    }
-
-    /**
-     * @return string Directory of class
-     */
-    public function getDirectory() {
-        $class = new \ReflectionClass($this);
-        return dirname($class->getFileName());
-    }
-
-    /**
-     * @return string Name of class with which it can be found (possibly omitting pre/suffixes)
-     */
-    public function getName() {
-        $class = new \ReflectionClass($this);
-        return $class->getShortName();
     }
 }

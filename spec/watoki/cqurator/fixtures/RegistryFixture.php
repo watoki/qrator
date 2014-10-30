@@ -1,11 +1,9 @@
 <?php
 namespace spec\watoki\cqurator\fixtures;
 
-use watoki\scrut\Fixture;
-use watoki\cqurator\web\IndexResource;
 use watoki\cqurator\representer\GenericRepresenter;
 use watoki\cqurator\RepresenterRegistry;
-use watoki\scrut\Specification;
+use watoki\scrut\Fixture;
 
 class RegistryFixture extends Fixture {
 
@@ -17,7 +15,7 @@ class RegistryFixture extends Fixture {
 
     public function setUp() {
         parent::setUp();
-        $this->registry = new RepresenterRegistry($this->spec->factory);
+        $this->registry = new RepresenterRegistry();
     }
 
     public function givenIRegisteredARepresenterFor($class) {
