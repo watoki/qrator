@@ -86,6 +86,20 @@ class ShowPreparationFormTest extends Specification {
         $this->thenTheActionOfTheFormShouldBe('command');
     }
 
+    function testHideIdField() {
+        $this->resource->givenTheRequestArgument_Is('id', '42');
+        $this->class->givenTheClass_WithTheBody('ActionWithId', '
+            public $id;
+            public $other;
+        ');
+
+        $this->whenIPrepare('ActionWithId');
+
+        $this->thenThereShouldBe_Fields(1);
+        $this->thenThereShouldBeAHiddenField_WithValue('id', '42');
+
+    }
+
     ###############################################################################################
 
     private function whenIPrepare($action, $type = 'query') {

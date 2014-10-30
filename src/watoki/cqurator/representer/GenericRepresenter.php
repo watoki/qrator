@@ -85,7 +85,7 @@ class GenericRepresenter implements Representer {
     public function getFields($object) {
         $fields = [];
         foreach ($this->getProperties($object) as $property) {
-            if (!$property->canSet()) {
+            if (!$property->canSet() || $property->name == 'id') {
                 continue;
             }
 

@@ -45,6 +45,7 @@ class PrepareResource extends ActionResource {
             'parameter' => [
                 ['name' => 'action', 'value' => get_class($action)],
                 ['name' => 'type', 'value' => $type],
+                ['name' => 'id', 'value' => $representer->getId($action)]
             ],
             'field' => $this->assembleFields($action, $representer)
         ];

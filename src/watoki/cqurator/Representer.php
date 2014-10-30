@@ -27,7 +27,7 @@ interface Representer {
 
     /**
      * @param object $object
-     * @return array|\watoki\cqurator\form\Field[]
+     * @return array|\watoki\cqurator\form\Field[] Without ID
      */
     public function getFields($object);
 
