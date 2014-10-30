@@ -69,7 +69,7 @@ class QueryResource extends ActionResource {
     }
 
     private function assembleEntity($entity) {
-        $representer = $this->registry->getRepresenter(get_class($entity));
+        $representer = $this->registry->getEntityRepresenter($entity);
         return [
             'name' => $representer->toString($entity),
             'properties' => $this->assembleProperties($entity),
@@ -78,11 +78,11 @@ class QueryResource extends ActionResource {
         ];
     }
 
-    private function assembleProperties($object) {
+    private function assembleProperties($entity) {
         $properties = [];
 
-        $representer = $this->registry->getRepresenter(get_class($object));
-        foreach ($representer->getProperties($object) as $property) {
+        $representer = $this->registry->getEntityRepresenter($entity);
+        foreach ($representer->getProperties($entity) as $property) {
             if ($property->canGet()) {
                 $properties[] = $this->assembleProperty($property->name, $property->get());
             }
@@ -95,7 +95,7 @@ class QueryResource extends ActionResource {
 
     private function assembleProperty($name, $value) {
         if (is_object($value)) {
-            $representer = $this->registry->getRepresenter(get_class($value));
+            $representer = $this->registry->getEntityRepresenter($value);
             $value = $representer->render($value);
         }
         return [
@@ -104,27 +104,27 @@ class QueryResource extends ActionResource {
         ];
     }
 
-    private function assembleQueries($object) {
-        $queries = $this->registry->getRepresenter(get_class($object))->getQueries();
-        return $this->assembleActions($queries, $object, self::TYPE);
+    private function assembleQueries($entity) {
+        $queries = $this->registry->getEntityRepresenter($entity)->getQueries();
+        return $this->assembleActions($queries, $entity, self::TYPE);
     }
 
-    private function assembleCommands($object) {
-        $commands = $this->registry->getRepresenter(get_class($object))->getCommands();
-        return $this->assembleActions($commands, $object, CommandResource::TYPE);
+    private function assembleCommands($entity) {
+        $commands = $this->registry->getEntityRepresenter($entity)->getCommands();
+        return $this->assembleActions($commands, $entity, CommandResource::TYPE);
     }
 
-    private function assembleActions($actions, $object, $type) {
+    private function assembleActions($actions, $entity, $type) {
         if (!$actions) {
             return null;
         }
 
-        $representer = $this->registry->getRepresenter(get_class($object));
-        $id = $representer->getId($object);
+        $representer = $this->registry->getEntityRepresenter($entity);
+        $id = $representer->getId($entity);
 
         return [
             'action' => array_map(function ($query) use ($type, $id) {
-                $representer = $this->registry->getRepresenter($query);
+                $representer = $this->registry->getActionRepresenter($query);
                 return [
                     'name' => $representer->toString($this->factory->getInstance($query)),
                     'link' => [
@@ -160,7 +160,7 @@ class QueryResource extends ActionResource {
             $crumbs = $newCrumbs;
         }
 
-        $representer = $this->registry->getRepresenter($action);
+        $representer = $this->registry->getActionRepresenter($action);
         $caption = $representer->toString($action);
 
         $crumbs[] = [$caption, $action, $args->toArray()];

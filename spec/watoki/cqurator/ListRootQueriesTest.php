@@ -20,7 +20,7 @@ class ListRootQueriesTest extends Specification {
     }
 
     function testTwoQueriesRegistered() {
-        $this->registry->givenIRegisteredARepresenterFor(null);
+        $this->registry->givenIRegisteredAnEntityRepresenterFor(null);
         $this->registry->givenIAddedTheQuery_ToTheRepresenterOf('some\QueryOne', null);
         $this->registry->givenIAddedTheQuery_ToTheRepresenterOf('other\QueryTwo', null);
 

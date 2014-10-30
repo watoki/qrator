@@ -1,6 +1,7 @@
 <?php
 namespace spec\watoki\cqurator;
 
+use watoki\cqurator\representer\GenericEntityRepresenter;
 use watoki\cqurator\representer\GenericRepresenter;
 use watoki\scrut\Specification;
 
@@ -39,7 +40,7 @@ class DeterminePropertiesOfObjectTest extends Specification {
     private $properties;
 
     private function whenIDetermineThePropertiesOf($class) {
-        $representer = new GenericRepresenter();
+        $representer = new GenericEntityRepresenter();
         $this->properties = $representer->getProperties(new $class);
     }
 

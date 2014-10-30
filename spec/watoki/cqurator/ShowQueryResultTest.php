@@ -38,7 +38,7 @@ class ShowQueryResultTest extends Specification {
             return new \DateTime();
         }, 'MyQuery');
 
-        $this->registry->givenIRegisteredARepresenterFor('DateTime');
+        $this->registry->givenIRegisteredAnEntityRepresenterFor('DateTime');
 
         $this->registry->givenIAddedTheQuery_ToTheRepresenterOf('QueryOne', 'DateTime');
         $this->registry->givenIAddedTheQuery_ToTheRepresenterOf('QueryTwo', 'DateTime');
@@ -99,7 +99,7 @@ class ShowQueryResultTest extends Specification {
             return $object;
         }, 'MyQuery');
 
-        $this->registry->givenIRegisteredARepresenterFor('DateTime');
+        $this->registry->givenIRegisteredAnEntityRepresenterFor('DateTime');
         $this->registry->givenIHaveTheTheRenderer_For(function (\DateTime $d) {
             return $d->format('Y-m-d H:i');
         }, 'DateTime');
@@ -114,7 +114,7 @@ class ShowQueryResultTest extends Specification {
             return [new \DateTime(), new \DateTime(), new \DateTime()];
         }, 'MyQuery');
 
-        $this->registry->givenIRegisteredARepresenterFor('DateTime');
+        $this->registry->givenIRegisteredAnEntityRepresenterFor('DateTime');
         $this->registry->givenIAddedTheQuery_ToTheRepresenterOf('QueryOne', 'DateTime');
         $this->registry->givenIAddedTheCommand_ToTheRepresenterOf('CommandOne', 'DateTime');
 
@@ -143,7 +143,7 @@ class ShowQueryResultTest extends Specification {
         ');
         $this->dispatcher->givenIAddedTheClass_AsHandlerFor('property\MyHandler', 'MyQuery');
 
-        $this->registry->givenIRegisteredARepresenterFor('property\Entity');
+        $this->registry->givenIRegisteredAnEntityRepresenterFor('property\Entity');
         $this->registry->givenIAddedTheQuery_ToTheRepresenterOf('SomeQuery', 'property\Entity');
         $this->registry->givenIAddedTheCommand_ToTheRepresenterOf('SomeCommand', 'property\Entity');
 
@@ -163,7 +163,7 @@ class ShowQueryResultTest extends Specification {
         ');
         $this->dispatcher->givenIAddedTheClass_AsHandlerFor('methods\MyHandler', 'MyQuery');
 
-        $this->registry->givenIRegisteredARepresenterFor('methods\Entity');
+        $this->registry->givenIRegisteredAnEntityRepresenterFor('methods\Entity');
         $this->registry->givenIAddedTheQuery_ToTheRepresenterOf('SomeQuery', 'methods\Entity');
         $this->registry->givenIAddedTheCommand_ToTheRepresenterOf('SomeCommand', 'methods\Entity');
 

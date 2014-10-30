@@ -2,6 +2,7 @@
 namespace watoki\cqurator\web;
 
 use watoki\collections\Map;
+use watoki\cqurator\ActionRepresenter;
 use watoki\cqurator\form\Field;
 use watoki\cqurator\form\PreFilling;
 use watoki\cqurator\Representer;
@@ -39,7 +40,7 @@ class PrepareResource extends ActionResource {
             $action->preFill($this->dispatcher);
         }
 
-        $representer = $this->registry->getRepresenter(get_class($action));
+        $representer = $this->registry->getActionRepresenter(get_class($action));
         $form = [
             'title' => $representer->toString($action),
             'method' => ($type == QueryResource::TYPE ? 'get' : 'post'),
@@ -54,7 +55,7 @@ class PrepareResource extends ActionResource {
         return $form;
     }
 
-    private function assembleFields($action, Representer $representer) {
+    private function assembleFields($action, ActionRepresenter $representer) {
         return array_map(function (Field $field) {
             return [
                 'label' => ucfirst($field->getLabel()),

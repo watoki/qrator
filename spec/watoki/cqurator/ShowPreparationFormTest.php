@@ -51,7 +51,7 @@ class ShowPreparationFormTest extends Specification {
             public function setValue($value) {}
             public function inflate($value) { return $value; }
         ');
-        $this->registry->givenIRegisteredARepresenterFor('PrepareAction');
+        $this->registry->givenIRegisteredAnActionRepresenterFor('PrepareAction');
         $this->givenISetTheFieldFor_To_For('one', 'MySpecialField', 'PrepareAction');
 
         $this->whenIPrepare('PrepareAction');

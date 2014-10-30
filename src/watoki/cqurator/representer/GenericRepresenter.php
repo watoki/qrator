@@ -7,118 +7,22 @@ use watoki\cqurator\form\StringField;
 use watoki\cqurator\representer\property\AccessorProperty;
 use watoki\cqurator\representer\property\PublicProperty;
 
-class GenericRepresenter implements Representer {
-
-    /** @var array|string[] */
-    private $queries = [];
-
-    /** @var array|string[] */
-    private $commands = [];
-
-    /** @var null|callable */
-    private $renderer;
-
-    /** @var array|Field[] */
-    private $fields = [];
+abstract class GenericRepresenter implements Representer {
 
     /** @var null|callable */
     private $stringifier;
-
-    /**
-     * @param string $queryClass
-     */
-    public function addQuery($queryClass) {
-        $this->queries[] = $queryClass;
-    }
-
-    /**
-     * @param string $commandClass
-     */
-    public function addCommand($commandClass) {
-        $this->commands[] = $commandClass;
-    }
-
-    /**
-     * @return array|string[]
-     */
-    public function getQueries() {
-        return $this->queries;
-    }
-
-    /**
-     * @return array|string[]
-     */
-    public function getCommands() {
-        return $this->commands;
-    }
-
-    public function setRenderer($renderer) {
-        $this->renderer = $renderer;
-    }
-
-    /**
-     * @param object $value
-     * @return string
-     */
-    public function render($value) {
-        if ($this->renderer) {
-            return call_user_func($this->renderer, $value);
-        }
-        return print_r($value, true);
-    }
 
     /**
      * @param object $object
      * @return mixed
      */
     public function getId($object) {
-        if (isset($object->id)) {
-            return $object->id;
-        } else if (method_exists($object, 'getId')) {
-            return $object->getId();
+        $properties = $this->getProperties($object);
+        if (isset($properties['id']) && $properties['id']->canGet()) {
+            return $properties['id']->get();
         } else {
             return null;
         }
-    }
-
-    /**
-     * @param object $object
-     * @return array|\watoki\cqurator\form\Field[]
-     */
-    public function getFields($object) {
-        $fields = [];
-        foreach ($this->getProperties($object) as $property) {
-            if (!$property->canSet() || $property->name == 'id') {
-                continue;
-            }
-
-            $field = $this->getField($property->name);
-            $fields[] = $field;
-
-            if ($property->canGet()) {
-                $field->setValue($property->get());
-            }
-        }
-        return $fields;
-    }
-
-    /**
-     * @param $name
-     * @return Field
-     */
-    public function getField($name) {
-        if (isset($this->fields[$name])) {
-            return $this->fields[$name];
-        }
-        return new StringField($name);
-    }
-
-    /**
-     * @param string $name
-     * @param Field $field
-     */
-    public function setField($name, Field $field) {
-        $this->fields[$name] = $field;
     }
 
     /**

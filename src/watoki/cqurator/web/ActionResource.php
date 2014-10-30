@@ -72,7 +72,7 @@ abstract class ActionResource extends Container {
 
     protected function prepareAction(Map $args, $action) {
         $actionClass = get_class($action);
-        $representer = $this->registry->getRepresenter($actionClass);
+        $representer = $this->registry->getActionRepresenter($actionClass);
 
         foreach ($representer->getProperties($action) as $property) {
             if ($property->canSet()) {

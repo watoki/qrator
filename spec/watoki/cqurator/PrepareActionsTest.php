@@ -100,7 +100,7 @@ class PrepareActionsTest extends Specification {
         $this->dispatcher->givenIAddedTheClass_AsHandlerFor('inflateArgs\MyHandler', 'inflateArgs\InflatableAction');
         $this->resource->givenTheActionArgument_Is('inflateMe', '2012-03-04 15:16');
 
-        $this->registry->givenIRegisteredARepresenterFor('inflateArgs\InflatableAction');
+        $this->registry->givenIRegisteredAnActionRepresenterFor('inflateArgs\InflatableAction');
         $this->givenISetTheField_Of_ToBeAnInstanceOf('inflateMe', 'inflateArgs\InflatableAction', 'inflateArgs\MySpecialField');
 
         $this->whenIExecuteTheAction('inflateArgs\InflatableAction');

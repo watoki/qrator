@@ -1,6 +1,8 @@
 <?php
 namespace spec\watoki\cqurator\fixtures;
 
+use watoki\cqurator\representer\GenericActionRepresenter;
+use watoki\cqurator\representer\GenericEntityRepresenter;
 use watoki\cqurator\representer\GenericRepresenter;
 use watoki\cqurator\RepresenterRegistry;
 use watoki\scrut\Fixture;
@@ -21,8 +23,13 @@ class RegistryFixture extends Fixture {
         $this->registry = new RepresenterRegistry();
     }
 
-    public function givenIRegisteredARepresenterFor($class) {
-        $this->representers[$class] = new GenericRepresenter($this->spec->factory);
+    public function givenIRegisteredAnActionRepresenterFor($class) {
+        $this->representers[$class] = new GenericActionRepresenter($this->spec->factory);
+        $this->registry->register($class, $this->representers[$class]);
+    }
+
+    public function givenIRegisteredAnEntityRepresenterFor($class) {
+        $this->representers[$class] = new GenericEntityRepresenter($this->spec->factory);
         $this->registry->register($class, $this->representers[$class]);
     }
 
