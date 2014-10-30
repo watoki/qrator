@@ -1,7 +1,7 @@
 {
     "name": "watoki/cqurator",
     "description": "Administration interface based on the Command/Query Separation pattern",
-    "keywords": ["cqrs", "admin", "watoki"],
+    "keywords": ["cqrs", "admin", "backend", "watoki"],
     "homepage": "http://github.com/watoki/cqurator",
     "type": "library",
     "license": "MIT",
