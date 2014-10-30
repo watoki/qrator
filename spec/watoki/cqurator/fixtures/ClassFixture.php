@@ -14,7 +14,7 @@ class ClassFixture extends Fixture {
         $name = array_pop($parts);
         $namespace = implode('\\', $parts);
 
-        if (class_exists($name)) {
+        if (class_exists($fqn)) {
             return;
         }
 
@@ -30,7 +30,7 @@ class ClassFixture extends Fixture {
         $name = array_pop($parts);
         $namespace = implode('\\', $parts);
 
-        if (class_exists($name)) {
+        if (class_exists($fqn)) {
             return;
         }
 

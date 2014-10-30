@@ -51,6 +51,10 @@ class ResourceFixture extends Fixture {
         $this->spec->assertArrayNotHasKey($key, $this->get($modelPath));
     }
 
+    public function thenThereShouldBeNo($key) {
+        $this->spec->assertArrayNotHasKey($key, $this->returned);
+    }
+
     public function get($modelPath) {
         $path = explode('/', $modelPath);
         $model = $this->returned;

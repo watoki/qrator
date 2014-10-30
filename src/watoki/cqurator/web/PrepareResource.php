@@ -32,10 +32,6 @@ class PrepareResource extends ActionResource {
         ];
     }
 
-    public function doPost(Request $request, $action, $type) {
-        return $this->doGet($request, $action, $type);
-    }
-
     private function assembleForm($action, $type) {
         if ($action instanceof PreFilling) {
             $action->preFill($this->dispatcher);
@@ -44,6 +40,8 @@ class PrepareResource extends ActionResource {
         $representer = $this->registry->getRepresenter(get_class($action));
         $form = [
             'title' => $representer->toString($action),
+            'method' => ($type == QueryResource::TYPE ? 'get' : 'post'),
+            'action' => $type,
             'parameter' => [
                 ['name' => 'action', 'value' => get_class($action)],
                 ['name' => 'type', 'value' => $type],

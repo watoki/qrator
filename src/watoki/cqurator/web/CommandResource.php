@@ -6,11 +6,10 @@ use watoki\cqurator\ActionDispatcher;
 use watoki\cqurator\RepresenterRegistry;
 use watoki\curir\cookie\CookieStore;
 use watoki\curir\protocol\Url;
-use watoki\curir\Responder;
 use watoki\curir\responder\Redirecter;
+use watoki\curir\Responder;
 use watoki\deli\Request;
 use watoki\factory\Factory;
-use watoki\smokey\Dispatcher;
 
 class CommandResource extends ActionResource {
 
@@ -32,11 +31,11 @@ class CommandResource extends ActionResource {
 
     /**
      * @param Request $request <-
-     * @param $command
+     * @param $action
      * @return \watoki\curir\Responder
      */
-    public function doPost(Request $request, $command) {
-        $returned = $this->doAction($this->dispatcher, $request, $command, self::TYPE);
+    public function doPost(Request $request, $action) {
+        $returned = $this->doAction($this->dispatcher, $request, $action, self::TYPE);
         if ($returned instanceof Responder) {
             return $returned;
         }
@@ -51,6 +50,6 @@ class CommandResource extends ActionResource {
             return new Redirecter($url);
         }
 
-        return "Command executed: " . $command;
+        return "Command executed: " . $action;
     }
 }

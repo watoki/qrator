@@ -91,6 +91,7 @@ class GenericRepresenter implements Representer {
 
             $field = $this->getField($property->name);
             $fields[] = $field;
+
             if ($property->canGet()) {
                 $field->setValue($property->get());
             }
@@ -122,13 +123,14 @@ class GenericRepresenter implements Representer {
      * @return string
      */
     public function toString($object) {
-        return get_class($object);
+        $class = new \ReflectionClass($object);
+        return $class->getShortName();
     }
 
     /**
      * @param object $object
      * @throws \InvalidArgumentException
-     * @return array|Property[]
+     * @return array|Property[] indexed with property name
      */
     public function getProperties($object) {
         if (!is_object($object)) {
@@ -137,11 +139,14 @@ class GenericRepresenter implements Representer {
         $properties = [];
 
         foreach ($object as $property => $value) {
-            $properties[] = new PublicProperty($object, $property);;
+            $properties[$property] = new PublicProperty($object, $property);;
         }
         foreach (get_class_methods(get_class($object)) as $method) {
             if (substr($method, 0, 3) == 'set' || substr($method, 0, 3) == 'get') {
-                $properties[] = new AccessorProperty($object, lcfirst(substr($method, 3)));
+                $name = lcfirst(substr($method, 3));
+                if (!array_key_exists($name, $properties)) {
+                    $properties[$name] = new AccessorProperty($object, $name);
+                }
             }
         }
 

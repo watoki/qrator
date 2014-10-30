@@ -22,6 +22,9 @@ class DispatcherFixture extends Fixture {
     }
 
     public function givenIAdded_AsHandlerFor($object, $action) {
+        if (!array_key_exists($object, $this->objects)) {
+            $this->givenAnObject($object);
+        }
         $this->dispatcher->addActionHandler($action, $this->objects[$object]);
     }
 

@@ -74,12 +74,28 @@ class ShowPreparationFormTest extends Specification {
         $this->thenField_ShouldBeRenderedAs(2, '<input type="text" name="two"/>');
     }
 
+    function testSubmitQueriesWithGet() {
+        $this->whenIPrepare('PrepareAction');
+        $this->thenTheMethodOfTheFormShouldBe('get');
+        $this->thenTheActionOfTheFormShouldBe('query');
+    }
+
+    function testSubmitCommandsWithPost() {
+        $this->whenIPrepareTheCommand('PrepareAction');
+        $this->thenTheMethodOfTheFormShouldBe('post');
+        $this->thenTheActionOfTheFormShouldBe('command');
+    }
+
     ###############################################################################################
 
-    private function whenIPrepare($action) {
-        $this->resource->whenIDo_With(function (PrepareResource $resource) use ($action) {
-            return $resource->doGet($this->resource->request, $action, 'query');
+    private function whenIPrepare($action, $type = 'query') {
+        $this->resource->whenIDo_With(function (PrepareResource $resource) use ($action, $type) {
+            return $resource->doGet($this->resource->request, $action, $type);
         }, new PrepareResource($this->factory, $this->registry->registry, new ActionDispatcher($this->factory)));
+    }
+
+    private function whenIPrepareTheCommand($command) {
+        $this->whenIPrepare($command, 'command');
     }
 
     private function thenThereShouldBe_Fields($int) {
@@ -112,6 +128,14 @@ class ShowPreparationFormTest extends Specification {
 
     private function givenISetTheFieldFor_To_For($field, $class, $representedClass) {
         $this->registry->representers[$representedClass]->setField($field, new $class);
+    }
+
+    private function thenTheMethodOfTheFormShouldBe($string) {
+        $this->resource->then_ShouldBe('form/method', $string);
+    }
+
+    private function thenTheActionOfTheFormShouldBe($string) {
+        $this->resource->then_ShouldBe('form/action', $string);
     }
 
 }

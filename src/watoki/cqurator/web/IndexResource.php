@@ -10,6 +10,10 @@ class IndexResource extends Container {
     /** @var RepresenterRegistry */
     private $registry;
 
+    /**
+     * @param Factory $factory <-
+     * @param RepresenterRegistry $registry <-
+     */
     function __construct(Factory $factory, RepresenterRegistry $registry) {
         parent::__construct($factory);
         $this->registry = $registry;

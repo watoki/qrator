@@ -5,6 +5,9 @@ use watoki\cqurator\representer\GenericRepresenter;
 use watoki\cqurator\RepresenterRegistry;
 use watoki\scrut\Fixture;
 
+/**
+ * @property ClassFixture class <-
+ */
 class RegistryFixture extends Fixture {
 
     /** @var RepresenterRegistry */
@@ -24,10 +27,12 @@ class RegistryFixture extends Fixture {
     }
 
     public function givenIAddedTheQuery_ToTheRepresenterOf($query, $class) {
+        $this->class->givenTheClass($query);
         $this->representers[$class]->addQuery($query);
     }
 
     public function givenIAddedTheCommand_ToTheRepresenterOf($command, $class) {
+        $this->class->givenTheClass($command);
         $this->representers[$class]->addCommand($command);
     }
 

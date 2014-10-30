@@ -120,7 +120,7 @@ class ShowQueryResultTest extends Specification {
 
         $this->whenIShowTheResultsOf('MyQuery');
         $this->thenThereShouldBe_Entities(3);
-        $this->thenEntity_ShouldHave_Properties(1, 9);
+        $this->thenEntity_ShouldHave_Properties(1, 6);
     }
 
     function testThrowExceptions() {
