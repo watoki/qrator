@@ -26,7 +26,7 @@ class ShowPreparationFormTest extends Specification {
         $this->resource->givenTheRequestArgument_Is('two', 'dos');
 
         $this->whenIPrepare('PrepareAction');
-        $this->resource->thenIShouldBeRedirectedTo('?action=PrepareAction&type=query&one=uno&two=dos');
+        $this->resource->thenIShouldBeRedirectedTo('query?action=PrepareAction&one=uno&two=dos');
     }
 
     function testInputForMissingProperties() {

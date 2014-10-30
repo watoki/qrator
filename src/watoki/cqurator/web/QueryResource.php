@@ -102,16 +102,16 @@ class QueryResource extends ActionResource {
     private function assembleQueries($object) {
         $class = get_class($object);
         $queries = $this->registry->getRepresenter($class)->getQueries();
-        return $this->assembleActions($queries, $object);
+        return $this->assembleActions($queries, $object, self::TYPE);
     }
 
     private function assembleCommands($object) {
         $class = get_class($object);
         $commands = $this->registry->getRepresenter($class)->getCommands();
-        return $this->assembleActions($commands, $object, '&do=post');
+        return $this->assembleActions($commands, $object, CommandResource::TYPE);
     }
 
-    private function assembleActions($actions, $object, $urlSuffix = '') {
+    private function assembleActions($actions, $object, $type) {
         if (!$actions) {
             return null;
         }
@@ -120,11 +120,13 @@ class QueryResource extends ActionResource {
         $id = $representer->getId($object);
 
         return [
-            'action' => array_map(function ($query) use ($urlSuffix, $id) {
+            'action' => array_map(function ($query) use ($type, $id) {
                 return [
                     'name' => $query,
                     'link' => [
-                        'href' => "?action=$query" . $urlSuffix . ($id ? '&id=' . $id : '')
+                        'href' => "$type?action=$query"
+                            . ($type == self::TYPE ? '' : '&do=post')
+                            . ($id ? '&id=' . $id : '')
                     ]
                 ];
             }, $actions),

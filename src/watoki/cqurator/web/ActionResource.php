@@ -1,6 +1,7 @@
 <?php
 namespace watoki\cqurator\web;
 
+use watoki\collections\Map;
 use watoki\cqurator\RepresenterRegistry;
 use watoki\curir\Container;
 use watoki\curir\protocol\Url;
@@ -32,7 +33,10 @@ abstract class ActionResource extends Container {
     }
 
     protected function redirectToPrepare(Request $request, $action, $type) {
-        return $this->redirectTo('prepare', $request, $action, $type);
+        return $this->redirectTo('prepare', $request, array(
+            'action' => $action,
+            'type' => $type
+        ));
     }
 
     protected function prepareAction(Request $request, $action) {
@@ -52,10 +56,9 @@ abstract class ActionResource extends Container {
         }
     }
 
-    protected function redirectTo($resource, Request $request, $action, $type) {
+    protected function redirectTo($resource, Request $request, $params = array()) {
         $target = Url::fromString($resource);
-        $target->getParameters()->set('action', $action);
-        $target->getParameters()->set('type', $type);
+        $target->getParameters()->merge(new Map($params));
         $target->getParameters()->merge($request->getArguments());
         return new Redirecter($target);
     }

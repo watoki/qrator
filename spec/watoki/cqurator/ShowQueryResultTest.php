@@ -49,10 +49,10 @@ class ShowQueryResultTest extends Specification {
         $this->thenThereShouldBe_Commands(3);
 
         $this->thenQuery_ShouldHaveTheName(1, 'QueryOne');
-        $this->thenQuery_ShouldLinkTo(1, '?action=QueryOne');
+        $this->thenQuery_ShouldLinkTo(1, 'query?action=QueryOne');
 
         $this->thenCommand_ShouldHaveTheName(1, 'CommandOne');
-        $this->thenCommand_ShouldLinkTo(1, '?action=CommandOne&do=post');
+        $this->thenCommand_ShouldLinkTo(1, 'command?action=CommandOne&do=post');
     }
 
     function testDisplayDynamicProperties() {
@@ -146,8 +146,8 @@ class ShowQueryResultTest extends Specification {
         $this->registry->givenIAddedTheCommand_ToTheRepresenterOf('SomeCommand', 'property\Entity');
 
         $this->whenIShowTheResultsOf('MyQuery');
-        $this->thenQuery_ShouldLinkTo(1, '?action=SomeQuery&id=42');
-        $this->thenCommand_ShouldLinkTo(1, '?action=SomeCommand&do=post&id=42');
+        $this->thenQuery_ShouldLinkTo(1, 'query?action=SomeQuery&id=42');
+        $this->thenCommand_ShouldLinkTo(1, 'command?action=SomeCommand&do=post&id=42');
     }
 
     function testEntityActionWithMethods() {
@@ -166,8 +166,8 @@ class ShowQueryResultTest extends Specification {
         $this->registry->givenIAddedTheCommand_ToTheRepresenterOf('SomeCommand', 'methods\Entity');
 
         $this->whenIShowTheResultsOf('MyQuery');
-        $this->thenQuery_ShouldLinkTo(1, '?action=SomeQuery&id=73');
-        $this->thenCommand_ShouldLinkTo(1, '?action=SomeCommand&do=post&id=73');
+        $this->thenQuery_ShouldLinkTo(1, 'query?action=SomeQuery&id=73');
+        $this->thenCommand_ShouldLinkTo(1, 'command?action=SomeCommand&do=post&id=73');
     }
 
     function testInvalidResult() {

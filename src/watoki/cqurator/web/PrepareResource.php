@@ -23,7 +23,7 @@ class PrepareResource extends ActionResource {
         $object = $this->createAction($action);
         try {
             $this->prepareAction($request, $object);
-            return $this->redirectTo('', $request, $action, $type);
+            return $this->redirectTo($type, $request, array('action' => $action));
         } catch (\UnderflowException $e) {
             // That's why we are here
         }

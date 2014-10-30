@@ -28,8 +28,8 @@ class ListRootQueriesTest extends Specification {
         $this->thenThereShouldBe_Queries(2);
         $this->thenQuery_ShouldBe(1, 'some\Query');
         $this->thenQuery_ShouldBe(2, 'other\Query');
-        $this->thenQuery_ShouldLinkTo(1, '?action=some\Query');
-        $this->thenQuery_ShouldLinkTo(2, '?action=other\Query');
+        $this->thenQuery_ShouldLinkTo(1, 'query?action=some\Query');
+        $this->thenQuery_ShouldLinkTo(2, 'query?action=other\Query');
     }
 
     ####################################################################################################

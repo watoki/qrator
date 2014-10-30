@@ -21,7 +21,7 @@ class IndexResource extends Container {
                 return [
                     'name' => $query,
                     'link' => [
-                        'href' => '?action=' . $query
+                        'href' => 'query?action=' . $query
                     ]
                 ];
             }, $this->registry->getRepresenter(null)->getQueries())
