@@ -19,6 +19,8 @@ class PrepareResource extends ActionResource {
      * @return array
      */
     public function doGet($action, $type, Map $args = null) {
+        $args = $args ? : new Map();
+
         $object = $this->createAction($action);
         try {
             $this->prepareAction($args, $object);

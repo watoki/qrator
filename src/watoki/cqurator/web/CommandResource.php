@@ -35,6 +35,7 @@ class CommandResource extends ActionResource {
      * @return \watoki\curir\Responder
      */
     public function doPost($action, Map $args = null) {
+        $args = $args ? : new Map();
 
         $returned = $this->doAction($this->dispatcher, $args, $action, self::TYPE);
 
