@@ -3,6 +3,7 @@ namespace watoki\cqurator\web;
 
 use watoki\cqurator\RepresenterRegistry;
 use watoki\curir\Container;
+use watoki\curir\rendering\adapter\TempanRenderer;
 use watoki\factory\Factory;
 
 class IndexResource extends Container {
@@ -19,11 +20,16 @@ class IndexResource extends Container {
         $this->registry = $registry;
     }
 
+    protected function createDefaultRenderer() {
+        return new TempanRenderer();
+    }
+
     public function doGet() {
         return [
             'query' => array_map(function ($query) {
+                $representer = $this->registry->getRepresenter($query);
                 return [
-                    'name' => $query,
+                    'name' => $representer->toString($this->factory->getInstance($query)),
                     'link' => [
                         'href' => 'query?action=' . $query
                     ]

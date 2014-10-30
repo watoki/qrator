@@ -21,15 +21,15 @@ class ListRootQueriesTest extends Specification {
 
     function testTwoQueriesRegistered() {
         $this->registry->givenIRegisteredARepresenterFor(null);
-        $this->registry->givenIAddedTheQuery_ToTheRepresenterOf('some\Query', null);
-        $this->registry->givenIAddedTheQuery_ToTheRepresenterOf('other\Query', null);
+        $this->registry->givenIAddedTheQuery_ToTheRepresenterOf('some\QueryOne', null);
+        $this->registry->givenIAddedTheQuery_ToTheRepresenterOf('other\QueryTwo', null);
 
         $this->whenIOpenTheIndexResource();
         $this->thenThereShouldBe_Queries(2);
-        $this->thenQuery_ShouldBe(1, 'some\Query');
-        $this->thenQuery_ShouldBe(2, 'other\Query');
-        $this->thenQuery_ShouldLinkTo(1, 'query?action=some\Query');
-        $this->thenQuery_ShouldLinkTo(2, 'query?action=other\Query');
+        $this->thenQuery_ShouldBe(1, 'QueryOne');
+        $this->thenQuery_ShouldBe(2, 'QueryTwo');
+        $this->thenQuery_ShouldLinkTo(1, 'query?action=some\QueryOne');
+        $this->thenQuery_ShouldLinkTo(2, 'query?action=other\QueryTwo');
     }
 
     ####################################################################################################

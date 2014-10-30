@@ -6,6 +6,7 @@ use watoki\cqurator\ActionDispatcher;
 use watoki\cqurator\RepresenterRegistry;
 use watoki\curir\Container;
 use watoki\curir\protocol\Url;
+use watoki\curir\rendering\adapter\TempanRenderer;
 use watoki\curir\responder\Redirecter;
 use watoki\deli\Request;
 use watoki\factory\Factory;
@@ -32,6 +33,10 @@ abstract class ActionResource extends Container {
         $this->registry = $registry;
         $this->factory = $factory;
         $this->dispatcher = $dispatcher;
+    }
+
+    protected function createDefaultRenderer() {
+        return new TempanRenderer();
     }
 
     protected function doAction(Dispatcher $dispatcher, Request $request, $actionClass, $type) {
