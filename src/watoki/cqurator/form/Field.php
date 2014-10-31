@@ -30,4 +30,9 @@ interface Field {
      */
     public function setRequired($to = true);
 
+    /**
+     * @return bool
+     */
+    public function isRequired();
+
 }

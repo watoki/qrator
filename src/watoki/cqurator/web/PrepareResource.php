@@ -70,7 +70,8 @@ class PrepareResource extends ActionResource {
         return array_map(function (Field $field) {
             return [
                 'label' => ucfirst($field->getLabel()),
-                'control' => $field->render()
+                'control' => $field->render(),
+                'isRequired' => $field->isRequired()
             ];
         }, $representer->getFields($action));
     }

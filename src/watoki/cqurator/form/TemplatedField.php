@@ -26,6 +26,10 @@ abstract class TemplatedField implements Field {
         $this->required = $to;
     }
 
+    public function isRequired() {
+        return $this->required;
+    }
+
     /**
      * @return string
      */

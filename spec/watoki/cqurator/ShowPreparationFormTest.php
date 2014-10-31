@@ -62,6 +62,7 @@ class ShowPreparationFormTest extends Specification {
             public function setValue($value) {}
             public function inflate($value) { return $value; }
             public function setRequired($to = true) {}
+            public function isRequired() {}
         ');
         $this->registry->givenIRegisteredAnActionRepresenterFor('PrepareAction');
         $this->givenISetTheFieldFor_To_For('one', 'MySpecialField', 'PrepareAction');
@@ -205,16 +206,19 @@ class ShowPreparationFormTest extends Specification {
 
     private function thenField_ShouldBeRequired($int) {
         $this->assertContains('required', $this->getRenderedField($int));
+        $int--;
+        $this->resource->then_ShouldBe("form/field/$int/isRequired", true);
     }
 
     private function thenField_ShouldNotBeRequired($int) {
         $this->assertNotContains('required', $this->getRenderedField($int));
+        $int--;
+        $this->resource->then_ShouldBe("form/field/$int/isRequired", false);
     }
 
     private function getRenderedField($int) {
         $int--;
-        $rendered = $this->resource->get("form/field/$int/control");
-        return $rendered;
+        return $this->resource->get("form/field/$int/control");
     }
 
 }
