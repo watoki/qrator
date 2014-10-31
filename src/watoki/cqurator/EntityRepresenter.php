@@ -10,24 +10,24 @@ interface EntityRepresenter extends Representer {
     public function render($object);
 
     /**
-     * @return string[]
+     * @return \watoki\cqurator\representer\ActionGenerator[]
      */
     public function getQueries();
 
     /**
-     * @return string[]
+     * @return \watoki\cqurator\representer\ActionGenerator[]
      */
     public function getCommands();
 
     /**
      * @param string $property
-     * @return string[]
+     * @return \watoki\cqurator\representer\ActionGenerator[]
      */
     public function getPropertyQueries($property);
 
     /**
      * @param string $property
-     * @return string[]
+     * @return \watoki\cqurator\representer\ActionGenerator[]
      */
     public function getPropertyCommands($property);
 

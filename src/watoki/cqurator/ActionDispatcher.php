@@ -20,7 +20,7 @@ class ActionDispatcher implements Dispatcher {
 
     /**
      * @param string $class
-     * @param object $handler
+     * @param object|callable|string $handler
      */
     public function addActionHandler($class, $handler) {
         if (!is_callable($handler)) {

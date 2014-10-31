@@ -3,6 +3,8 @@ namespace watoki\cqurator\web;
 
 use watoki\collections\Map;
 use watoki\cqurator\ActionDispatcher;
+use watoki\cqurator\representer\ActionGenerator;
+use watoki\cqurator\representer\PropertyActionGenerator;
 use watoki\cqurator\RepresenterRegistry;
 use watoki\curir\cookie\Cookie;
 use watoki\curir\cookie\CookieStore;
@@ -105,10 +107,10 @@ class QueryResource extends ActionResource {
             $representer = $this->registry->getEntityRepresenter($value);
 
             $queries = $this->assembleQueries($value);
-            $propertyQueries = $this->assemblePropertyActions($entityRepresenter->getPropertyQueries($name), $name, $value, $entity, self::TYPE);
+            $propertyQueries = $this->assemblePropertyActions($entityRepresenter->getPropertyQueries($name), $value, $entity, self::TYPE);
 
             $commands = $this->assembleCommands($value);
-            $propertyCommands = $this->assemblePropertyActions($entityRepresenter->getPropertyCommands($name), $name, $value, $entity, CommandResource::TYPE);
+            $propertyCommands = $this->assemblePropertyActions($entityRepresenter->getPropertyCommands($name), $value, $entity, CommandResource::TYPE);
 
             return [
                 'caption' => $representer->render($value),
@@ -137,22 +139,20 @@ class QueryResource extends ActionResource {
         ];
     }
 
-    private function assemblePropertyActions($actions, $property, $object, $entity, $type) {
+    private function assemblePropertyActions($actions, $object, $entity, $type) {
         if (!$actions) {
             return null;
         }
 
         $representer = $this->registry->getEntityRepresenter($entity);
         $id = $representer->getId($entity);
-        $urlSuffix = $id ? '&args[id]=' . $id : '';
 
         $propertyRepresenter = $this->registry->getEntityRepresenter($object);
-        $propertyId = $propertyRepresenter->getId($object);
-        $urlSuffix .= $propertyId ? '&args[' . $property . ']=' . $propertyId : '';
+        $propertyId = $propertyRepresenter->getId($object);;
 
         return [
-            'action' => array_map(function ($action) use ($type, $urlSuffix) {
-                return $this->assembleAction($action, $type, $urlSuffix);
+            'action' => array_map(function (PropertyActionGenerator $action) use ($type, $id, $propertyId) {
+                return $this->assembleAction($action->getClass(), $type, $action->getArguments($id, $propertyId));
             }, $actions)
         ];
     }
@@ -174,23 +174,28 @@ class QueryResource extends ActionResource {
 
         $representer = $this->registry->getEntityRepresenter($entity);
         $id = $representer->getId($entity);
-        $urlSuffix = $id ? '&args[id]=' . $id : '';
 
         return [
-            'action' => array_map(function ($action) use ($type, $urlSuffix) {
-                return $this->assembleAction($action, $type, $urlSuffix);
+            'action' => array_map(function (ActionGenerator $action) use ($type, $id) {
+                return $this->assembleAction($action->getClass(), $type, $action->getArguments($id));
             }, $actions)
         ];
     }
 
-    private function assembleAction($action, $type, $urlSuffix) {
+    private function assembleAction($action, $type, $arguments) {
+        $target = Url::fromString($type);
+        $target->getParameters()->set('action', $action);
+        if ($type == CommandResource::TYPE) {
+            $target->getParameters()->set('do', 'post');
+        }
+        $target->getParameters()->set('args', new Map($arguments));
+
+
         $representer = $this->registry->getActionRepresenter($action);
         return [
             'name' => $representer->getName($action),
             'link' => [
-                'href' => "$type?action=$action"
-                    . ($type == self::TYPE ? '' : '&do=post')
-                    . $urlSuffix
+                'href' => $target->toString()
             ]
         ];
     }

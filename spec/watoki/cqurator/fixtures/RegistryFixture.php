@@ -1,9 +1,11 @@
 <?php
 namespace spec\watoki\cqurator\fixtures;
 
+use watoki\cqurator\representer\ActionGenerator;
 use watoki\cqurator\representer\GenericActionRepresenter;
 use watoki\cqurator\representer\GenericEntityRepresenter;
 use watoki\cqurator\representer\GenericRepresenter;
+use watoki\cqurator\representer\PropertyActionGenerator;
 use watoki\cqurator\RepresenterRegistry;
 use watoki\scrut\Fixture;
 
@@ -35,16 +37,24 @@ class RegistryFixture extends Fixture {
 
     public function givenIAddedTheQuery_ToTheRepresenterOf($query, $class) {
         $this->class->givenTheClass($query);
-        $this->representers[$class]->addQuery($query);
+        $this->representers[$class]->addQuery(new ActionGenerator($query));
     }
 
     public function givenIAddedTheCommand_ToTheRepresenterOf($command, $class) {
         $this->class->givenTheClass($command);
-        $this->representers[$class]->addCommand($command);
+        $this->representers[$class]->addCommand(new ActionGenerator($command));
     }
 
     public function givenIHaveTheTheRenderer_For($callable, $class) {
         $this->representers[$class]->setRenderer($callable);
+    }
+
+    public function givenIAddedAQuery_ForTheProperty_Of($query, $property, $class) {
+        $this->representers[$class]->addPropertyQuery($property, new PropertyActionGenerator($query));
+    }
+
+    public function givenIAddedACommand_ForTheProperty_Of($query, $property, $class) {
+        $this->representers[$class]->addPropertyCommand($property, new PropertyActionGenerator($query));
     }
 
 } 

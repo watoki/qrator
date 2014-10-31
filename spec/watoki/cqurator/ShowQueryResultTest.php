@@ -246,15 +246,16 @@ class ShowQueryResultTest extends Specification {
         $this->class->givenTheClass('propertyQueries\PropertyQuery');
         $this->class->givenTheClass('propertyQueries\PropertyCommand');
         $this->registry->givenIRegisteredAnEntityRepresenterFor('propertyQueries\SomeEntity');
-        $this->registry->representers['propertyQueries\SomeEntity']->addPropertyQuery('other', 'propertyQueries\PropertyQuery');
-        $this->registry->representers['propertyQueries\SomeEntity']->addPropertyCommand('other', 'propertyQueries\PropertyCommand');
+
+        $this->registry->givenIAddedAQuery_ForTheProperty_Of('propertyQueries\PropertyQuery', 'other', 'propertyQueries\SomeEntity');
+        $this->registry->givenIAddedACommand_ForTheProperty_Of('propertyQueries\PropertyCommand', 'other', 'propertyQueries\SomeEntity');
 
         $this->whenIShowTheResultsOf('MyQuery');
         $this->thenThereShouldBe_Properties(2);
         $this->thenProperty_ShouldHaveQuery_WithTheName(1, 1, 'PropertyQuery');
-        $this->thenProperty_ShouldHaveQuery_WithTheLinkTarget(1, 1, 'query?action=propertyQueries\PropertyQuery&args[id]=someID&args[other]=otherID');
+        $this->thenProperty_ShouldHaveQuery_WithTheLinkTarget(1, 1, 'query?action=propertyQueries%5CPropertyQuery&args[id]=someID&args[object]=otherID');
         $this->thenProperty_ShouldHaveCommand_WithTheName(1, 1, 'PropertyCommand');
-        $this->thenProperty_ShouldHaveCommand_WithTheLinkTarget(1, 1, 'command?action=propertyQueries\PropertyCommand&do=post&args[id]=someID&args[other]=otherID');
+        $this->thenProperty_ShouldHaveCommand_WithTheLinkTarget(1, 1, 'command?action=propertyQueries%5CPropertyCommand&do=post&args[id]=someID&args[object]=otherID');
     }
 
     ###########################################################################################

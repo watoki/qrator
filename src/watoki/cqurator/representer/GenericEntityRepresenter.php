@@ -5,39 +5,39 @@ use watoki\cqurator\EntityRepresenter;
 
 class GenericEntityRepresenter extends GenericRepresenter implements EntityRepresenter {
 
-    /** @var array|string[] */
+    /** @var array|ActionGenerator[] */
     private $queries = [];
 
-    /** @var array|string[] */
+    /** @var array|ActionGenerator[] */
     private $commands = [];
 
-    /** @var array|array[] Arrays of query classes indexed by property names */
+    /** @var array|array[] Arrays of PropertyActionGenerator indexed by property names */
     private $propertyQueries = [];
 
-    /** @var array|array[] Arrays of command classes indexed by property names */
+    /** @var array|array[] Arrays of PropertyActionGenerator indexed by property names */
     private $propertyCommands = [];
 
     /** @var null|callable */
     private $renderer;
 
     /**
-     * @param string $queryClass
+     * @param ActionGenerator $queryClass
      */
-    public function addQuery($queryClass) {
+    public function addQuery(ActionGenerator $queryClass) {
         $this->queries[] = $queryClass;
     }
 
     /**
      * @param string $property
-     * @param string $queryClass
+     * @param PropertyActionGenerator $query
      */
-    public function addPropertyQuery($property, $queryClass) {
-        $this->propertyQueries[$property][] = $queryClass;
+    public function addPropertyQuery($property, PropertyActionGenerator $query) {
+        $this->propertyQueries[$property][] = $query;
     }
 
     /**
      * @param string $property
-     * @return array|string[]
+     * @return array|PropertyActionGenerator[]
      */
     public function getPropertyQueries($property) {
         if (!isset($this->propertyQueries[$property])) {
@@ -48,15 +48,15 @@ class GenericEntityRepresenter extends GenericRepresenter implements EntityRepre
 
     /**
      * @param string $property
-     * @param string $commandClass
+     * @param PropertyActionGenerator $command
      */
-    public function addPropertyCommand($property, $commandClass) {
-        $this->propertyCommands[$property][] = $commandClass;
+    public function addPropertyCommand($property, PropertyActionGenerator $command) {
+        $this->propertyCommands[$property][] = $command;
     }
 
     /**
      * @param string $property
-     * @return \string[]
+     * @return PropertyActionGenerator[]
      */
     public function getPropertyCommands($property) {
         if (!isset($this->propertyCommands[$property])) {
@@ -66,21 +66,21 @@ class GenericEntityRepresenter extends GenericRepresenter implements EntityRepre
     }
 
     /**
-     * @param string $commandClass
+     * @param ActionGenerator $commandClass
      */
-    public function addCommand($commandClass) {
+    public function addCommand(ActionGenerator $commandClass) {
         $this->commands[] = $commandClass;
     }
 
     /**
-     * @return array|string[]
+     * @return array|ActionGenerator[]
      */
     public function getQueries() {
         return $this->queries;
     }
 
     /**
-     * @return array|string[]
+     * @return array|ActionGenerator[]
      */
     public function getCommands() {
         return $this->commands;

@@ -1,6 +1,7 @@
 <?php
 namespace watoki\cqurator\web;
 
+use watoki\cqurator\representer\ActionGenerator;
 use watoki\cqurator\RepresenterRegistry;
 use watoki\curir\Container;
 use watoki\curir\rendering\adapter\TempanRenderer;
@@ -26,7 +27,8 @@ class IndexResource extends Container {
 
     public function doGet() {
         return [
-            'query' => array_map(function ($query) {
+            'query' => array_map(function (ActionGenerator $action) {
+                $query = $action->getClass();
                 $representer = $this->registry->getActionRepresenter($query);
                 return [
                     'name' => $representer->getName($query),
