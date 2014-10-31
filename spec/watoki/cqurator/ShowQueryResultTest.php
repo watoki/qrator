@@ -228,6 +228,35 @@ class ShowQueryResultTest extends Specification {
         $this->thenProperty_ShouldHaveCommand_WithTheName(1, 1, 'SomeCommand');
     }
 
+    function testPropertyQueries() {
+        $this->class->givenTheClass_WithTheBody('propertyQueries\SomeEntity', '
+            public $id = "someID";
+            function __construct($other) { $this->other = $other; }
+        ');
+        $this->class->givenTheClass_WithTheBody('propertyQueries\OtherEntity', '
+            public $id = "otherID";
+        ');
+        $this->class->givenTheClass_WithTheBody('propertyQueries\MyHandler', '
+            function myQuery() {
+                return new SomeEntity(new OtherEntity());
+            }
+        ');
+        $this->dispatcher->givenIAddedTheClass_AsHandlerFor('propertyQueries\MyHandler', 'MyQuery');
+
+        $this->class->givenTheClass('propertyQueries\PropertyQuery');
+        $this->class->givenTheClass('propertyQueries\PropertyCommand');
+        $this->registry->givenIRegisteredAnEntityRepresenterFor('propertyQueries\SomeEntity');
+        $this->registry->representers['propertyQueries\SomeEntity']->addPropertyQuery('other', 'propertyQueries\PropertyQuery');
+        $this->registry->representers['propertyQueries\SomeEntity']->addPropertyCommand('other', 'propertyQueries\PropertyCommand');
+
+        $this->whenIShowTheResultsOf('MyQuery');
+        $this->thenThereShouldBe_Properties(2);
+        $this->thenProperty_ShouldHaveQuery_WithTheName(1, 1, 'PropertyQuery');
+        $this->thenProperty_ShouldHaveQuery_WithTheLinkTarget(1, 1, 'query?action=propertyQueries\PropertyQuery&args[id]=someID&args[other]=otherID');
+        $this->thenProperty_ShouldHaveCommand_WithTheName(1, 1, 'PropertyCommand');
+        $this->thenProperty_ShouldHaveCommand_WithTheLinkTarget(1, 1, 'command?action=propertyQueries\PropertyCommand&do=post&args[id]=someID&args[other]=otherID');
+    }
+
     ###########################################################################################
 
     private function whenIShowTheResultsOf($query) {
@@ -329,10 +358,22 @@ class ShowQueryResultTest extends Specification {
         $this->resource->then_ShouldBe("entity/properties/property/$propertyPos/value/queries/action/$queryPos/name", $name);
     }
 
+    private function thenProperty_ShouldHaveQuery_WithTheLinkTarget($propertyPos, $queryPos, $target) {
+        $propertyPos--;
+        $queryPos--;
+        $this->resource->then_ShouldBe("entity/properties/property/$propertyPos/value/queries/action/$queryPos/link/href", $target);
+    }
+
     private function thenProperty_ShouldHaveCommand_WithTheName($propertyPos, $queryPos, $name) {
         $propertyPos--;
         $queryPos--;
         $this->resource->then_ShouldBe("entity/properties/property/$propertyPos/value/commands/action/$queryPos/name", $name);
+    }
+
+    private function thenProperty_ShouldHaveCommand_WithTheLinkTarget($propertyPos, $queryPos, $target) {
+        $propertyPos--;
+        $queryPos--;
+        $this->resource->then_ShouldBe("entity/properties/property/$propertyPos/value/commands/action/$queryPos/link/href", $target);
     }
 
 } 

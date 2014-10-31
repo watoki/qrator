@@ -83,7 +83,7 @@ class QueryResource extends ActionResource {
         $representer = $this->registry->getEntityRepresenter($entity);
         foreach ($representer->getProperties($entity) as $property) {
             if ($property->canGet()) {
-                $properties[] = $this->assembleProperty($property->name(), $property->get());
+                $properties[] = $this->assembleProperty($entity, $property->name(), $property->get());
             }
         }
 
@@ -92,24 +92,41 @@ class QueryResource extends ActionResource {
         ] : null;
     }
 
-    private function assembleProperty($name, $value) {
+    private function assembleProperty($entity, $name, $value) {
         return [
             'name' => $name,
-            'value' => $this->assembleValue($value)
+            'value' => $this->assembleValue($entity, $name, $value)
         ];
     }
 
-    private function assembleValue($value) {
+    private function assembleValue($entity, $name, $value) {
         if (is_object($value)) {
+            $entityRepresenter = $this->registry->getEntityRepresenter($entity);
             $representer = $this->registry->getEntityRepresenter($value);
+
+            $queries = $this->assembleQueries($value);
+            $propertyQueries = $this->assemblePropertyActions($entityRepresenter->getPropertyQueries($name), $name, $value, $entity, self::TYPE);
+
+            $commands = $this->assembleCommands($value);
+            $propertyCommands = $this->assemblePropertyActions($entityRepresenter->getPropertyCommands($name), $name, $value, $entity, CommandResource::TYPE);
+
             return [
                 'caption' => $representer->render($value),
-                'queries' => $this->assembleQueries($value),
-                'commands' => $this->assembleCommands($value)
+                'queries' => $queries || $propertyQueries ? [
+                    'action' => array_merge(
+                        $queries ? $queries['action'] : [],
+                        $propertyQueries ? $propertyQueries['action'] : [])
+                ] : null,
+                'commands' => $commands || $propertyCommands ? [
+                        'action' => array_merge(
+                            $commands ? $commands['action'] : [],
+                            $propertyCommands ? $propertyCommands['action'] : []
+                        )
+                    ] : null,
             ];
         } else if (is_array($value)) {
-            array_walk($value, function (&$item) {
-                $item = $this->assembleValue($item);
+            array_walk($value, function (&$item) use ($entity, $name) {
+                $item = $this->assembleValue($entity, $name, $item);
             });
             return $value;
         }
@@ -120,14 +137,34 @@ class QueryResource extends ActionResource {
         ];
     }
 
+    private function assemblePropertyActions($actions, $property, $object, $entity, $type) {
+        if (!$actions) {
+            return null;
+        }
+
+        $representer = $this->registry->getEntityRepresenter($entity);
+        $id = $representer->getId($entity);
+        $urlSuffix = $id ? '&args[id]=' . $id : '';
+
+        $propertyRepresenter = $this->registry->getEntityRepresenter($object);
+        $propertyId = $propertyRepresenter->getId($object);
+        $urlSuffix .= $propertyId ? '&args[' . $property . ']=' . $propertyId : '';
+
+        return [
+            'action' => array_map(function ($action) use ($type, $urlSuffix) {
+                return $this->assembleAction($action, $type, $urlSuffix);
+            }, $actions)
+        ];
+    }
+
     private function assembleQueries($entity) {
-        $queries = $this->registry->getEntityRepresenter($entity)->getQueries();
-        return $this->assembleActions($queries, $entity, self::TYPE);
+        $representer = $this->registry->getEntityRepresenter($entity);
+        return $this->assembleActions($representer->getQueries(), $entity, self::TYPE);
     }
 
     private function assembleCommands($entity) {
-        $commands = $this->registry->getEntityRepresenter($entity)->getCommands();
-        return $this->assembleActions($commands, $entity, CommandResource::TYPE);
+        $representer = $this->registry->getEntityRepresenter($entity);
+        return $this->assembleActions($representer->getCommands(), $entity, CommandResource::TYPE);
     }
 
     private function assembleActions($actions, $entity, $type) {
@@ -137,19 +174,24 @@ class QueryResource extends ActionResource {
 
         $representer = $this->registry->getEntityRepresenter($entity);
         $id = $representer->getId($entity);
+        $urlSuffix = $id ? '&args[id]=' . $id : '';
 
         return [
-            'action' => array_map(function ($query) use ($type, $id) {
-                $representer = $this->registry->getActionRepresenter($query);
-                return [
-                    'name' => $representer->getName($query),
-                    'link' => [
-                        'href' => "$type?action=$query"
-                            . ($type == self::TYPE ? '' : '&do=post')
-                            . ($id ? '&args[id]=' . $id : '')
-                    ]
-                ];
-            }, $actions),
+            'action' => array_map(function ($action) use ($type, $urlSuffix) {
+                return $this->assembleAction($action, $type, $urlSuffix);
+            }, $actions)
+        ];
+    }
+
+    private function assembleAction($action, $type, $urlSuffix) {
+        $representer = $this->registry->getActionRepresenter($action);
+        return [
+            'name' => $representer->getName($action),
+            'link' => [
+                'href' => "$type?action=$action"
+                    . ($type == self::TYPE ? '' : '&do=post')
+                    . $urlSuffix
+            ]
         ];
     }
 

@@ -11,6 +11,12 @@ class GenericEntityRepresenter extends GenericRepresenter implements EntityRepre
     /** @var array|string[] */
     private $commands = [];
 
+    /** @var array|array[] Arrays of query classes indexed by property names */
+    private $propertyQueries = [];
+
+    /** @var array|array[] Arrays of command classes indexed by property names */
+    private $propertyCommands = [];
+
     /** @var null|callable */
     private $renderer;
 
@@ -19,6 +25,44 @@ class GenericEntityRepresenter extends GenericRepresenter implements EntityRepre
      */
     public function addQuery($queryClass) {
         $this->queries[] = $queryClass;
+    }
+
+    /**
+     * @param string $property
+     * @param string $queryClass
+     */
+    public function addPropertyQuery($property, $queryClass) {
+        $this->propertyQueries[$property][] = $queryClass;
+    }
+
+    /**
+     * @param string $property
+     * @return array|string[]
+     */
+    public function getPropertyQueries($property) {
+        if (!isset($this->propertyQueries[$property])) {
+            return [];
+        }
+        return $this->propertyQueries[$property];
+    }
+
+    /**
+     * @param string $property
+     * @param string $commandClass
+     */
+    public function addPropertyCommand($property, $commandClass) {
+        $this->propertyCommands[$property][] = $commandClass;
+    }
+
+    /**
+     * @param string $property
+     * @return \string[]
+     */
+    public function getPropertyCommands($property) {
+        if (!isset($this->propertyCommands[$property])) {
+            return [];
+        }
+        return $this->propertyCommands[$property];
     }
 
     /**
@@ -56,5 +100,4 @@ class GenericEntityRepresenter extends GenericRepresenter implements EntityRepre
         }
         return $this->toString($object);
     }
-
 }
