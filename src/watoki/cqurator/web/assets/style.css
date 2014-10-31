@@ -35,13 +35,34 @@ label {
 [property=properties] {
     overflow: hidden;
     max-height: 15em;
-    margin-bottom: 1em;
+    position: relative;
+    margin-bottom: .5em;
+}
+
+[property=properties]:after {
+    position: absolute;
+    bottom: 0;
+    height: 20%;
+    width: 100%;
+    content: "";
+    background: linear-gradient(to top,
+    rgba(255,255,255, 1) 0%,
+    rgba(255,255,255, 0) 60%
+    );
+    pointer-events: none; /* so the text is still selectable */
 }
 
 [property=entity]:only-child [property=properties] {
     overflow: hidden;
     max-height: none;
-    margin-bottom: 1em;
+}
+
+[property=entity]:only-child [property=properties]:after {
+    background: none;
+}
+
+[property=entity] .panel {
+    margin-bottom: 0;
 }
 
 .panel-heading {
