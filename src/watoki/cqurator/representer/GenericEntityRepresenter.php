@@ -47,14 +47,14 @@ class GenericEntityRepresenter extends GenericRepresenter implements EntityRepre
     }
 
     /**
-     * @param object $value
+     * @param object $object
      * @return string
      */
-    public function render($value) {
+    public function render($object) {
         if ($this->renderer) {
-            return call_user_func($this->renderer, $value);
+            return call_user_func($this->renderer, $object);
         }
-        return print_r($value, true);
+        return $this->toString($object);
     }
 
 } 

@@ -4,10 +4,10 @@ namespace watoki\cqurator;
 interface EntityRepresenter extends Representer {
 
     /**
-     * @param object $value
+     * @param object $object
      * @return string
      */
-    public function render($value);
+    public function render($object);
 
     /**
      * @return \string[]
