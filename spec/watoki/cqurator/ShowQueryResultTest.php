@@ -283,11 +283,11 @@ class ShowQueryResultTest extends Specification {
     }
 
     private function thenThereShouldBe_Queries($int) {
-        $this->resource->thenThereShouldBe_Of($int, 'entity/queries/action');
+        $this->resource->thenThereShouldBe_Of($int, 'entity/queries/item');
     }
 
     private function thenThereShouldBe_Commands($int) {
-        $this->resource->thenThereShouldBe_Of($int, 'entity/commands/action');
+        $this->resource->thenThereShouldBe_Of($int, 'entity/commands/item');
     }
 
     private function thenThereShouldBeNoProperties() {
@@ -295,31 +295,31 @@ class ShowQueryResultTest extends Specification {
     }
 
     private function thenThereShouldBeNoQueries() {
-        $this->resource->then_ShouldBe('entity/queries', null);
+        $this->resource->then_ShouldBe('entity/queries/isEmpty', true);
     }
 
     private function thenThereShouldBeNoCommands() {
-        $this->resource->then_ShouldBe('entity/commands', null);
+        $this->resource->then_ShouldBe('entity/commands/isEmpty', true);
     }
 
     private function thenQuery_ShouldHaveTheName($int, $string) {
         $int--;
-        $this->resource->then_ShouldBe("entity/queries/action/$int/name", $string);
+        $this->resource->then_ShouldBe("entity/queries/item/$int/name", $string);
     }
 
     private function thenQuery_ShouldLinkTo($int, $string) {
         $int--;
-        $this->resource->then_ShouldBe("entity/queries/action/$int/link/href", $string);
+        $this->resource->then_ShouldBe("entity/queries/item/$int/link/href", $string);
     }
 
     private function thenCommand_ShouldHaveTheName($int, $string) {
         $int--;
-        $this->resource->then_ShouldBe("entity/commands/action/$int/name", $string);
+        $this->resource->then_ShouldBe("entity/commands/item/$int/name", $string);
     }
 
     private function thenCommand_ShouldLinkTo($int, $string) {
         $int--;
-        $this->resource->then_ShouldBe("entity/commands/action/$int/link/href", $string);
+        $this->resource->then_ShouldBe("entity/commands/item/$int/link/href", $string);
     }
 
     private function thenProperty_ShouldHaveTheName_AndValue($int, $name, $value) {
@@ -356,25 +356,25 @@ class ShowQueryResultTest extends Specification {
     private function thenProperty_ShouldHaveQuery_WithTheName($propertyPos, $queryPos, $name) {
         $propertyPos--;
         $queryPos--;
-        $this->resource->then_ShouldBe("entity/properties/property/$propertyPos/value/queries/action/$queryPos/name", $name);
+        $this->resource->then_ShouldBe("entity/properties/property/$propertyPos/value/queries/$queryPos/name", $name);
     }
 
     private function thenProperty_ShouldHaveQuery_WithTheLinkTarget($propertyPos, $queryPos, $target) {
         $propertyPos--;
         $queryPos--;
-        $this->resource->then_ShouldBe("entity/properties/property/$propertyPos/value/queries/action/$queryPos/link/href", $target);
+        $this->resource->then_ShouldBe("entity/properties/property/$propertyPos/value/queries/$queryPos/link/href", $target);
     }
 
     private function thenProperty_ShouldHaveCommand_WithTheName($propertyPos, $queryPos, $name) {
         $propertyPos--;
         $queryPos--;
-        $this->resource->then_ShouldBe("entity/properties/property/$propertyPos/value/commands/action/$queryPos/name", $name);
+        $this->resource->then_ShouldBe("entity/properties/property/$propertyPos/value/commands/$queryPos/name", $name);
     }
 
     private function thenProperty_ShouldHaveCommand_WithTheLinkTarget($propertyPos, $queryPos, $target) {
         $propertyPos--;
         $queryPos--;
-        $this->resource->then_ShouldBe("entity/properties/property/$propertyPos/value/commands/action/$queryPos/link/href", $target);
+        $this->resource->then_ShouldBe("entity/properties/property/$propertyPos/value/commands/$queryPos/link/href", $target);
     }
 
 } 

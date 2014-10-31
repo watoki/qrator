@@ -12,6 +12,7 @@
 </ul>
 
 <div property="entity">
+    <hr/>
     <h1 property="name">Some Model</h1>
 
     <div property="properties">
@@ -21,14 +22,10 @@
                 <span property="value">
                     <span property="caption">Value</span>
                     <span property="queries">
-                        <span property="action">
-                            <a property="link" href="prepare.html"><span property="name">Some Query</span></a>
-                        </span>
+                        <a property="link" href="prepare.html"><span property="name">Some Query</span></a>
                     </span>
                     <span property="commands">
-                        <span property="action">
-                            <a property="link" href="prepare.html"><span property="name">Some Query</span></a>
-                        </span>
+                        <a property="link" href="prepare.html"><span property="name">Some Query</span></a>
                     </span>
                 </span>
             </li>
@@ -36,21 +33,25 @@
     </div>
 
     <div property="queries">
-        <h2>Queries</h2>
-        <ul>
-            <li property="action">
-                <a property="link" href="prepare.html"><span property="name">Some Query</span></a>
-            </li>
-        </ul>
+        <div property="isNotEmpty">
+            <h2>Queries</h2>
+            <ul>
+                <li property="item">
+                    <a property="link" href="prepare.html"><span property="name">Some Query</span></a>
+                </li>
+            </ul>
+        </div>
     </div>
 
     <div property="commands">
-        <h2>Commands</h2>
-        <ul>
-            <li property="action">
-                <a property="link" href="prepare.html"><span property="name">Some Command</span></a>
-            </li>
-        </ul>
+        <div property="isNotEmpty">
+            <h2>Commands</h2>
+            <ul>
+                <li property="item">
+                    <a property="link" href="prepare.html"><span property="name">Some Command</span></a>
+                </li>
+            </ul>
+        </div>
     </div>
 
 </div>

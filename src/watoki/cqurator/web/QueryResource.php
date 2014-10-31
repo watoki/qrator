@@ -11,6 +11,7 @@ use watoki\curir\cookie\CookieStore;
 use watoki\curir\protocol\Url;
 use watoki\curir\Responder;
 use watoki\factory\Factory;
+use watoki\tempan\model\ListModel;
 
 class QueryResource extends ActionResource {
 
@@ -74,8 +75,8 @@ class QueryResource extends ActionResource {
         return [
             'name' => $representer->getName(get_class($entity)),
             'properties' => $this->assembleProperties($entity),
-            'queries' => $this->assembleQueries($entity),
-            'commands' => $this->assembleCommands($entity)
+            'queries' => new ListModel($this->assembleQueries($entity)),
+            'commands' => new ListModel($this->assembleCommands($entity))
         ];
     }
 
@@ -106,25 +107,16 @@ class QueryResource extends ActionResource {
             $entityRepresenter = $this->registry->getEntityRepresenter($entity);
             $representer = $this->registry->getEntityRepresenter($value);
 
-            $queries = $this->assembleQueries($value);
-            $propertyQueries = $this->assemblePropertyActions($entityRepresenter->getPropertyQueries($name), $value, $entity, self::TYPE);
-
-            $commands = $this->assembleCommands($value);
-            $propertyCommands = $this->assemblePropertyActions($entityRepresenter->getPropertyCommands($name), $value, $entity, CommandResource::TYPE);
-
             return [
                 'caption' => $representer->render($value),
-                'queries' => $queries || $propertyQueries ? [
-                    'action' => array_merge(
-                        $queries ? $queries['action'] : [],
-                        $propertyQueries ? $propertyQueries['action'] : [])
-                ] : null,
-                'commands' => $commands || $propertyCommands ? [
-                        'action' => array_merge(
-                            $commands ? $commands['action'] : [],
-                            $propertyCommands ? $propertyCommands['action'] : []
-                        )
-                    ] : null,
+                'queries' => array_merge(
+                    $this->assembleQueries($value),
+                    $this->assemblePropertyActions($entityRepresenter->getPropertyQueries($name), $value, $entity, self::TYPE)
+                ),
+                'commands' => array_merge(
+                    $this->assembleCommands($value),
+                    $this->assemblePropertyActions($entityRepresenter->getPropertyCommands($name), $value, $entity, CommandResource::TYPE)
+                ),
             ];
         } else if (is_array($value)) {
             array_walk($value, function (&$item) use ($entity, $name) {
@@ -140,21 +132,15 @@ class QueryResource extends ActionResource {
     }
 
     private function assemblePropertyActions($actions, $object, $entity, $type) {
-        if (!$actions) {
-            return null;
-        }
-
         $representer = $this->registry->getEntityRepresenter($entity);
         $id = $representer->getId($entity);
 
         $propertyRepresenter = $this->registry->getEntityRepresenter($object);
         $propertyId = $propertyRepresenter->getId($object);;
 
-        return [
-            'action' => array_map(function (PropertyActionGenerator $action) use ($type, $id, $propertyId) {
-                return $this->assembleAction($action->getClass(), $type, $action->getArguments($id, $propertyId));
-            }, $actions)
-        ];
+        return array_map(function (PropertyActionGenerator $action) use ($type, $id, $propertyId) {
+            return $this->assembleAction($action->getClass(), $type, $action->getArguments($id, $propertyId));
+        }, $actions);
     }
 
     private function assembleQueries($entity) {
@@ -168,18 +154,12 @@ class QueryResource extends ActionResource {
     }
 
     private function assembleActions($actions, $entity, $type) {
-        if (!$actions) {
-            return null;
-        }
-
         $representer = $this->registry->getEntityRepresenter($entity);
         $id = $representer->getId($entity);
 
-        return [
-            'action' => array_map(function (ActionGenerator $action) use ($type, $id) {
-                return $this->assembleAction($action->getClass(), $type, $action->getArguments($id));
-            }, $actions)
-        ];
+        return array_map(function (ActionGenerator $action) use ($type, $id) {
+            return $this->assembleAction($action->getClass(), $type, $action->getArguments($id));
+        }, $actions);
     }
 
     private function assembleAction($action, $type, $arguments) {

@@ -70,7 +70,17 @@ class ResourceFixture extends Fixture {
         $path = explode('/', $modelPath);
         $model = $this->returned;
         foreach ($path as $key) {
-            $model = $model[$key];
+            if (is_array($model) && array_key_exists($key, $model)) {
+                $model = $model[$key];
+            } else if (is_object($model)) {
+                if (isset($model->$key)) {
+                    $model = $model->$key;
+                } else if (method_exists($model, $key)) {
+                    $model = call_user_func(array($model, $key));
+                }
+            } else {
+                $this->spec->fail("Cannot find [$key] in " . var_export($model, true));
+            }
         }
         return $model;
     }
