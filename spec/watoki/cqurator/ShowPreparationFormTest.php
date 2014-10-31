@@ -29,6 +29,14 @@ class ShowPreparationFormTest extends Specification {
         $this->resource->thenIShouldBeRedirectedTo('query?action=PrepareAction&args[one]=uno&args[two]=dos');
     }
 
+    function testAllPropertiesOfCommandProvided() {
+        $this->resource->givenTheActionArgument_Is('one', 'uno');
+        $this->resource->givenTheActionArgument_Is('two', 'dos');
+
+        $this->whenIPrepareTheCommand('PrepareAction');
+        $this->resource->thenIShouldBeRedirectedTo('command?action=PrepareAction&do=post&args[one]=uno&args[two]=dos');
+    }
+
     function testInputForMissingProperties() {
         $this->resource->givenTheActionArgument_Is('one', 'uno');
 

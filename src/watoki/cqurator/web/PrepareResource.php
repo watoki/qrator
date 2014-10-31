@@ -26,7 +26,11 @@ class PrepareResource extends ActionResource {
         $object = $representer->create($action, $args);
 
         if (!$representer->hasMissingProperties($object)) {
-            return $this->redirectTo($type, $args, array('action' => $action));
+            $params = ['action' => $action];
+            if ($type == CommandResource::TYPE) {
+                $params['do'] = 'post';
+            }
+            return $this->redirectTo($type, $args, $params);
         }
 
         return [
