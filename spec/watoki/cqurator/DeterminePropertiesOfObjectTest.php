@@ -3,8 +3,6 @@ namespace spec\watoki\cqurator;
 
 use watoki\collections\Map;
 use watoki\cqurator\representer\GenericActionRepresenter;
-use watoki\cqurator\representer\GenericEntityRepresenter;
-use watoki\cqurator\representer\GenericRepresenter;
 use watoki\scrut\Specification;
 
 /**
@@ -39,26 +37,33 @@ class DeterminePropertiesOfObjectTest extends Specification {
     function testFindPropertiesInConstructor() {
         $this->class->givenTheClass_WithTheBody('constructor\ClassWithConstructor', '
             public $three;
-            function __construct($one = null, $two = null, $three = null) {}
+            function __construct($one, $two = null, $three = null, $four = null) {}
             function getTwo() {}
         ');
 
+        $this->givenTheActionArgument_Is('one', 'uno');
+
         $this->whenIDetermineThePropertiesOf('constructor\ClassWithConstructor');
-        $this->thenThereShouldBe_Properties(3);
+        $this->thenThereShouldBe_Properties(4);
+
         $this->then_ShouldBeSettable('one');
         $this->then_ShouldNotBeGettable('one');
+
         $this->then_ShouldBeGettable('two');
         $this->then_ShouldBeGettable('three');
+        $this->then_ShouldNotBeGettable('four');
     }
 
     ##################################################################################################
+
+    private $args = [];
 
     /** @var \watoki\cqurator\representer\Property[] */
     private $properties;
 
     private function whenIDetermineThePropertiesOf($class) {
         $representer = new GenericActionRepresenter($this->factory);
-        $this->properties = $representer->getProperties($representer->create($class, new Map()));
+        $this->properties = $representer->getProperties($representer->create($class, new Map($this->args)));
     }
 
     private function thenThereShouldBe_Properties($int) {
@@ -70,15 +75,19 @@ class DeterminePropertiesOfObjectTest extends Specification {
     }
 
     private function then_ShouldNotBeGettable($name) {
-        $this->assertFalse($this->properties[$name]->canGet());
+        $this->assertFalse($this->properties[$name]->canGet(), "$name should not be gettable");
     }
 
     private function then_ShouldBeSettable($name) {
-        $this->assertTrue($this->properties[$name]->canSet());
+        $this->assertTrue($this->properties[$name]->canSet(), "$name should be settable");
     }
 
     private function then_ShouldBeGettable($name) {
-        $this->assertTrue($this->properties[$name]->canGet());
+        $this->assertTrue($this->properties[$name]->canGet(), "$name should be gettable");
+    }
+
+    private function givenTheActionArgument_Is($key, $value) {
+        $this->args[$key] = $value;
     }
 
 } 
