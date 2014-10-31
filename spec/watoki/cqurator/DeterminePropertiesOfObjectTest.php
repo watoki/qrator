@@ -54,6 +54,21 @@ class DeterminePropertiesOfObjectTest extends Specification {
         $this->then_ShouldNotBeGettable('four');
     }
 
+    function testRequiredProperties() {
+        $this->class->givenTheClass_WithTheBody('required\SomeClass', '
+            public $three;
+            function __construct($one, $two = null) {}
+        ');
+        $this->givenTheActionArgument_Is('one', 'uno');
+
+        $this->whenIDetermineThePropertiesOf('required\SomeClass');
+        $this->thenThereShouldBe_Properties(3);
+
+        $this->then_ShouldBeRequired('one');
+        $this->then_ShouldBeOptional('two');
+        $this->then_ShouldBeOptional('three');
+    }
+
     ##################################################################################################
 
     private $args = [];
@@ -88,6 +103,14 @@ class DeterminePropertiesOfObjectTest extends Specification {
 
     private function givenTheActionArgument_Is($key, $value) {
         $this->args[$key] = $value;
+    }
+
+    private function then_ShouldBeRequired($name) {
+        $this->assertTrue($this->properties[$name]->isRequired(), "$name should be required");
+    }
+
+    private function then_ShouldBeOptional($name) {
+        $this->assertFalse($this->properties[$name]->isRequired(), "$name should be optional");
     }
 
 } 

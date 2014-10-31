@@ -7,9 +7,16 @@ abstract class Property {
 
     protected $object;
 
-    public function __construct($object, $name) {
+    protected $required;
+
+    public function __construct($object, $name, $required = false) {
         $this->name = $name;
         $this->object = $object;
+        $this->required = $required;
+    }
+
+    public function isRequired() {
+        return $this->required;
     }
 
     abstract public function canGet();

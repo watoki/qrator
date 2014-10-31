@@ -85,7 +85,8 @@ abstract class GenericRepresenter implements Representer {
         $constructor = $class->getConstructor();
         if ($constructor) {
             foreach ($constructor->getParameters() as $parameter) {
-                $properties[$parameter->getName()] = new ConstructorProperty($object, $parameter->getName());
+                $properties[$parameter->getName()] =
+                    new ConstructorProperty($object, $parameter->getName(), !$parameter->isDefaultValueAvailable());
             }
         }
 
