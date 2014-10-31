@@ -42,7 +42,7 @@ class ShowPreparationFormTest extends Specification {
 
         $this->whenIPrepare('PrepareAction');
 
-        $this->thenTheFormTitleShouldBe('PrepareAction');
+        $this->thenTheFormTitleShouldBe('Prepare Action');
         $this->thenThereShouldBeAHiddenField_WithValue('action', 'PrepareAction');
         $this->thenThereShouldBeAHiddenField_WithValue('type', 'query');
         $this->thenThereShouldBeAHiddenField_WithValue('prepared', 'true');

@@ -29,14 +29,14 @@ class LeaveBreadcrumbsTest extends Specification {
 
         $this->whenIExecuteTheQuery('test\SomeQuery');
         $this->thenTheBreadcrumbs_ShouldBeStored([
-            ['SomeQuery', 'test\SomeQuery', ['foo' => 'bar']]
+            ['Some Query', 'test\SomeQuery', ['foo' => 'bar']]
         ]);
     }
 
     function testNoBreadcrumbsToShow() {
         $this->whenIExecuteTheQuery('test\SomeQuery');
         $this->thenThereShouldBeNoBreadcrumbs();
-        $this->thenTheCurrentOneShouldBe('SomeQuery');
+        $this->thenTheCurrentOneShouldBe('Some Query');
     }
 
     function testShowBreadcrumbs() {
@@ -58,7 +58,7 @@ class LeaveBreadcrumbsTest extends Specification {
         $this->whenIExecuteTheQuery('test\SomeQuery');
         $this->thenTheBreadcrumbs_ShouldBeStored([
             ['one', 'first', []],
-            ['SomeQuery', 'test\SomeQuery', []]
+            ['Some Query', 'test\SomeQuery', []]
         ]);
     }
 
@@ -72,7 +72,7 @@ class LeaveBreadcrumbsTest extends Specification {
         $this->whenIExecuteTheQuery('test\SomeQuery');
         $this->thenTheBreadcrumbs_ShouldBeStored([
             ['one', 'first', []],
-            ['SomeQuery', 'test\SomeQuery', []]
+            ['Some Query', 'test\SomeQuery', []]
         ]);
     }
 

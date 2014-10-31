@@ -2,55 +2,68 @@
 <html>
 <head>
     <title>Query</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
 
-<ul property="breadcrumbs">
-    <li><a href="index.html">Home</a></li>
-    <li property="breadcrumb"><a property="link" href="#"><span property="caption">Breadcrumb</span></a></li>
-    <li property="current">Current</li>
-</ul>
+<div class="container">
 
-<div property="entity">
-    <hr/>
-    <h1 property="name">Some Model</h1>
+    <ul property="breadcrumbs">
+        <li><a href="index.html">Home</a></li>
+        <li property="breadcrumb"><a property="link" href="#"><span property="caption">Breadcrumb</span></a></li>
+        <li property="current">Current</li>
+    </ul>
 
-    <div property="properties">
-        <ul>
-            <li property="property">
-                <strong property="name">Property</strong>:
-                <span property="value">
-                    <span property="caption">Value</span>
-                    <span property="queries">
-                        <a property="link" href="prepare.html"><span property="name">Some Query</span></a>
-                    </span>
-                    <span property="commands">
-                        <a property="link" href="prepare.html"><span property="name">Some Query</span></a>
-                    </span>
-                </span>
-            </li>
-        </ul>
-    </div>
+    <div>
+        <div property="entity" class="panel panel-info">
+            <h1 class="panel-heading" property="name">Some Model</h1>
 
-    <div property="queries">
-        <div property="isNotEmpty">
-            <h2>Queries</h2>
-            <ul>
-                <li property="item">
-                    <a property="link" href="prepare.html"><span property="name">Some Query</span></a>
-                </li>
-            </ul>
-        </div>
-    </div>
+            <div class="panel-body row">
+                <div property="properties" class="col-md-9">
+                    <ul>
+                        <li property="property">
+                            <h5 property="name">Property</h5>
 
-    <div property="commands">
-        <div property="isNotEmpty">
-            <h2>Commands</h2>
-            <ul>
-                <li property="item">
-                    <a property="link" href="prepare.html"><span property="name">Some Command</span></a>
-                </li>
-            </ul>
+                            <div property="value">
+                                <span property="caption">Value</span>
+                                <span property="queries">
+                                    <a property="link" href="prepare.html"><span property="name">Some Query</span></a>
+                                </span>
+                                <span property="commands">
+                                    <a property="link" href="prepare.html"><span property="name">Some Query</span></a>
+                                </span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="panel panel-default ">
+                        <div class="panel-heading">Actions</div>
+                        <div class="panel-body">
+                            <div property="queries">
+                                <ul>
+                                    <li property="item">
+                                        <a property="link" href="prepare.html"><span
+                                                property="name">Some Query</span></a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div property="commands">
+                                <ul>
+                                    <li property="item">
+                                        <a property="link" href="prepare.html"><span
+                                                property="name">Some Query</span></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 

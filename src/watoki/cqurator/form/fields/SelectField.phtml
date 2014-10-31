@@ -1,4 +1,4 @@
-<select name="<?= $name ?>"<?= $required ? ' required' : '' ?>>
+<select class="form-control" name="<?= $name ?>"<?= $required ? ' required' : '' ?>>
     <? foreach ($options as $value => $content) { ?>
         <option<?= $value == $selected ? ' selected' : '' ?> value="<?= $value ?>"><?= $content ?></option>
     <? } ?>

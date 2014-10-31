@@ -26,8 +26,8 @@ class ListRootQueriesTest extends Specification {
 
         $this->whenIOpenTheIndexResource();
         $this->thenThereShouldBe_Queries(2);
-        $this->thenQuery_ShouldBe(1, 'QueryOne');
-        $this->thenQuery_ShouldBe(2, 'QueryTwo');
+        $this->thenQuery_ShouldBe(1, 'Query One');
+        $this->thenQuery_ShouldBe(2, 'Query Two');
         $this->thenQuery_ShouldLinkTo(1, 'query?action=some\QueryOne');
         $this->thenQuery_ShouldLinkTo(2, 'query?action=other\QueryTwo');
     }

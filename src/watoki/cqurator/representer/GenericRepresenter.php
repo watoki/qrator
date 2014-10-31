@@ -20,7 +20,7 @@ abstract class GenericRepresenter implements Representer {
      */
     public function getName($class) {
         $class = new \ReflectionClass($class);
-        return $class->getShortName();
+        return preg_replace('/([a-z])([A-Z])/', '$1 $2', $class->getShortName());
     }
 
     /**
@@ -49,7 +49,7 @@ abstract class GenericRepresenter implements Representer {
         $properties = $this->getProperties($object);
         if (!$properties->isEmpty()) {
             $propertyString =
-                '[' .
+                ' [' .
                 $properties
                     ->filter(function (ObjectProperty $property) {
                         return $property->canGet() && $property->get();

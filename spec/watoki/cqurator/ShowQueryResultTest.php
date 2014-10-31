@@ -27,7 +27,7 @@ class ShowQueryResultTest extends Specification {
         }, 'MyQuery');
 
         $this->whenIShowTheResultsOf('MyQuery');
-        $this->thenTheNameShouldBe('stdClass');
+        $this->thenTheNameShouldBe('std Class');
         $this->thenThereShouldBeNoProperties();
         $this->thenThereShouldBeNoQueries();
         $this->thenThereShouldBeNoCommands();
@@ -50,10 +50,10 @@ class ShowQueryResultTest extends Specification {
         $this->thenThereShouldBe_Queries(2);
         $this->thenThereShouldBe_Commands(3);
 
-        $this->thenQuery_ShouldHaveTheName(1, 'QueryOne');
+        $this->thenQuery_ShouldHaveTheName(1, 'Query One');
         $this->thenQuery_ShouldLinkTo(1, 'query?action=QueryOne');
 
-        $this->thenCommand_ShouldHaveTheName(1, 'CommandOne');
+        $this->thenCommand_ShouldHaveTheName(1, 'Command One');
         $this->thenCommand_ShouldLinkTo(1, 'command?action=CommandOne&do=post');
     }
 
@@ -224,8 +224,8 @@ class ShowQueryResultTest extends Specification {
 
         $this->whenIShowTheResultsOf('MyQuery');
         $this->thenThereShouldBe_Properties(1);
-        $this->thenProperty_ShouldHaveQuery_WithTheName(1, 1, 'SomeQuery');
-        $this->thenProperty_ShouldHaveCommand_WithTheName(1, 1, 'SomeCommand');
+        $this->thenProperty_ShouldHaveQuery_WithTheName(1, 1, 'Some Query');
+        $this->thenProperty_ShouldHaveCommand_WithTheName(1, 1, 'Some Command');
     }
 
     function testPropertyQueries() {
@@ -252,9 +252,9 @@ class ShowQueryResultTest extends Specification {
 
         $this->whenIShowTheResultsOf('MyQuery');
         $this->thenThereShouldBe_Properties(2);
-        $this->thenProperty_ShouldHaveQuery_WithTheName(1, 1, 'PropertyQuery');
+        $this->thenProperty_ShouldHaveQuery_WithTheName(1, 1, 'Property Query');
         $this->thenProperty_ShouldHaveQuery_WithTheLinkTarget(1, 1, 'query?action=propertyQueries%5CPropertyQuery&args[id]=someID&args[object]=otherID');
-        $this->thenProperty_ShouldHaveCommand_WithTheName(1, 1, 'PropertyCommand');
+        $this->thenProperty_ShouldHaveCommand_WithTheName(1, 1, 'Property Command');
         $this->thenProperty_ShouldHaveCommand_WithTheLinkTarget(1, 1, 'command?action=propertyQueries%5CPropertyCommand&do=post&args[id]=someID&args[object]=otherID');
     }
 

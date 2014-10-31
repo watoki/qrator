@@ -2,25 +2,37 @@
 <html>
 <head>
     <title>Prepare</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
 
-<form property="form" action="" method="get">
-    <h1 property="title">Some Action</h1>
+<div class="container">
 
-    <input property="parameter" type="hidden" name="" value="">
+    <form property="form" action="" method="get">
 
-    <div property="field">
-        <label>
-            <strong><span property="label">Property</span><span property="isRequired">*</span></strong>:
-            <span property="control">
-                <input property="property" placeholder="" type="text" name="name" value="">
-            </span>
-        </label>
-    </div>
+        <div class="panel panel-primary">
+            <h1 class="panel-heading" property="title">Some Action</h1>
 
-    <button type="submit">Submit</button>
-</form>
+            <div class="panel-body">
+                <input property="parameter" type="hidden" name="" value="">
+
+                <div class="form-group" property="field">
+                    <label>
+                        <strong><span property="label">Property</span><span property="isRequired">*</span></strong>:
+                        <span property="control">
+                            <input class="form-control" property="property" placeholder="" type="text" name="name" value="">
+                        </span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <a href="javascript:history.back()" class="btn btn-default">Cancel</a>
+            </div>
+        </div>
+    </form>
+
+</div>
 
 </body>
 </html>

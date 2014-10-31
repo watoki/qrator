@@ -1,0 +1,74 @@
+.container {
+    margin-top: 4em;
+}
+
+ul {
+    list-style: none;
+    padding-left: 1em;
+}
+
+label {
+    width: 100%;
+}
+
+[property=breadcrumbs] {
+    position: fixed;
+    background-color: white;
+    padding: 1em;
+    margin-top: -4em;
+    border-bottom: 1px solid #eee;
+    z-index: 10;
+}
+
+[property=breadcrumbs] li {
+    display: inline;
+}
+
+[property=breadcrumbs] li:after {
+    content: ' > ';
+}
+
+[property=breadcrumbs] li:last-child:after {
+    content: '';
+}
+
+[property=properties] {
+    overflow: hidden;
+    max-height: 15em;
+    margin-bottom: 1em;
+}
+
+[property=entity]:only-child [property=properties] {
+    overflow: hidden;
+    max-height: none;
+    margin-bottom: 1em;
+}
+
+.panel-heading {
+    margin-top: 0;
+}
+
+h5 {
+    font-weight: bold;
+    text-transform: capitalize;
+    margin-bottom: .5em;
+    margin-top: 1em;
+}
+
+[property=entity] a[href^=query],
+a[href^=command] {
+    display: inline-block;
+    border-radius: 2pt;
+    padding: 2pt 4pt;
+    margin: 2pt 0px;
+}
+
+[property=entity] a[href^=query] {
+    background-color: #DFF0D8;
+    color: #3C763D;
+}
+
+[property=entity] a[href^=command] {
+    color: #A94442;
+    background-color: #F2DEDE;
+}
