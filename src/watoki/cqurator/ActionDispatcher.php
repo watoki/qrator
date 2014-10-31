@@ -29,6 +29,10 @@ class ActionDispatcher implements Dispatcher {
 
             $handler = function ($action) use ($handler, $methodName) {
                 $handler = is_object($handler) ? $handler : $this->factory->getInstance($handler);
+                if (!method_exists($handler, $methodName)) {
+                    $class = get_class($handler);
+                    throw new \InvalidArgumentException("Method [$class::$methodName] does not exist.");
+                }
                 return call_user_func(array($handler, $methodName), $action);
             };
         }
