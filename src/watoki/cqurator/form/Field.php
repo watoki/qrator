@@ -6,6 +6,11 @@ interface Field {
     /**
      * @return string
      */
+    public function getName();
+
+    /**
+     * @return string
+     */
     public function getLabel();
 
     /**

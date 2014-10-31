@@ -35,6 +35,10 @@ abstract class TemplatedField implements Field {
         return $this->required;
     }
 
+    public function getName() {
+        return $this->name;
+    }
+
     /**
      * @return string
      */

@@ -181,6 +181,53 @@ class ShowQueryResultTest extends Specification {
         $this->try->thenTheException_ShouldBeThrown('Action had no displayable result: NULL');
     }
 
+    function testShowArrayProperty() {
+        $this->class->givenTheClass_WithTheBody('arrayProperty\SomeEntity', '
+            function getArray() { return [
+                new \DateTime("2001-01-01"),
+                new \DateTime("2002-02-02")
+            ]; }
+        ');
+        $this->class->givenTheClass_WithTheBody('arrayProperty\MyHandler', '
+            function myQuery() {
+                return new SomeEntity();
+            }
+        ');
+        $this->dispatcher->givenIAddedTheClass_AsHandlerFor('arrayProperty\MyHandler', 'MyQuery');
+
+        $this->registry->givenIRegisteredAnEntityRepresenterFor(\DateTime::class);
+        $this->registry->givenIHaveTheTheRenderer_For(function (\DateTime $d) {
+            return $d->format('Y-m-d H:i');
+        }, \DateTime::class);
+
+        $this->whenIShowTheResultsOf('MyQuery');
+        $this->thenThereShouldBe_Properties(1);
+        $this->thenProperty_ShouldHaveTheName(1, 'array');
+        $this->thenProperty_ShouldHave_Value(1, 2);
+        $this->thenProperty_ShouldHaveValue_WithTheCaption(1, 1, '2001-01-01 00:00');
+    }
+
+    function testShowQueriesAndCommandsForProperties() {
+        $this->class->givenTheClass_WithTheBody('propertyActions\SomeEntity', '
+            function __construct($one) { $this->one = $one; }
+        ');
+        $this->class->givenTheClass_WithTheBody('propertyActions\MyHandler', '
+            function myQuery() {
+                return new SomeEntity(new \DateTime());
+            }
+        ');
+        $this->dispatcher->givenIAddedTheClass_AsHandlerFor('propertyActions\MyHandler', 'MyQuery');
+
+        $this->registry->givenIRegisteredAnEntityRepresenterFor(\DateTime::class);
+        $this->registry->givenIAddedTheQuery_ToTheRepresenterOf('SomeQuery', \DateTime::class);
+        $this->registry->givenIAddedTheCommand_ToTheRepresenterOf('SomeCommand', \DateTime::class);
+
+        $this->whenIShowTheResultsOf('MyQuery');
+        $this->thenThereShouldBe_Properties(1);
+        $this->thenProperty_ShouldHaveQuery_WithTheName(1, 1, 'SomeQuery');
+        $this->thenProperty_ShouldHaveCommand_WithTheName(1, 1, 'SomeCommand');
+    }
+
     ###########################################################################################
 
     private function whenIShowTheResultsOf($query) {
@@ -246,9 +293,14 @@ class ShowQueryResultTest extends Specification {
     }
 
     private function thenProperty_ShouldHaveTheName_AndValue($int, $name, $value) {
+        $this->thenProperty_ShouldHaveTheName($int, $name);
+        $int--;
+        $this->resource->then_ShouldBe("entity/properties/property/$int/value/caption", $value);
+    }
+
+    private function thenProperty_ShouldHaveTheName($int, $name) {
         $int--;
         $this->resource->then_ShouldBe("entity/properties/property/$int/name", $name);
-        $this->resource->then_ShouldBe("entity/properties/property/$int/value", $value);
     }
 
     private function thenThereShouldBe_Entities($int) {
@@ -258,6 +310,29 @@ class ShowQueryResultTest extends Specification {
     private function thenEntity_ShouldHave_Properties($pos, $count) {
         $pos--;
         $this->resource->thenThereShouldBe_Of($count, "entity/$pos/properties/property");
+    }
+
+    private function thenProperty_ShouldHave_Value($pos, $count) {
+        $pos--;
+        $this->resource->thenThereShouldBe_Of($count, "entity/properties/property/$pos/value");
+    }
+
+    private function thenProperty_ShouldHaveValue_WithTheCaption($propertyPos, $valuePos, $caption) {
+        $propertyPos--;
+        $valuePos--;
+        $this->resource->then_ShouldBe("entity/properties/property/$propertyPos/value/$valuePos/caption", $caption);
+    }
+
+    private function thenProperty_ShouldHaveQuery_WithTheName($propertyPos, $queryPos, $name) {
+        $propertyPos--;
+        $queryPos--;
+        $this->resource->then_ShouldBe("entity/properties/property/$propertyPos/value/queries/action/$queryPos/name", $name);
+    }
+
+    private function thenProperty_ShouldHaveCommand_WithTheName($propertyPos, $queryPos, $name) {
+        $propertyPos--;
+        $queryPos--;
+        $this->resource->then_ShouldBe("entity/properties/property/$propertyPos/value/commands/action/$queryPos/name", $name);
     }
 
 } 

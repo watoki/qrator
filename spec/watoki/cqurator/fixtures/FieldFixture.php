@@ -41,4 +41,8 @@ class FieldFixture extends Fixture {
         $this->value = $value;
     }
 
+    public function thenTheOutputShouldContain($string) {
+        $this->spec->assertContains($string, $this->rendered);
+    }
+
 } 

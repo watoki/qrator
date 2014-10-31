@@ -7,33 +7,33 @@ use watoki\smokey\Dispatcher;
 
 class SelectEntityField extends SelectField {
 
-    private $entityClass;
-
     /** @var \watoki\smokey\Dispatcher */
     private $dispatcher;
 
-    /** @var \watoki\cqurator\RepresenterRegistry */
-    private $registry;
+    /** @var object */
+    private $listQuery;
 
-    public function __construct($name, $entityClass, RepresenterRegistry $registry, Dispatcher $dispatcher) {
+    /** @var \watoki\cqurator\EntityRepresenter */
+    private $representer;
+
+    /**
+     * @param string $name
+     * @param object $listQuery
+     * @param EntityRepresenter $representer
+     * @param Dispatcher $dispatcher
+     */
+    public function __construct($name, $listQuery, EntityRepresenter $representer, Dispatcher $dispatcher) {
         parent::__construct($name);
         $this->dispatcher = $dispatcher;
-        $this->registry = $registry;
-        $this->entityClass = $entityClass;
+        $this->listQuery = $listQuery;
+        $this->representer = $representer;
     }
 
     protected function getOptions() {
-        $representer = $this->registry->getEntityRepresenter($this->entityClass);
-        $query = $representer->getListQuery();
-
-        if (!$query) {
-            throw new \Exception("The Representer of [{$this->entityClass}] must provide a listing query.");
-        }
-
         $options = [];
-        $this->dispatcher->fire($query)->onSuccess(function ($list) use (&$options, $representer) {
+        $this->dispatcher->fire($this->listQuery)->onSuccess(function ($list) use (&$options) {
             foreach ($list as $entity) {
-                $options[$representer->getId($entity)] = $representer->toString($entity);
+                $options[$this->representer->getId($entity)] = $this->representer->toString($entity);
             }
         });
         return $options;

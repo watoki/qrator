@@ -3,13 +3,11 @@ namespace watoki\cqurator\web;
 
 use watoki\collections\Map;
 use watoki\cqurator\ActionDispatcher;
-use watoki\cqurator\ActionRepresenter;
 use watoki\cqurator\RepresenterRegistry;
 use watoki\curir\cookie\Cookie;
 use watoki\curir\cookie\CookieStore;
 use watoki\curir\protocol\Url;
 use watoki\curir\Responder;
-use watoki\factory\exception\InjectionException;
 use watoki\factory\Factory;
 
 class QueryResource extends ActionResource {
@@ -95,13 +93,30 @@ class QueryResource extends ActionResource {
     }
 
     private function assembleProperty($name, $value) {
-        if (is_object($value)) {
-            $representer = $this->registry->getEntityRepresenter($value);
-            $value = $representer->render($value);
-        }
         return [
             'name' => $name,
-            'value' => $value
+            'value' => $this->assembleValue($value)
+        ];
+    }
+
+    private function assembleValue($value) {
+        if (is_object($value)) {
+            $representer = $this->registry->getEntityRepresenter($value);
+            return [
+                'caption' => $representer->render($value),
+                'queries' => $this->assembleQueries($value),
+                'commands' => $this->assembleCommands($value)
+            ];
+        } else if (is_array($value)) {
+            array_walk($value, function (&$item) {
+                $item = $this->assembleValue($item);
+            });
+            return $value;
+        }
+        return [
+            'caption' => $value,
+            'queries' => null,
+            'commands' => null
         ];
     }
 
@@ -153,6 +168,7 @@ class QueryResource extends ActionResource {
 
             $newCrumbs = [];
             foreach ($crumbs as $crumb) {
+                /** @noinspection PhpUnusedLocalVariableInspection */
                 list($label, $crumbAction, $crumbArgs) = $crumb;
                 if ($action == $crumbAction && $args->toArray() == $crumbArgs) {
                     break;

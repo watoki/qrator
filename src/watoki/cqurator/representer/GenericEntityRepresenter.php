@@ -57,4 +57,4 @@ class GenericEntityRepresenter extends GenericRepresenter implements EntityRepre
         return $this->toString($object);
     }
 
-} 
+}

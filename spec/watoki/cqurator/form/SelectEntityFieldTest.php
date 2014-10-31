@@ -14,19 +14,12 @@ class SelectEntityFieldTest extends Specification {
 
     protected function background() {
         $this->class->givenTheClass('EntityClass');
-    }
-
-    function testNoListQueryGiven() {
-        $this->givenASelectEntityField_For('test', 'EntityClass');
-        $this->field->whenITryToRenderTheField();
-        $this->field->try->thenTheException_ShouldBeThrown('The Representer of [EntityClass] must provide a listing query.');
+        $this->class->givenTheClass('ListEntity');
     }
 
     function testEmptyEntityList() {
-        $this->givenASelectEntityField_For('test', 'EntityClass');
-
         $this->registry->givenIRegisteredAnEntityRepresenterFor('EntityClass');
-        $this->givenISetTheListQueryOf_To('EntityClass', 'ListEntity');
+        $this->givenASelectEntityField_For_WithTheListQuery('test', 'EntityClass', 'ListEntity');
 
         $this->field->whenIRenderTheField();
         $this->field->thenTheOutputShouldBe(
@@ -39,10 +32,9 @@ class SelectEntityFieldTest extends Specification {
             function __construct($name) { $this->name = $name; }
             function getId() { return strtolower($this->name); }
         ');
-        $this->givenASelectEntityField_For('test', 'NamedEntity');
-
         $this->registry->givenIRegisteredAnEntityRepresenterFor('NamedEntity');
-        $this->givenISetTheListQueryOf_To('NamedEntity', 'ListEntity');
+        $this->givenASelectEntityField_For_WithTheListQuery('test', 'NamedEntity', 'ListEntity');
+
 
         $this->class->givenTheClass_WithTheBody('EntityHandler', '
             function listEntity() {
@@ -64,14 +56,9 @@ class SelectEntityFieldTest extends Specification {
 
     ################################################################################################
 
-    private function givenASelectEntityField_For($name, $class) {
-        $this->field->givenTheField(new SelectEntityField($name, $class,
-            $this->registry->registry, $this->dispatcher->dispatcher));
-    }
-
-    private function givenISetTheListQueryOf_To($entity, $query) {
-        $this->class->givenTheClass($query);
-        $this->registry->representers[$entity]->setListQuery(new $query);
+    private function givenASelectEntityField_For_WithTheListQuery($name, $class, $query) {
+        $this->field->givenTheField(new SelectEntityField($name, new $query,
+            $this->registry->representers[$class], $this->dispatcher->dispatcher));
     }
 
 } 

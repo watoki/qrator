@@ -44,6 +44,7 @@ abstract class GenericRepresenter implements Representer {
         if ($this->stringifier) {
             return call_user_func($this->stringifier, $object);
         }
+
         $propertyString = '';
         $properties = $this->getProperties($object);
         if (!$properties->isEmpty()) {
