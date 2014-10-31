@@ -32,11 +32,11 @@ class AccessorProperty extends Property {
         return method_exists($this->object, $this->setMethod());
     }
 
-    private function getMethod() {
+    protected function getMethod() {
         return 'get' . ucfirst($this->name);
     }
 
-    private function setMethod() {
+    protected function setMethod() {
         return 'set' . ucfirst($this->name);
     }
 }

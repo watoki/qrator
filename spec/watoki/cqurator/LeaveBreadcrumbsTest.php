@@ -22,6 +22,9 @@ class LeaveBreadcrumbsTest extends Specification {
     }
 
     function testStoreBreadcrumbsInCookie() {
+        $this->class->givenTheClass_WithTheBody('test\FooQuery', '
+            public $foo;
+        ');
         $this->resource->givenTheActionArgument_Is('foo', 'bar');
 
         $this->whenIExecuteTheQuery('test\SomeQuery');
@@ -87,7 +90,8 @@ class LeaveBreadcrumbsTest extends Specification {
     private function whenIExecuteTheQuery($query) {
         $this->resource->whenIDo_With(function (QueryResource $resource) use ($query) {
             return $resource->doGet($query, $this->resource->args);
-        }, new QueryResource($this->factory, $this->dispatcher->dispatcher, new RepresenterRegistry(), $this->cookies));
+        }, new QueryResource($this->factory, $this->dispatcher->dispatcher,
+            new RepresenterRegistry($this->factory), $this->cookies));
     }
 
     private function thenTheBreadcrumbs_ShouldBeStored($array) {

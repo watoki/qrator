@@ -4,6 +4,12 @@ namespace watoki\cqurator;
 interface Representer {
 
     /**
+     * @param string $class
+     * @return string
+     */
+    public function getName($class);
+
+    /**
      * @param object $object
      * @return string
      */

@@ -29,7 +29,7 @@ class IndexResource extends Container {
             'query' => array_map(function ($query) {
                 $representer = $this->registry->getActionRepresenter($query);
                 return [
-                    'name' => $representer->toString($this->factory->getInstance($query)),
+                    'name' => $representer->getName($query),
                     'link' => [
                         'href' => 'query?action=' . $query
                     ]

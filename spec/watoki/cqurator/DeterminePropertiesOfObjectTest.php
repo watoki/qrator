@@ -1,6 +1,8 @@
 <?php
 namespace spec\watoki\cqurator;
 
+use watoki\collections\Map;
+use watoki\cqurator\representer\GenericActionRepresenter;
 use watoki\cqurator\representer\GenericEntityRepresenter;
 use watoki\cqurator\representer\GenericRepresenter;
 use watoki\scrut\Specification;
@@ -31,7 +33,22 @@ class DeterminePropertiesOfObjectTest extends Specification {
         $this->thenTheValueOf_ShouldBe('publicAndSetter', 'three');
         $this->thenTheValueOf_ShouldBe('private', 'six');
         $this->thenTheValueOf_ShouldBe('getter', 'seven');
-        $this->thenTheValueOf_ShouldNotBeGettable('setter');
+        $this->then_ShouldNotBeGettable('setter');
+    }
+
+    function testFindPropertiesInConstructor() {
+        $this->class->givenTheClass_WithTheBody('constructor\ClassWithConstructor', '
+            public $three;
+            function __construct($one = null, $two = null, $three = null) {}
+            function getTwo() {}
+        ');
+
+        $this->whenIDetermineThePropertiesOf('constructor\ClassWithConstructor');
+        $this->thenThereShouldBe_Properties(3);
+        $this->then_ShouldBeSettable('one');
+        $this->then_ShouldNotBeGettable('one');
+        $this->then_ShouldBeGettable('two');
+        $this->then_ShouldBeGettable('three');
     }
 
     ##################################################################################################
@@ -40,8 +57,8 @@ class DeterminePropertiesOfObjectTest extends Specification {
     private $properties;
 
     private function whenIDetermineThePropertiesOf($class) {
-        $representer = new GenericEntityRepresenter();
-        $this->properties = $representer->getProperties(new $class);
+        $representer = new GenericActionRepresenter($this->factory);
+        $this->properties = $representer->getProperties($representer->create($class, new Map()));
     }
 
     private function thenThereShouldBe_Properties($int) {
@@ -52,11 +69,16 @@ class DeterminePropertiesOfObjectTest extends Specification {
         $this->assertEquals($value, $this->properties[$name]->get());
     }
 
-    private function thenTheValueOf_ShouldNotBeGettable($name) {
-        try {
-            $this->properties[$name]->get();
-            $this->fail("Should have thrown an Exception");
-        } catch (\Exception $e) {}
+    private function then_ShouldNotBeGettable($name) {
+        $this->assertFalse($this->properties[$name]->canGet());
+    }
+
+    private function then_ShouldBeSettable($name) {
+        $this->assertTrue($this->properties[$name]->canSet());
+    }
+
+    private function then_ShouldBeGettable($name) {
+        $this->assertTrue($this->properties[$name]->canGet());
     }
 
 } 

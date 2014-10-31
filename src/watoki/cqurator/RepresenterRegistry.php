@@ -4,12 +4,22 @@ namespace watoki\cqurator;
 use watoki\cqurator\Representer;
 use watoki\cqurator\representer\GenericActionRepresenter;
 use watoki\cqurator\representer\GenericEntityRepresenter;
-use watoki\cqurator\representer\GenericRepresenter;
+use watoki\factory\Factory;
 
 class RepresenterRegistry {
 
     /** @var array|Representer[] */
     private $representers = [];
+
+    /** @var Factory */
+    private $factory;
+
+    /**
+     * @param Factory $factory <-
+     */
+    public function __construct(Factory $factory) {
+        $this->factory = $factory;
+    }
 
     /**
      * @param string|null $class
@@ -57,7 +67,7 @@ class RepresenterRegistry {
             }
             return $representer;
         } else {
-            return new GenericActionRepresenter();
+            return new GenericActionRepresenter($this->factory);
         }
     }
 }

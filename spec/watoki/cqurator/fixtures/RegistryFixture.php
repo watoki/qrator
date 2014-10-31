@@ -15,12 +15,12 @@ class RegistryFixture extends Fixture {
     /** @var RepresenterRegistry */
     public $registry;
 
-    /** @var GenericRepresenter[] */
+    /** @var GenericActionRepresenter[]|GenericEntityRepresenter[] */
     public $representers = array();
 
     public function setUp() {
         parent::setUp();
-        $this->registry = new RepresenterRegistry();
+        $this->registry = new RepresenterRegistry($this->spec->factory);
     }
 
     public function givenIRegisteredAnActionRepresenterFor($class) {

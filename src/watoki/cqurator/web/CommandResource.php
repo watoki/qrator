@@ -8,7 +8,6 @@ use watoki\curir\cookie\CookieStore;
 use watoki\curir\protocol\Url;
 use watoki\curir\responder\Redirecter;
 use watoki\curir\Responder;
-use watoki\deli\Request;
 use watoki\factory\Factory;
 
 class CommandResource extends ActionResource {
@@ -37,11 +36,14 @@ class CommandResource extends ActionResource {
     public function doPost($action, Map $args = null) {
         $args = $args ? : new Map();
 
-        $returned = $this->doAction($this->dispatcher, $args, $action, self::TYPE);
+        $representer = $this->registry->getActionRepresenter($action);
 
-        if ($returned instanceof Responder) {
-            return $returned;
+        $object = $representer->create($action, $args);
+        if ($representer->hasMissingProperties($object)) {
+            return $this->redirectToPrepare($action, $args, self::TYPE);
         }
+
+        $this->fireAction($object);
 
         if ($this->cookies->hasKey(QueryResource::LAST_QUERY_COOKIE)) {
             $lastQuery = $this->cookies->read(QueryResource::LAST_QUERY_COOKIE)->payload;

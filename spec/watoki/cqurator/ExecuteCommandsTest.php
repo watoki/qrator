@@ -65,6 +65,21 @@ class ExecuteCommandsTest extends Specification {
         $this->resource->thenIShouldBeRedirectedTo('query?action=MyQuery&args[one]=eins&args[two]=zwei');
     }
 
+    function testActionWithConstructorArguments() {
+        $this->class->givenTheClass_WithTheBody('test\ConstructorAction', '
+            function __construct($one, $two) {
+                $GLOBALS["one"] = $one;
+                $GLOBALS["two"] = $two;
+            }
+        ');
+        $this->resource->givenTheActionArgument_Is('one', 'uno');
+        $this->resource->givenTheActionArgument_Is('two', 'dos');
+
+        $this->whenIExecuteTheCommand('test\ConstructorAction');
+        $this->class->then_ShouldBe('$GLOBALS[\'one\']', 'uno');
+        $this->class->then_ShouldBe('$GLOBALS[\'two\']', 'dos');
+    }
+
     ####################################################################################################
 
     /** @var CookieStore */

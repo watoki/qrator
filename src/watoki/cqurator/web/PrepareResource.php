@@ -9,7 +9,7 @@ use watoki\cqurator\Representer;
 
 class PrepareResource extends ActionResource {
 
-    protected function redirectToPrepare(Map $args, $action, $type) {
+    protected function redirectToPrepare($action, Map $args, $type) {
         throw new \LogicException('Cannot redirect. Already at prepare.');
     }
 
@@ -22,12 +22,11 @@ class PrepareResource extends ActionResource {
     public function doGet($action, $type, Map $args = null) {
         $args = $args ? : new Map();
 
-        $object = $this->createAction($action);
-        try {
-            $this->prepareAction($args, $object);
+        $representer = $this->registry->getActionRepresenter($action);
+        $object = $representer->create($action, $args);
+
+        if (!$representer->hasMissingProperties($object)) {
             return $this->redirectTo($type, $args, array('action' => $action));
-        } catch (\UnderflowException $e) {
-            // That's why we are here
         }
 
         return [
@@ -40,9 +39,9 @@ class PrepareResource extends ActionResource {
             $action->preFill($this->dispatcher);
         }
 
-        $representer = $this->registry->getActionRepresenter(get_class($action));
+        $representer = $this->registry->getActionRepresenter($action);
         $form = [
-            'title' => $representer->toString($action),
+            'title' => $representer->getName(get_class($action)),
             'method' => ($type == QueryResource::TYPE ? 'get' : 'post'),
             'action' => $type,
             'parameter' => [
