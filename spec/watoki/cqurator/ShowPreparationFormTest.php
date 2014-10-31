@@ -40,8 +40,10 @@ class ShowPreparationFormTest extends Specification {
 
         $this->thenThereShouldBe_Fields(2);
         $this->thenField_ShouldHaveTheLabel(1, 'One');
-        $this->thenField_ShouldBeRenderedAs(1, '<input type="text" name="args[one]" value="uno"/>');
-        $this->thenField_ShouldBeRenderedAs(2, '<input type="text" name="args[two]"/>');
+        $this->thenField_ShouldBeHaveTheName(1, 'args[one]');
+        $this->thenField_ShouldBeHaveTheValue(1, 'uno');
+        $this->thenField_ShouldBeHaveTheName(2, 'args[two]');
+        $this->thenField_ShouldBeHaveNoValue(2);
     }
 
     function testGetFormDefinitionFromRepresenter() {
@@ -50,6 +52,7 @@ class ShowPreparationFormTest extends Specification {
             public function render() { return "Hello World"; }
             public function setValue($value) {}
             public function inflate($value) { return $value; }
+            public function setRequired($to = true) {}
         ');
         $this->registry->givenIRegisteredAnActionRepresenterFor('PrepareAction');
         $this->givenISetTheFieldFor_To_For('one', 'MySpecialField', 'PrepareAction');
@@ -70,8 +73,8 @@ class ShowPreparationFormTest extends Specification {
         ');
 
         $this->whenIPrepare('PreFillingAction');
-        $this->thenField_ShouldBeRenderedAs(1, '<input type="text" name="args[one]" value="Fourtytwo"/>');
-        $this->thenField_ShouldBeRenderedAs(2, '<input type="text" name="args[two]"/>');
+        $this->thenField_ShouldBeHaveTheValue(1, 'Fourtytwo');
+        $this->thenField_ShouldBeHaveNoValue(2);
     }
 
     function testSubmitQueriesWithGet() {
@@ -97,7 +100,21 @@ class ShowPreparationFormTest extends Specification {
 
         $this->thenThereShouldBe_Fields(1);
         $this->thenThereShouldBeAHiddenField_WithValue('args[id]', '42');
+    }
 
+    function testMakeFieldsRequired() {
+        $this->class->givenTheClass_WithTheBody('preparation\ActionWithConstructor', '
+            public $two;
+            function __construct($one, $two = null) {}
+        ');
+
+        $this->resource->givenTheActionArgument_Is('one', 'uno');
+
+        $this->whenIPrepare('preparation\ActionWithConstructor');
+        $this->thenThereShouldBe_Fields(2);
+
+        $this->thenField_ShouldBeRequired(1);
+        $this->thenField_ShouldNotBeRequired(2);
     }
 
     ###############################################################################################
@@ -150,6 +167,32 @@ class ShowPreparationFormTest extends Specification {
 
     private function thenTheActionOfTheFormShouldBe($string) {
         $this->resource->then_ShouldBe('form/action', $string);
+    }
+
+    private function thenField_ShouldBeHaveTheName($int, $string) {
+        $this->assertContains('name="' . $string . '"', $this->getRenderedField($int));
+    }
+
+    private function thenField_ShouldBeHaveTheValue($int, $string) {
+        $this->assertContains('value="' . $string . '"', $this->getRenderedField($int));
+    }
+
+    private function thenField_ShouldBeHaveNoValue($int) {
+        $this->assertNotContains('value=', $this->getRenderedField($int));
+    }
+
+    private function thenField_ShouldBeRequired($int) {
+        $this->assertContains('required', $this->getRenderedField($int));
+    }
+
+    private function thenField_ShouldNotBeRequired($int) {
+        $this->assertNotContains('required', $this->getRenderedField($int));
+    }
+
+    private function getRenderedField($int) {
+        $int--;
+        $rendered = $this->resource->get("form/field/$int/control");
+        return $rendered;
     }
 
 }

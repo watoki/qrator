@@ -4,7 +4,7 @@ namespace watoki\cqurator\representer;
 use watoki\collections\Map;
 use watoki\cqurator\Representer;
 use watoki\cqurator\form\Field;
-use watoki\cqurator\form\StringField;
+use watoki\cqurator\form\fields\StringField;
 use watoki\cqurator\representer\property\AccessorProperty;
 use watoki\cqurator\representer\property\ConstructorProperty;
 use watoki\cqurator\representer\property\PublicProperty;

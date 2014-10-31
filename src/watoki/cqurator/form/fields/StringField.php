@@ -1,5 +1,7 @@
 <?php
-namespace watoki\cqurator\form;
+namespace watoki\cqurator\form\fields;
+
+use watoki\cqurator\form\TemplatedField;
 
 class StringField extends TemplatedField {
 

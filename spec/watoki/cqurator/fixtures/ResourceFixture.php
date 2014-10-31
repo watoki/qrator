@@ -61,6 +61,9 @@ class ResourceFixture extends Fixture {
     }
 
     public function get($modelPath) {
+        if (is_object($this->returned)) {
+            $this->spec->fail("Not an array: " . get_class($this->returned));
+        }
         $path = explode('/', $modelPath);
         $model = $this->returned;
         foreach ($path as $key) {

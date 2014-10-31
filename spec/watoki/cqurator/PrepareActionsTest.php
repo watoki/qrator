@@ -95,6 +95,7 @@ class PrepareActionsTest extends Specification {
             public function render() {}
             public function setValue($value) {}
             public function inflate($value) { return new \DateTime($value); }
+            public function setRequired($to = true) {}
         ');
 
         $this->dispatcher->givenIAddedTheClass_AsHandlerFor('inflateArgs\MyHandler', 'inflateArgs\InflatableAction');

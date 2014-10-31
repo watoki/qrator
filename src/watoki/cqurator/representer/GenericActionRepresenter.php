@@ -4,7 +4,7 @@ namespace watoki\cqurator\representer;
 use watoki\collections\Map;
 use watoki\cqurator\ActionRepresenter;
 use watoki\cqurator\form\Field;
-use watoki\cqurator\form\StringField;
+use watoki\cqurator\form\fields\StringField;
 use watoki\factory\Factory;
 
 class GenericActionRepresenter extends GenericRepresenter implements ActionRepresenter {
@@ -38,6 +38,10 @@ class GenericActionRepresenter extends GenericRepresenter implements ActionRepre
 
             if ($property->canGet()) {
                 $field->setValue($property->get());
+            }
+
+            if ($property->isRequired()) {
+                $field->setRequired(true);
             }
         }
         return $fields;

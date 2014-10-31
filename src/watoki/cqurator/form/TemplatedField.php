@@ -7,16 +7,23 @@ use watoki\curir\rendering\PhpRenderer;
 abstract class TemplatedField implements Field {
 
     /** @var string */
-    private $name;
+    protected $name;
 
     /** @var null|mixed */
-    private $value;
+    protected $value;
+
+    /** @var bool */
+    protected $required = false;
 
     /**
      * @param string $name
      */
     public function __construct($name) {
         $this->name = $name;
+    }
+
+    public function setRequired($to = true) {
+        $this->required = $to;
     }
 
     /**
@@ -69,7 +76,8 @@ abstract class TemplatedField implements Field {
     protected function getModel() {
         return [
             'name' => "args[{$this->name}]",
-            'value' => $this->getValue()
+            'value' => $this->getValue(),
+            'required' => $this->required
         ];
     }
 }

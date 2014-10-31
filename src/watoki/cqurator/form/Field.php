@@ -23,4 +23,11 @@ interface Field {
      * @return mixed
      */
     public function inflate($value);
+
+    /**
+     * @param bool $to
+     * @return void
+     */
+    public function setRequired($to = true);
+
 }
