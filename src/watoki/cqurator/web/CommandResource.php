@@ -31,15 +31,16 @@ class CommandResource extends ActionResource {
     /**
      * @param string $action
      * @param \watoki\collections\Map|null $args
+     * @param bool $prepared
      * @return \watoki\curir\Responder
      */
-    public function doPost($action, Map $args = null) {
+    public function doPost($action, Map $args = null, $prepared = false) {
         $args = $args ? : new Map();
 
         $representer = $this->registry->getActionRepresenter($action);
 
         $object = $representer->create($action, $args);
-        if ($representer->hasMissingProperties($object)) {
+        if (!$prepared && $representer->hasMissingProperties($object)) {
             return $this->redirectToPrepare($action, $args, self::TYPE);
         }
 

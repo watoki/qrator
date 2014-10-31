@@ -45,6 +45,7 @@ class ShowPreparationFormTest extends Specification {
         $this->thenTheFormTitleShouldBe('PrepareAction');
         $this->thenThereShouldBeAHiddenField_WithValue('action', 'PrepareAction');
         $this->thenThereShouldBeAHiddenField_WithValue('type', 'query');
+        $this->thenThereShouldBeAHiddenField_WithValue('prepared', 'true');
 
         $this->thenThereShouldBe_Fields(2);
         $this->thenField_ShouldHaveTheLabel(1, 'One');

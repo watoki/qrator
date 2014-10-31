@@ -34,6 +34,9 @@ class ResourceFixture extends Fixture {
     }
 
     public function thenIShouldNotBeRedirected() {
+        if ($this->returned instanceof Redirecter) {
+            $this->spec->fail("Was redirected to " . $this->returned->getTarget()->toString());
+        }
     }
 
     public function thenIShouldBeRedirectedTo($url) {

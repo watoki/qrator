@@ -1,6 +1,7 @@
 <?php
 namespace spec\watoki\cqurator;
 
+use watoki\cqurator\web\CommandResource;
 use watoki\cqurator\web\QueryResource;
 use watoki\curir\cookie\CookieStore;
 use watoki\curir\cookie\SerializerRepository;
@@ -47,7 +48,7 @@ class PrepareActionsTest extends Specification {
         ');
         $this->dispatcher->givenIAddedTheClass_AsHandlerFor('allGiven\MyHandler', 'ComplexAction');
 
-        $this->whenIExecuteTheAction('ComplexAction');
+        $this->whenIExecuteTheQuery('ComplexAction');
         $this->resource->thenIShouldNotBeRedirected();
 
         $this->class->then_ShouldBe('allGiven\MyHandler::$action->one', 'uno');
@@ -59,8 +60,11 @@ class PrepareActionsTest extends Specification {
         $this->resource->givenTheActionArgument_Is('one', 'uno');
         $this->resource->givenTheActionArgument_Is('three', 'tres');
 
-        $this->whenIExecuteTheAction('ComplexAction');
+        $this->whenIExecuteTheQuery('ComplexAction');
         $this->resource->thenIShouldBeRedirectedTo('prepare?action=ComplexAction&type=query&args[one]=uno&args[three]=tres');
+
+        $this->whenIExecuteTheCommand('ComplexAction');
+        $this->resource->thenIShouldBeRedirectedTo('prepare?action=ComplexAction&type=command&args[one]=uno&args[three]=tres');
     }
 
     function testGetActionInstanceFromFactory() {
@@ -69,7 +73,7 @@ class PrepareActionsTest extends Specification {
         $this->dispatcher->givenAnObject('myHandler');
         $this->dispatcher->givenIAdded_AsHandlerFor('myHandler', 'OtherClass');
 
-        $this->whenIExecuteTheAction('ComplexAction');
+        $this->whenIExecuteTheQuery('ComplexAction');
         $this->resource->thenIShouldNotBeRedirected();
         $this->dispatcher->thenTheMethodOf_ShouldBeInvokedWithAnInstanceOf('myHandler', 'OtherClass');
     }
@@ -104,27 +108,55 @@ class PrepareActionsTest extends Specification {
         $this->registry->givenIRegisteredAnActionRepresenterFor('inflateArgs\InflatableAction');
         $this->givenISetTheField_Of_ToBeAnInstanceOf('inflateMe', 'inflateArgs\InflatableAction', 'inflateArgs\MySpecialField');
 
-        $this->whenIExecuteTheAction('inflateArgs\InflatableAction');
+        $this->whenIExecuteTheQuery('inflateArgs\InflatableAction');
         $this->class->then_ShouldBe('inflateArgs\MyHandler::$action->inflateMe instanceof \DateTime', true);
         $this->class->then_ShouldBe('inflateArgs\MyHandler::$action->inflateMe->getTimestamp()', 1330874160);
     }
 
+    function testMissingPropertiesButPrepared() {
+        $this->whenIExecuteThePreparedAction('ComplexAction');
+        $this->resource->thenIShouldNotBeRedirected();
+
+        $this->whenIExecuteThePreparedCommand('ComplexAction');
+        $this->resource->thenIShouldNotBeRedirected();
+    }
+
     ####################################################################################
+
+    private $prepared = false;
 
     private function givenISetAnInstanceOf_AsSingletonFor($class, $action) {
         $this->factory->setSingleton($action, new $class);
     }
 
-    private function whenIExecuteTheAction($action) {
+    private function whenIExecuteTheQuery($action) {
         $cookies = new CookieStore(new SerializerRepository(), array());
 
         $this->resource->whenIDo_With(function (QueryResource $resource) use ($action) {
-            return $resource->doGet($action, $this->resource->args);
+            return $resource->doGet($action, $this->resource->args, $this->prepared);
         }, new QueryResource($this->factory, $this->dispatcher->dispatcher, $this->registry->registry, $cookies));
+    }
+
+    private function whenIExecuteThePreparedCommand($action) {
+        $this->prepared = true;
+        $this->whenIExecuteTheCommand($action);
+    }
+
+    private function whenIExecuteTheCommand($action) {
+        $cookies = new CookieStore(new SerializerRepository(), array());
+
+        $this->resource->whenIDo_With(function (CommandResource $resource) use ($action) {
+            return $resource->doPost($action, $this->resource->args, $this->prepared);
+        }, new CommandResource($this->factory, $this->dispatcher->dispatcher, $this->registry->registry, $cookies));
     }
 
     private function givenISetTheField_Of_ToBeAnInstanceOf($field, $class, $fieldClass) {
         $this->registry->representers[$class]->setField($field, new $fieldClass);
+    }
+
+    private function whenIExecuteThePreparedAction($action) {
+        $this->prepared = true;
+        $this->whenIExecuteTheQuery($action);
     }
 
 } 

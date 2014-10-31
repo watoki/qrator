@@ -49,9 +49,10 @@ class PrepareResource extends ActionResource {
             'method' => ($type == QueryResource::TYPE ? 'get' : 'post'),
             'action' => $type,
             'parameter' => [
+                ['name' => 'prepared', 'value' => 'true'],
                 ['name' => 'action', 'value' => get_class($action)],
                 ['name' => 'type', 'value' => $type],
-                ['name' => 'args[id]', 'value' => $representer->getId($action)]
+                ['name' => 'args[id]', 'value' => $representer->getId($action)],
             ],
             'field' => $this->assembleFields($action, $representer)
         ];
