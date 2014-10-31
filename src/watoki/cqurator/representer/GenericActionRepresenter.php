@@ -23,17 +23,17 @@ class GenericActionRepresenter extends GenericRepresenter implements ActionRepre
     }
 
     /**
-     * @param object $object
+     * @param object|string $action
      * @return array|\watoki\cqurator\form\Field[]
      */
-    public function getFields($object) {
+    public function getFields($action) {
         $fields = [];
-        foreach ($this->getProperties($object) as $property) {
-            if (!$property->canSet() || $property->name == 'id') {
+        foreach ($this->getProperties($action) as $property) {
+            if (!$property->canSet() || $property->name() == 'id') {
                 continue;
             }
 
-            $field = $this->getField($property->name);
+            $field = $this->getField($property->name());
             $fields[] = $field;
 
             if ($property->canGet()) {
@@ -76,9 +76,9 @@ class GenericActionRepresenter extends GenericRepresenter implements ActionRepre
         $action = $this->factory->getInstance($class, $args->toArray());
 
         foreach ($this->getProperties($action) as $property) {
-            if ($property->canSet() && $args->has($property->name)) {
-                $value = $args->get($property->name);
-                $inflated = $this->getField($property->name)->inflate($value);
+            if ($property->canSet() && $args->has($property->name())) {
+                $value = $args->get($property->name());
+                $inflated = $this->getField($property->name())->inflate($value);
                 $property->set($inflated);
             }
         }

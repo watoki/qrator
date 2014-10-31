@@ -37,14 +37,10 @@ class CommandResource extends ActionResource {
     public function doPost($action, Map $args = null, $prepared = false) {
         $args = $args ? : new Map();
 
-        $representer = $this->registry->getActionRepresenter($action);
-
-        $object = $representer->create($action, $args);
-        if (!$prepared && $representer->hasMissingProperties($object)) {
-            return $this->redirectToPrepare($action, $args, self::TYPE);
+        $result = $this->doAction($action, $args, $prepared, self::TYPE);
+        if ($result instanceof Responder) {
+            return $result;
         }
-
-        $this->fireAction($object);
 
         if ($this->cookies->hasKey(QueryResource::LAST_QUERY_COOKIE)) {
             $lastQuery = $this->cookies->read(QueryResource::LAST_QUERY_COOKIE)->payload;

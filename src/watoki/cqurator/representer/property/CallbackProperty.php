@@ -1,9 +1,9 @@
 <?php
 namespace watoki\cqurator\representer\property;
 
-use watoki\cqurator\representer\Property;
+use watoki\cqurator\representer\property\ObjectProperty;
 
-class CallbackProperty extends Property {
+class CallbackObjectProperty extends ObjectProperty {
 
     /** @var null|callable */
     private $getCallback;

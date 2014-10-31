@@ -26,6 +26,13 @@ class DeterminePropertiesOfObjectTest extends Specification {
 
         $this->whenIDetermineThePropertiesOf('fields\one\SomeClass');
         $this->thenThereShouldBe_Properties(6);
+        $this->then_ShouldBeGettable('public');
+        $this->then_ShouldBeSettable('public');
+        $this->then_ShouldNotBeSettable('private');
+        $this->then_ShouldNotBeGettable('setter');
+
+        $this->whenIDetermineThePropertiesOfAnInstanceOf('fields\one\SomeClass');
+        $this->thenThereShouldBe_Properties(6);
         $this->thenTheValueOf_ShouldBe('public', 'one');
         $this->thenTheValueOf_ShouldBe('publicAndGetter', 'two');
         $this->thenTheValueOf_ShouldBe('publicAndSetter', 'three');
@@ -43,7 +50,7 @@ class DeterminePropertiesOfObjectTest extends Specification {
 
         $this->givenTheActionArgument_Is('one', 'uno');
 
-        $this->whenIDetermineThePropertiesOf('constructor\ClassWithConstructor');
+        $this->whenIDetermineThePropertiesOfAnInstanceOf('constructor\ClassWithConstructor');
         $this->thenThereShouldBe_Properties(4);
 
         $this->then_ShouldBeSettable('one');
@@ -56,29 +63,54 @@ class DeterminePropertiesOfObjectTest extends Specification {
 
     function testRequiredProperties() {
         $this->class->givenTheClass_WithTheBody('required\SomeClass', '
+            public $two;
             public $three;
-            function __construct($one, $two = null) {}
+            public $four;
+            function __construct($one, $two, $three = null) {}
         ');
         $this->givenTheActionArgument_Is('one', 'uno');
+        $this->givenTheActionArgument_Is('two', 'dos');
 
-        $this->whenIDetermineThePropertiesOf('required\SomeClass');
-        $this->thenThereShouldBe_Properties(3);
+        $this->whenIDetermineThePropertiesOfAnInstanceOf('required\SomeClass');
+        $this->thenThereShouldBe_Properties(4);
 
         $this->then_ShouldBeRequired('one');
-        $this->then_ShouldBeOptional('two');
+        $this->then_ShouldBeRequired('two');
         $this->then_ShouldBeOptional('three');
+        $this->then_ShouldBeOptional('four');
+
+        $this->whenIDetermineThePropertiesOf('required\SomeClass');
+        $this->thenThereShouldBe_Properties(4);
+
+        $this->then_ShouldBeRequired('one');
+        $this->then_ShouldBeRequired('two');
+        $this->then_ShouldBeOptional('three');
+        $this->then_ShouldBeOptional('four');
     }
 
     ##################################################################################################
 
     private $args = [];
 
-    /** @var \watoki\cqurator\representer\Property[] */
+    /** @var \watoki\cqurator\representer\property\ObjectProperty[] */
     private $properties;
 
+    /** @var \watoki\cqurator\ActionRepresenter */
+    private $representer;
+
+    protected function setUp() {
+        parent::setUp();
+        $this->representer = new GenericActionRepresenter($this->factory);
+    }
+
+    private function whenIDetermineThePropertiesOfAnInstanceOf($class) {
+        $this->properties = $this->representer->getProperties($this->representer->create($class, new Map($this->args)));
+        return true;
+    }
+
     private function whenIDetermineThePropertiesOf($class) {
-        $representer = new GenericActionRepresenter($this->factory);
-        $this->properties = $representer->getProperties($representer->create($class, new Map($this->args)));
+        $this->properties = $this->representer->getProperties($class);
+        return true;
     }
 
     private function thenThereShouldBe_Properties($int) {
@@ -95,6 +127,10 @@ class DeterminePropertiesOfObjectTest extends Specification {
 
     private function then_ShouldBeSettable($name) {
         $this->assertTrue($this->properties[$name]->canSet(), "$name should be settable");
+    }
+
+    private function then_ShouldNotBeSettable($name) {
+        $this->assertFalse($this->properties[$name]->canSet(), "$name should not be settable");
     }
 
     private function then_ShouldBeGettable($name) {

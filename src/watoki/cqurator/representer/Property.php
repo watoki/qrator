@@ -1,30 +1,18 @@
 <?php
 namespace watoki\cqurator\representer;
 
-abstract class Property {
+interface Property {
 
-    public $name;
+    public function name();
 
-    protected $object;
+    public function isRequired();
 
-    protected $required;
+    public function canGet();
 
-    public function __construct($object, $name, $required = false) {
-        $this->name = $name;
-        $this->object = $object;
-        $this->required = $required;
-    }
+    public function canSet();
 
-    public function isRequired() {
-        return $this->required;
-    }
+    public function get();
 
-    abstract public function canGet();
-
-    abstract public function canSet();
-
-    abstract public function get();
-
-    abstract public function set($value);
+    public function set($value);
 
 } 

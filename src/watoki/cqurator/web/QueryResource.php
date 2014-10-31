@@ -9,6 +9,7 @@ use watoki\curir\cookie\Cookie;
 use watoki\curir\cookie\CookieStore;
 use watoki\curir\protocol\Url;
 use watoki\curir\Responder;
+use watoki\factory\exception\InjectionException;
 use watoki\factory\Factory;
 
 class QueryResource extends ActionResource {
@@ -40,18 +41,14 @@ class QueryResource extends ActionResource {
     public function doGet($action, Map $args = null, $prepared = false) {
         $args = $args ? : new Map();
 
-        $representer = $this->registry->getActionRepresenter($action);
-
-        $object = $representer->create($action, $args);
-        if (!$prepared && $representer->hasMissingProperties($object)) {
-            return $this->redirectToPrepare($action, $args, self::TYPE);
+        $result = $this->doAction($action, $args, $prepared, self::TYPE);
+        if ($result instanceof Responder) {
+            return $result;
         }
 
         $this->storeLastQuery($action, $args);
 
-        $result = $this->fireAction($object);
-
-        $crumbs = $this->updateBreadcrumb($representer, $object, $args);
+        $crumbs = $this->updateBreadcrumb($action, $args);
         $breadcrumbs = $this->assembleBreadcrumbs($crumbs);
 
         return [
@@ -88,7 +85,7 @@ class QueryResource extends ActionResource {
         $representer = $this->registry->getEntityRepresenter($entity);
         foreach ($representer->getProperties($entity) as $property) {
             if ($property->canGet()) {
-                $properties[] = $this->assembleProperty($property->name, $property->get());
+                $properties[] = $this->assembleProperty($property->name(), $property->get());
             }
         }
 
@@ -148,8 +145,7 @@ class QueryResource extends ActionResource {
         ]), self::LAST_QUERY_COOKIE);
     }
 
-    private function updateBreadcrumb(ActionRepresenter $representer, $object, Map $args) {
-        $class = get_class($object);
+    private function updateBreadcrumb($action, Map $args) {
 
         $crumbs = [];
         if ($this->cookies->hasKey(self::BREADCRUMB_COOKIE)) {
@@ -158,7 +154,7 @@ class QueryResource extends ActionResource {
             $newCrumbs = [];
             foreach ($crumbs as $crumb) {
                 list($label, $crumbAction, $crumbArgs) = $crumb;
-                if ($class == $crumbAction && $args->toArray() == $crumbArgs) {
+                if ($action == $crumbAction && $args->toArray() == $crumbArgs) {
                     break;
                 }
                 $newCrumbs[] = $crumb;
@@ -166,8 +162,11 @@ class QueryResource extends ActionResource {
             $crumbs = $newCrumbs;
         }
 
+        $representer = $this->registry->getActionRepresenter($action);
+        $object = $representer->create($action, $args);
         $caption = $representer->toString($object);
-        $crumbs[] = [$caption, $class, $args->toArray()];
+
+        $crumbs[] = [$caption, $action, $args->toArray()];
 
         $this->cookies->create(new Cookie($crumbs), self::BREADCRUMB_COOKIE);
 

@@ -80,6 +80,15 @@ class ExecuteCommandsTest extends Specification {
         $this->class->then_ShouldBe('$GLOBALS[\'two\']', 'dos');
     }
 
+    function testMissingConstructorArguments() {
+        $this->class->givenTheClass_WithTheBody('test\MissingConstructorArguments', '
+            function __construct($one, $two) {}
+        ');
+
+        $this->whenIExecuteTheCommand('test\MissingConstructorArguments');
+        $this->resource->thenIShouldBeRedirectedTo('prepare?action=test%5CMissingConstructorArguments&type=command');
+    }
+
     ####################################################################################################
 
     /** @var CookieStore */

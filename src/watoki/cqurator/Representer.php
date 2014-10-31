@@ -16,10 +16,10 @@ interface Representer {
     public function toString($object);
 
     /**
-     * @param object $object
-     * @return array|\watoki\cqurator\representer\Property[]
+     * @param object|string $action Object or class reference
+     * @return array|\watoki\cqurator\representer\property\ObjectProperty[]
      */
-    public function getProperties($object);
+    public function getProperties($action);
 
     /**
      * @param object $object

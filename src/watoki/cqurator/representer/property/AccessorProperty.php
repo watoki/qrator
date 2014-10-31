@@ -1,9 +1,9 @@
 <?php
 namespace watoki\cqurator\representer\property;
 
-use watoki\cqurator\representer\Property;
+use watoki\cqurator\representer\property\ObjectProperty;
 
-class AccessorProperty extends Property {
+class AccessorProperty extends ObjectProperty {
 
     public function get() {
         $method = $this->getMethod();
@@ -20,7 +20,7 @@ class AccessorProperty extends Property {
     private function guardMethodExists($method) {
         if (!method_exists($this->object, $method)) {
             $class = get_class($this->object);
-            throw new \Exception("Cannot access value of property [{$this->name}]. Method [$class::$method] does not exist.");
+            throw new \Exception("Cannot access value of property [{$this->name()}]. Method [$class::$method] does not exist.");
         }
     }
 
@@ -33,10 +33,10 @@ class AccessorProperty extends Property {
     }
 
     protected function getMethod() {
-        return 'get' . ucfirst($this->name);
+        return 'get' . ucfirst($this->name());
     }
 
     protected function setMethod() {
-        return 'set' . ucfirst($this->name);
+        return 'set' . ucfirst($this->name());
     }
 }

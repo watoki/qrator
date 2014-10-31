@@ -113,17 +113,30 @@ class ShowPreparationFormTest extends Specification {
 
     function testMakeFieldsRequired() {
         $this->class->givenTheClass_WithTheBody('preparation\ActionWithConstructor', '
+            public $one;
             public $two;
+            public $three;
             function __construct($one, $two = null) {}
         ');
 
         $this->resource->givenTheActionArgument_Is('one', 'uno');
 
         $this->whenIPrepare('preparation\ActionWithConstructor');
-        $this->thenThereShouldBe_Fields(2);
+        $this->thenThereShouldBe_Fields(3);
 
         $this->thenField_ShouldBeRequired(1);
         $this->thenField_ShouldNotBeRequired(2);
+        $this->thenField_ShouldNotBeRequired(3);
+    }
+
+    function testActionWithMissingConstructorArguments() {
+        $this->class->givenTheClass_WithTheBody('preparation\IncompleteConstructor', '
+            public $three;
+            function __construct($one, $two) {}
+            function setFour() {}
+        ');
+        $this->whenIPrepare('preparation\IncompleteConstructor');
+        $this->thenThereShouldBe_Fields(4);
     }
 
     ###############################################################################################

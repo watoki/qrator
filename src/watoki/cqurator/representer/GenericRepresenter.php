@@ -2,12 +2,12 @@
 namespace watoki\cqurator\representer;
 
 use watoki\collections\Map;
-use watoki\cqurator\Representer;
-use watoki\cqurator\form\Field;
-use watoki\cqurator\form\fields\StringField;
 use watoki\cqurator\representer\property\AccessorProperty;
+use watoki\cqurator\representer\property\ClassProperty;
 use watoki\cqurator\representer\property\ConstructorProperty;
+use watoki\cqurator\representer\property\ObjectProperty;
 use watoki\cqurator\representer\property\PublicProperty;
+use watoki\cqurator\Representer;
 
 abstract class GenericRepresenter implements Representer {
 
@@ -50,11 +50,11 @@ abstract class GenericRepresenter implements Representer {
             $propertyString =
                 '[' .
                 $properties
-                    ->filter(function (Property $property) {
+                    ->filter(function (ObjectProperty $property) {
                         return $property->canGet() && $property->get();
                     })
-                    ->map(function (Property $property) {
-                        return $property->name . ':' . print_r($property->get(), true);
+                    ->map(function (ObjectProperty $property) {
+                        return $property->name() . ':' . print_r($property->get(), true);
                     })
                     ->asList()
                     ->join('|')
@@ -71,38 +71,84 @@ abstract class GenericRepresenter implements Representer {
     }
 
     /**
-     * @param object $object
+     * @param object|string $action
      * @throws \InvalidArgumentException
-     * @return \watoki\collections\Map|Property[] indexed with property name
+     * @return \watoki\collections\Map|ObjectProperty[] indexed with property name
      */
-    public function getProperties($object) {
-        if (!is_object($object)) {
-            throw new \InvalidArgumentException("Not an object: " . var_export($object, true));
+    public function getProperties($action) {
+        if (is_object($action)) {
+            return $this->getObjectProperties($action);
+        } else {
+            return $this->getClassProperties($action);
         }
-        $properties = new Map();
+    }
 
-        $class = new \ReflectionClass($object);
-        $constructor = $class->getConstructor();
+    private function getObjectProperties($action) {
+        /** @var Map|Property[] $properties */
+        $properties = new Map();
+        $reflection = new \ReflectionClass($action);
+
+        $constructor = $reflection->getConstructor();
         if ($constructor) {
             foreach ($constructor->getParameters() as $parameter) {
                 $properties[$parameter->getName()] =
-                    new ConstructorProperty($object, $parameter->getName(), !$parameter->isDefaultValueAvailable());
+                    new ConstructorProperty($action, $parameter->getName(), !$parameter->isDefaultValueAvailable());
             }
         }
 
-        foreach ($object as $property => $value) {
-            $properties[$property] = new PublicProperty($object, $property);;
+        foreach ($action as $property => $value) {
+            $isRequired = $properties->has($property) && $properties->get($property)->isRequired();
+            $properties[$property] = new PublicProperty($action, $property, $isRequired);;
         }
 
-        foreach (get_class_methods(get_class($object)) as $method) {
+        foreach (get_class_methods(get_class($action)) as $method) {
             if (substr($method, 0, 3) == 'set' || substr($method, 0, 3) == 'get') {
                 $name = lcfirst(substr($method, 3));
                 if (!$properties->has($name)) {
-                    $properties[$name] = new AccessorProperty($object, $name);
+                    $properties[$name] = new AccessorProperty($action, $name);
                 }
             }
         }
+        return $properties;
+    }
 
+    private function getClassProperties($action) {
+        $properties = new Map();
+        $reflection = new \ReflectionClass($action);
+
+        $canSet = [];
+        $canGet = [];
+        $required = [];
+
+        $constructor = $reflection->getConstructor();
+        if ($constructor) {
+            foreach ($constructor->getParameters() as $parameter) {
+                $required[$parameter->getName()] = !$parameter->isDefaultValueAvailable();
+                $properties[$parameter->getName()] =
+                    new ClassProperty($parameter->getName(), $required[$parameter->getName()], false, true);
+                $canSet[$parameter->getName()] = true;
+            }
+        }
+
+        foreach ($reflection->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
+            $isRequired = isset($required[$property->getName()]) && $required[$property->getName()];
+            $properties[$property->getName()] = new ClassProperty($property->getName(), $isRequired, true, true);
+            $canGet[$property->getName()] = true;
+            $canSet[$property->getName()] = true;
+        }
+
+        foreach ($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+            $name = $method->getName();
+            $isGetter = substr($name, 0, 3) == 'get';
+            $isSetter = substr($name, 0, 3) == 'set';
+            if ($isGetter || $isSetter) {
+                $name = lcfirst(substr($name, 3));
+                $canSet[$name] = isset($canSet[$name]) && $canSet[$name] || $isSetter;
+                $canGet[$name] = isset($canGet[$name]) && $canGet[$name] || $isGetter;
+                $isRequired = isset($required[$name]) && $required[$name];
+                $properties[$name] = new ClassProperty($name, $isRequired, $canGet[$name], $canSet[$name]);
+            }
+        }
         return $properties;
     }
 }

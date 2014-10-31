@@ -6,6 +6,7 @@ use watoki\cqurator\ActionRepresenter;
 use watoki\cqurator\form\Field;
 use watoki\cqurator\form\PreFilling;
 use watoki\cqurator\Representer;
+use watoki\factory\exception\InjectionException;
 
 class PrepareResource extends ActionResource {
 
@@ -23,14 +24,19 @@ class PrepareResource extends ActionResource {
         $args = $args ? : new Map();
 
         $representer = $this->registry->getActionRepresenter($action);
-        $object = $representer->create($action, $args);
 
-        if (!$representer->hasMissingProperties($object)) {
-            $params = ['action' => $action];
-            if ($type == CommandResource::TYPE) {
-                $params['do'] = 'post';
+        try {
+            $object = $representer->create($action, $args);
+
+            if (!$representer->hasMissingProperties($object)) {
+                $params = ['action' => $action];
+                if ($type == CommandResource::TYPE) {
+                    $params['do'] = 'post';
+                }
+                return $this->redirectTo($type, $args, $params);
             }
-            return $this->redirectTo($type, $args, $params);
+        } catch (InjectionException $e) {
+            $object = $action;
         }
 
         return [
@@ -39,18 +45,19 @@ class PrepareResource extends ActionResource {
     }
 
     private function assembleForm($action, $type) {
-        if ($action instanceof PreFilling) {
+        $class = is_object($action) ? get_class($action) : $action;
+        if (is_object($action) && $action instanceof PreFilling) {
             $action->preFill($this->dispatcher);
         }
 
-        $representer = $this->registry->getActionRepresenter($action);
+        $representer = $this->registry->getActionRepresenter($class);
         $form = [
-            'title' => $representer->getName(get_class($action)),
+            'title' => $representer->getName($class),
             'method' => ($type == QueryResource::TYPE ? 'get' : 'post'),
             'action' => $type,
             'parameter' => [
                 ['name' => 'prepared', 'value' => 'true'],
-                ['name' => 'action', 'value' => get_class($action)],
+                ['name' => 'action', 'value' => $class],
                 ['name' => 'type', 'value' => $type],
                 ['name' => 'args[id]', 'value' => $representer->getId($action)],
             ],
