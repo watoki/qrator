@@ -10,10 +10,10 @@ abstract class TemplatedField implements Field {
     protected $name;
 
     /** @var null|mixed */
-    protected $value;
+    private $value;
 
     /** @var bool */
-    protected $required = false;
+    private $required = false;
 
     /**
      * @param string $name
@@ -21,6 +21,11 @@ abstract class TemplatedField implements Field {
     public function __construct($name) {
         $this->name = $name;
     }
+
+    /**
+     * @return array
+     */
+    abstract protected function getModel();
 
     public function setRequired($to = true) {
         $this->required = $to;
@@ -57,7 +62,8 @@ abstract class TemplatedField implements Field {
     public function render() {
         $locator = new ClassTemplateLocator($this);
         $renderer = $this->createRenderer();
-        return $renderer->render($locator->find($this->getTemplateExtension()), $this->getModel());
+        $model = $this->getModel();
+        return $renderer->render($locator->find($this->getTemplateExtension()), $model);
     }
 
     /**
@@ -72,16 +78,5 @@ abstract class TemplatedField implements Field {
      */
     protected function getTemplateExtension() {
         return 'phtml';
-    }
-
-    /**
-     * @return array
-     */
-    protected function getModel() {
-        return [
-            'name' => "args[{$this->name}]",
-            'value' => $this->getValue(),
-            'required' => $this->required
-        ];
     }
 }
