@@ -1,8 +1,8 @@
 {
-    "name": "watoki/cqurator",
+    "name": "watoki/qrator",
     "description": "Administration interface based on the Command/Query Separation pattern",
     "keywords": ["cqrs", "admin", "backend", "watoki"],
-    "homepage": "http://github.com/watoki/cqurator",
+    "homepage": "http://github.com/watoki/qrator",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -23,8 +23,8 @@
     },
     "autoload": {
         "psr-0": {
-            "watoki\\cqurator": "src/",
-            "spec\\watoki\\cqurator": ""
+            "watoki\\qrator": "src/",
+            "spec\\watoki\\qrator": ""
         }
     },
     "minimum-stability": "dev"
