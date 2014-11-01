@@ -10,17 +10,16 @@ use watoki\factory\exception\InjectionException;
 
 class PrepareResource extends ActionResource {
 
-    protected function redirectToPrepare($action, Map $args, $type) {
+    protected function redirectToPrepare($action, Map $args) {
         throw new \LogicException('Cannot redirect. Already at prepare.');
     }
 
     /**
      * @param string $action
-     * @param string $type
      * @param null|\watoki\collections\Map $args
      * @return array
      */
-    public function doGet($action, $type, Map $args = null) {
+    public function doGet($action, Map $args = null) {
         $args = $args ? : new Map();
 
         $representer = $this->registry->getActionRepresenter($action);
@@ -29,22 +28,18 @@ class PrepareResource extends ActionResource {
             $object = $representer->create($action, $args);
 
             if (!$representer->hasMissingProperties($object)) {
-                $params = ['action' => $action];
-                if ($type == CommandResource::TYPE) {
-                    $params['do'] = 'post';
-                }
-                return $this->redirectTo($type, $args, $params);
+                return $this->redirectTo('execute', $args, ['action' => $action]);
             }
         } catch (InjectionException $e) {
             $object = $action;
         }
 
         return [
-            'form' => $this->assembleForm($object, $type)
+            'form' => $this->assembleForm($object)
         ];
     }
 
-    private function assembleForm($action, $type) {
+    private function assembleForm($action) {
         $class = is_object($action) ? get_class($action) : $action;
         if (is_object($action) && $action instanceof PreFilling) {
             $action->preFill($this->dispatcher);
@@ -53,12 +48,10 @@ class PrepareResource extends ActionResource {
         $representer = $this->registry->getActionRepresenter($class);
         $form = [
             'title' => $representer->getName($class),
-            'method' => ($type == QueryResource::TYPE ? 'get' : 'post'),
-            'action' => $type,
+            'action' => 'execute',
             'parameter' => [
                 ['name' => 'prepared', 'value' => 'true'],
                 ['name' => 'action', 'value' => $class],
-                ['name' => 'type', 'value' => $type],
                 ['name' => 'args[id]', 'value' => $representer->getId($action)],
             ],
             'field' => $this->assembleFields($action, $representer)

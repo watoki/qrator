@@ -2,6 +2,7 @@
 namespace watoki\qrator\web;
 
 use watoki\collections\Map;
+use watoki\curir\responder\Redirecter;
 use watoki\qrator\ActionDispatcher;
 use watoki\qrator\representer\ActionGenerator;
 use watoki\qrator\representer\PropertyActionGenerator;
@@ -13,10 +14,9 @@ use watoki\curir\Responder;
 use watoki\factory\Factory;
 use watoki\tempan\model\ListModel;
 
-class QueryResource extends ActionResource {
+class ExecuteResource extends ActionResource {
 
-    const TYPE = 'query';
-    const LAST_QUERY_COOKIE = 'lastQuery';
+    const LAST_ACTION_COOKIE = 'lastAction';
     const BREADCRUMB_COOKIE = 'breadcrumbs';
 
     /** @var \watoki\curir\cookie\CookieStore */
@@ -42,12 +42,22 @@ class QueryResource extends ActionResource {
     public function doGet($action, Map $args = null, $prepared = false) {
         $args = $args ? : new Map();
 
-        $result = $this->doAction($action, $args, $prepared, self::TYPE);
+        $result = $this->doAction($action, $args, $prepared);
         if ($result instanceof Responder) {
             return $result;
         }
 
-        $this->storeLastQuery($action, $args);
+        if (!$result && $this->cookies->hasKey(ExecuteResource::LAST_ACTION_COOKIE)) {
+            $lastAction = $this->cookies->read(ExecuteResource::LAST_ACTION_COOKIE)->payload;
+
+            $url = Url::fromString('execute');
+            $url->getParameters()->set('action', $lastAction['action']);
+            $url->getParameters()->set('args', new Map($lastAction['arguments']));
+
+            return new Redirecter($url);
+        }
+
+        $this->storeLastAction($action, $args);
 
         $crumbs = $this->updateBreadcrumb($action, $args);
         $breadcrumbs = $this->assembleBreadcrumbs($crumbs);
@@ -66,7 +76,7 @@ class QueryResource extends ActionResource {
         } else if (is_object($result)) {
             return $this->assembleEntity($result);
         } else {
-            throw new \InvalidArgumentException("Action had no displayable result: " . var_export($result, true));
+            return "Action executed. Result: " . var_export($result, true);
         }
     }
 
@@ -74,9 +84,8 @@ class QueryResource extends ActionResource {
         $representer = $this->registry->getEntityRepresenter($entity);
         return [
             'name' => $representer->toString($entity),
-            'properties' => $this->assembleProperties($entity),
-            'queries' => new ListModel($this->assembleQueries($entity)),
-            'commands' => new ListModel($this->assembleCommands($entity))
+            'properties' => new ListModel($this->assembleProperties($entity)),
+            'actions' => new ListModel($this->assembleActions($representer->getActions(), $entity)),
         ];
     }
 
@@ -90,9 +99,7 @@ class QueryResource extends ActionResource {
             }
         }
 
-        return $properties ? [
-            'property' => $properties
-        ] : null;
+        return $properties;
     }
 
     private function assembleProperty($entity, $name, $value) {
@@ -105,17 +112,13 @@ class QueryResource extends ActionResource {
     private function assembleValue($entity, $name, $value) {
         if (is_object($value)) {
             $entityRepresenter = $this->registry->getEntityRepresenter($entity);
-            $representer = $this->registry->getEntityRepresenter($value);
+            $propertyRepresenter = $this->registry->getEntityRepresenter($value);
 
             return [
-                'caption' => $representer->render($value),
-                'queries' => array_merge(
-                    $this->assembleQueries($value),
-                    $this->assemblePropertyActions($entityRepresenter->getPropertyQueries($name), $value, $entity, self::TYPE)
-                ),
-                'commands' => array_merge(
-                    $this->assembleCommands($value),
-                    $this->assemblePropertyActions($entityRepresenter->getPropertyCommands($name), $value, $entity, CommandResource::TYPE)
+                'caption' => $propertyRepresenter->render($value),
+                'actions' => array_merge(
+                    $this->assembleActions($propertyRepresenter->getActions(), $value),
+                    $this->assemblePropertyActions($entityRepresenter->getPropertyActions($name), $value, $entity)
                 ),
             ];
         } else if (is_array($value)) {
@@ -126,48 +129,34 @@ class QueryResource extends ActionResource {
         }
         return [
             'caption' => $value,
-            'queries' => null,
-            'commands' => null
+            'actions' => null,
         ];
     }
 
-    private function assemblePropertyActions($actions, $object, $entity, $type) {
+    private function assemblePropertyActions($actions, $object, $entity) {
         $representer = $this->registry->getEntityRepresenter($entity);
         $id = $representer->getId($entity);
 
         $propertyRepresenter = $this->registry->getEntityRepresenter($object);
         $propertyId = $propertyRepresenter->getId($object);;
 
-        return array_map(function (PropertyActionGenerator $action) use ($type, $id, $propertyId) {
-            return $this->assembleAction($action->getClass(), $type, $action->getArguments($id, $propertyId));
+        return array_map(function (PropertyActionGenerator $action) use ($id, $propertyId) {
+            return $this->assembleAction($action->getClass(), $action->getArguments($id, $propertyId));
         }, $actions);
     }
 
-    private function assembleQueries($entity) {
-        $representer = $this->registry->getEntityRepresenter($entity);
-        return $this->assembleActions($representer->getQueries(), $entity, self::TYPE);
-    }
-
-    private function assembleCommands($entity) {
-        $representer = $this->registry->getEntityRepresenter($entity);
-        return $this->assembleActions($representer->getCommands(), $entity, CommandResource::TYPE);
-    }
-
-    private function assembleActions($actions, $entity, $type) {
+    private function assembleActions($actions, $entity) {
         $representer = $this->registry->getEntityRepresenter($entity);
         $id = $representer->getId($entity);
 
-        return array_map(function (ActionGenerator $action) use ($type, $id) {
-            return $this->assembleAction($action->getClass(), $type, $action->getArguments($id));
+        return array_map(function (ActionGenerator $action) use ($id) {
+            return $this->assembleAction($action->getClass(), $action->getArguments($id));
         }, $actions);
     }
 
-    private function assembleAction($action, $type, $arguments) {
-        $target = Url::fromString($type);
+    private function assembleAction($action, $arguments) {
+        $target = Url::fromString('execute');
         $target->getParameters()->set('action', $action);
-        if ($type == CommandResource::TYPE) {
-            $target->getParameters()->set('do', 'post');
-        }
         $target->getParameters()->set('args', new Map($arguments));
 
 
@@ -180,11 +169,11 @@ class QueryResource extends ActionResource {
         ];
     }
 
-    private function storeLastQuery($action, Map $args) {
+    private function storeLastAction($action, Map $args) {
         $this->cookies->create(new Cookie([
             'action' => $action,
             'arguments' => $args->toArray()
-        ]), self::LAST_QUERY_COOKIE);
+        ]), self::LAST_ACTION_COOKIE);
     }
 
     private function updateBreadcrumb($action, Map $args) {
@@ -222,7 +211,7 @@ class QueryResource extends ActionResource {
         return [
             'breadcrumb' => array_map(function ($crumb) {
                 list($caption, $action, $args) = $crumb;
-                $url = Url::fromString('query');
+                $url = Url::fromString('execute');
                 $url->getParameters()->set('action', $action);
                 $url->getParameters()->set('args', new Map($args));
                 return [

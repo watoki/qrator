@@ -34,26 +34,17 @@ class RegistryFixture extends Fixture {
         $this->registry->register($class, $this->representers[$class]);
     }
 
-    public function givenIAddedTheQuery_ToTheRepresenterOf($query, $class) {
-        $this->class->givenTheClass($query);
-        $this->representers[$class]->addQuery(new ActionGenerator($query));
-    }
-
-    public function givenIAddedTheCommand_ToTheRepresenterOf($command, $class) {
-        $this->class->givenTheClass($command);
-        $this->representers[$class]->addCommand(new ActionGenerator($command));
+    public function givenIAddedTheAction_ToTheRepresenterOf($action, $class) {
+        $this->class->givenTheClass($action);
+        $this->representers[$class]->addAction(new ActionGenerator($action));
     }
 
     public function givenIHaveTheTheRenderer_For($callable, $class) {
         $this->representers[$class]->setRenderer($callable);
     }
 
-    public function givenIAddedAQuery_ForTheProperty_Of($query, $property, $class) {
-        $this->representers[$class]->addPropertyQuery($property, new PropertyActionGenerator($query));
-    }
-
-    public function givenIAddedACommand_ForTheProperty_Of($query, $property, $class) {
-        $this->representers[$class]->addPropertyCommand($property, new PropertyActionGenerator($query));
+    public function givenIAddedAnAction_ForTheProperty_Of($action, $property, $class) {
+        $this->representers[$class]->addPropertyAction($property, new PropertyActionGenerator($action));
     }
 
 } 

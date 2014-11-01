@@ -1,6 +1,6 @@
 {
     "name": "watoki/qrator",
-    "description": "Administration interface based on the Command/Query Separation pattern",
+    "description": "Administration interface based using the Command Object Pattern",
     "keywords": ["cqrs", "admin", "backend", "watoki"],
     "homepage": "http://github.com/watoki/qrator",
     "type": "library",

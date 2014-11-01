@@ -27,16 +27,16 @@ class IndexResource extends Container {
 
     public function doGet() {
         return [
-            'query' => array_map(function (ActionGenerator $action) {
-                $query = $action->getClass();
-                $representer = $this->registry->getActionRepresenter($query);
+            'action' => array_map(function (ActionGenerator $action) {
+                $actionClass = $action->getClass();
+                $representer = $this->registry->getActionRepresenter($actionClass);
                 return [
-                    'name' => $representer->getName($query),
+                    'name' => $representer->getName($actionClass),
                     'link' => [
-                        'href' => 'query?action=' . $query
+                        'href' => 'execute?action=' . $actionClass
                     ]
                 ];
-            }, $this->registry->getEntityRepresenter(null)->getQueries())
+            }, $this->registry->getEntityRepresenter(null)->getActions())
         ];
     }
 }

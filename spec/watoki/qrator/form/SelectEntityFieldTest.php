@@ -19,7 +19,7 @@ class SelectEntityFieldTest extends Specification {
 
     function testEmptyEntityList() {
         $this->registry->givenIRegisteredAnEntityRepresenterFor('EntityClass');
-        $this->givenASelectEntityField_For_WithTheListQuery('test', 'EntityClass', 'ListEntity');
+        $this->givenASelectEntityField_For_WithTheListAction('test', 'EntityClass', 'ListEntity');
 
         $this->field->whenIRenderTheField();
         $this->field->thenTheOutputShouldBe(
@@ -33,7 +33,7 @@ class SelectEntityFieldTest extends Specification {
             function getId() { return strtolower($this->name); }
         ');
         $this->registry->givenIRegisteredAnEntityRepresenterFor('NamedEntity');
-        $this->givenASelectEntityField_For_WithTheListQuery('test', 'NamedEntity', 'ListEntity');
+        $this->givenASelectEntityField_For_WithTheListAction('test', 'NamedEntity', 'ListEntity');
 
 
         $this->class->givenTheClass_WithTheBody('EntityHandler', '
@@ -56,8 +56,8 @@ class SelectEntityFieldTest extends Specification {
 
     ################################################################################################
 
-    private function givenASelectEntityField_For_WithTheListQuery($name, $class, $query) {
-        $this->field->givenTheField(new SelectEntityField($name, new $query,
+    private function givenASelectEntityField_For_WithTheListAction($name, $class, $action) {
+        $this->field->givenTheField(new SelectEntityField($name, new $action,
             $this->registry->representers[$class], $this->dispatcher->dispatcher));
     }
 

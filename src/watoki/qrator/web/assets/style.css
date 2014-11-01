@@ -76,20 +76,11 @@ h5 {
     margin-top: 1em;
 }
 
-[property=entity] a[href^=query],
-a[href^=command] {
+a[href^=execute] {
+    background-color: #DFF0D8;
+    color: #3C763D;
     display: inline-block;
     border-radius: 2pt;
     padding: 2pt 4pt;
     margin: 2pt 0px;
-}
-
-[property=entity] a[href^=query] {
-    background-color: #DFF0D8;
-    color: #3C763D;
-}
-
-[property=entity] a[href^=command] {
-    color: #A94442;
-    background-color: #F2DEDE;
 }

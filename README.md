@@ -1,6 +1,6 @@
 # qrator [![Build Status](https://travis-ci.org/watoki/qrator.png?branch=master)](https://travis-ci.org/watoki/qrator)
 
-Administration interface based on the Command/Query Separation pattern.
+Administration interface using the Command Object pattern.
 
 Browse the [executable documentation][dox].
 

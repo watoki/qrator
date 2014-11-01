@@ -26,15 +26,7 @@ class ShowPreparationFormTest extends Specification {
         $this->resource->givenTheActionArgument_Is('two', 'dos');
 
         $this->whenIPrepare('PrepareAction');
-        $this->resource->thenIShouldBeRedirectedTo('query?action=PrepareAction&args[one]=uno&args[two]=dos');
-    }
-
-    function testAllPropertiesOfCommandProvided() {
-        $this->resource->givenTheActionArgument_Is('one', 'uno');
-        $this->resource->givenTheActionArgument_Is('two', 'dos');
-
-        $this->whenIPrepareTheCommand('PrepareAction');
-        $this->resource->thenIShouldBeRedirectedTo('command?action=PrepareAction&do=post&args[one]=uno&args[two]=dos');
+        $this->resource->thenIShouldBeRedirectedTo('execute?action=PrepareAction&args[one]=uno&args[two]=dos');
     }
 
     function testInputForMissingProperties() {
@@ -44,7 +36,6 @@ class ShowPreparationFormTest extends Specification {
 
         $this->thenTheFormTitleShouldBe('Prepare Action');
         $this->thenThereShouldBeAHiddenField_WithValue('action', 'PrepareAction');
-        $this->thenThereShouldBeAHiddenField_WithValue('type', 'query');
         $this->thenThereShouldBeAHiddenField_WithValue('prepared', 'true');
 
         $this->thenThereShouldBe_Fields(2);
@@ -86,18 +77,6 @@ class ShowPreparationFormTest extends Specification {
         $this->whenIPrepare('PreFillingAction');
         $this->thenField_ShouldBeHaveTheValue(1, 'Fourtytwo');
         $this->thenField_ShouldBeHaveNoValue(2);
-    }
-
-    function testSubmitQueriesWithGet() {
-        $this->whenIPrepare('PrepareAction');
-        $this->thenTheMethodOfTheFormShouldBe('get');
-        $this->thenTheActionOfTheFormShouldBe('query');
-    }
-
-    function testSubmitCommandsWithPost() {
-        $this->whenIPrepareTheCommand('PrepareAction');
-        $this->thenTheMethodOfTheFormShouldBe('post');
-        $this->thenTheActionOfTheFormShouldBe('command');
     }
 
     function testHideIdField() {
@@ -143,14 +122,10 @@ class ShowPreparationFormTest extends Specification {
 
     ###############################################################################################
 
-    private function whenIPrepare($action, $type = 'query') {
-        $this->resource->whenIDo_With(function (PrepareResource $resource) use ($action, $type) {
-            return $resource->doGet($action, $type, $this->resource->args);
+    private function whenIPrepare($action) {
+        $this->resource->whenIDo_With(function (PrepareResource $resource) use ($action) {
+            return $resource->doGet($action, $this->resource->args);
         }, new PrepareResource($this->factory, $this->registry->registry, new ActionDispatcher($this->factory)));
-    }
-
-    private function whenIPrepareTheCommand($command) {
-        $this->whenIPrepare($command, 'command');
     }
 
     private function thenThereShouldBe_Fields($int) {
@@ -183,14 +158,6 @@ class ShowPreparationFormTest extends Specification {
 
     private function givenISetTheFieldFor_To_For($field, $class, $representedClass) {
         $this->registry->representers[$representedClass]->setField($field, new $class);
-    }
-
-    private function thenTheMethodOfTheFormShouldBe($string) {
-        $this->resource->then_ShouldBe('form/method', $string);
-    }
-
-    private function thenTheActionOfTheFormShouldBe($string) {
-        $this->resource->then_ShouldBe('form/action', $string);
     }
 
     private function thenField_ShouldBeHaveTheName($int, $string) {

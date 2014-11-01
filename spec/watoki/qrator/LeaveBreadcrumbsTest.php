@@ -3,7 +3,7 @@ namespace spec\watoki\qrator;
 
 use watoki\collections\Map;
 use watoki\qrator\RepresenterRegistry;
-use watoki\qrator\web\QueryResource;
+use watoki\qrator\web\ExecuteResource;
 use watoki\curir\cookie\Cookie;
 use watoki\curir\cookie\CookieStore;
 use watoki\curir\cookie\SerializerRepository;
@@ -17,26 +17,26 @@ use watoki\scrut\Specification;
 class LeaveBreadcrumbsTest extends Specification {
 
     protected function background() {
-        $this->class->givenTheClass('test\SomeQuery');
-        $this->dispatcher->givenIAdded_AsHandlerFor('myHandler', 'test\SomeQuery');
+        $this->class->givenTheClass('test\SomeAction');
+        $this->dispatcher->givenIAdded_AsHandlerFor('myHandler', 'test\SomeAction');
     }
 
     function testStoreBreadcrumbsInCookie() {
-        $this->class->givenTheClass_WithTheBody('test\FooQuery', '
+        $this->class->givenTheClass_WithTheBody('test\FooAction', '
             public $foo;
         ');
         $this->resource->givenTheActionArgument_Is('foo', 'bar');
 
-        $this->whenIExecuteTheQuery('test\SomeQuery');
+        $this->whenIExecuteTheAction('test\SomeAction');
         $this->thenTheBreadcrumbs_ShouldBeStored([
-            ['Some Query', 'test\SomeQuery', ['foo' => 'bar']]
+            ['Some Action', 'test\SomeAction', ['foo' => 'bar']]
         ]);
     }
 
     function testNoBreadcrumbsToShow() {
-        $this->whenIExecuteTheQuery('test\SomeQuery');
+        $this->whenIExecuteTheAction('test\SomeAction');
         $this->thenThereShouldBeNoBreadcrumbs();
-        $this->thenTheCurrentOneShouldBe('Some Query');
+        $this->thenTheCurrentOneShouldBe('Some Action');
     }
 
     function testShowBreadcrumbs() {
@@ -45,34 +45,34 @@ class LeaveBreadcrumbsTest extends Specification {
             ['two', 'second', []]
         ]);
 
-        $this->whenIExecuteTheQuery('test\SomeQuery');
+        $this->whenIExecuteTheAction('test\SomeAction');
         $this->thenThereShouldBe_Breadcrumbs(2);
         $this->thenBreadcrumb_ShouldHaveTheCaption(1, 'one');
-        $this->thenBreadcrumb_ShouldHaveTheLinkTarget(1, 'query?action=first');
+        $this->thenBreadcrumb_ShouldHaveTheLinkTarget(1, 'execute?action=first');
     }
 
-    function testPushQuery() {
+    function testPushAction() {
         $this->givenTheStoredBreadcrumbs([
             ['one', 'first', []]
         ]);
-        $this->whenIExecuteTheQuery('test\SomeQuery');
+        $this->whenIExecuteTheAction('test\SomeAction');
         $this->thenTheBreadcrumbs_ShouldBeStored([
             ['one', 'first', []],
-            ['Some Query', 'test\SomeQuery', []]
+            ['Some Action', 'test\SomeAction', []]
         ]);
     }
 
-    function testPopQuery() {
+    function testPopAction() {
         $this->givenTheStoredBreadcrumbs([
             ['one', 'first', []],
-            ['SomeQuery', 'test\SomeQuery', []],
-            ['SomeQuery', 'test\SomeQuery', ['foo' => 'bar']],
+            ['SomeAction', 'test\SomeAction', []],
+            ['SomeAction', 'test\SomeAction', ['foo' => 'bar']],
             ['two', '?action=second']
         ]);
-        $this->whenIExecuteTheQuery('test\SomeQuery');
+        $this->whenIExecuteTheAction('test\SomeAction');
         $this->thenTheBreadcrumbs_ShouldBeStored([
             ['one', 'first', []],
-            ['Some Query', 'test\SomeQuery', []]
+            ['Some Action', 'test\SomeAction', []]
         ]);
     }
 
@@ -89,15 +89,15 @@ class LeaveBreadcrumbsTest extends Specification {
         $this->args = new Map();
     }
 
-    private function whenIExecuteTheQuery($query) {
-        $this->resource->whenIDo_With(function (QueryResource $resource) use ($query) {
-            return $resource->doGet($query, $this->resource->args);
-        }, new QueryResource($this->factory, $this->dispatcher->dispatcher,
+    private function whenIExecuteTheAction($action) {
+        $this->resource->whenIDo_With(function (ExecuteResource $resource) use ($action) {
+            return $resource->doGet($action, $this->resource->args);
+        }, new ExecuteResource($this->factory, $this->dispatcher->dispatcher,
             new RepresenterRegistry($this->factory), $this->cookies));
     }
 
     private function thenTheBreadcrumbs_ShouldBeStored($array) {
-        $this->assertEquals($array, $this->cookies->read(QueryResource::BREADCRUMB_COOKIE)->payload);
+        $this->assertEquals($array, $this->cookies->read(ExecuteResource::BREADCRUMB_COOKIE)->payload);
     }
 
     private function thenThereShouldBeNoBreadcrumbs() {
@@ -105,7 +105,7 @@ class LeaveBreadcrumbsTest extends Specification {
     }
 
     private function givenTheStoredBreadcrumbs($array) {
-        $this->cookies->create(new Cookie($array), QueryResource::BREADCRUMB_COOKIE);
+        $this->cookies->create(new Cookie($array), ExecuteResource::BREADCRUMB_COOKIE);
     }
 
     private function thenThereShouldBe_Breadcrumbs($int) {

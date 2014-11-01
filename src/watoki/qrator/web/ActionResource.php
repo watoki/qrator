@@ -45,19 +45,19 @@ abstract class ActionResource extends Container {
      * @param $prepared
      * @return \watoki\curir\responder\Redirecter
      */
-    protected function doAction($action, Map $args, $prepared, $type) {
+    protected function doAction($action, Map $args, $prepared) {
         $representer = $this->registry->getActionRepresenter($action);
 
         try {
             $object = $representer->create($action, $args);
 
             if (!$prepared && $representer->hasMissingProperties($object)) {
-                return $this->redirectToPrepare($action, $args, $type);
+                return $this->redirectToPrepare($action, $args);
             }
 
             return $this->fireAction($object);
         } catch (InjectionException $e) {
-            return $this->redirectToPrepare($action, $args, $type);
+            return $this->redirectToPrepare($action, $args);
         }
     }
 
@@ -73,15 +73,14 @@ abstract class ActionResource extends Container {
         return $result;
     }
 
-    protected function redirectToPrepare($action, Map $args, $type) {
+    protected function redirectToPrepare($action, Map $args) {
         return $this->redirectTo('prepare', $args, array(
-            'action' => $action,
-            'type' => $type
+            'action' => $action
         ));
     }
 
-    protected function redirectTo($resource, Map $args, $params = array()) {
-        $target = Url::fromString($resource);
+    protected function redirectTo($target, Map $args, $params = array()) {
+        $target = Url::fromString($target);
         $target->getParameters()->merge(new Map($params));
         $target->getParameters()->set('args', $args);
         return new Redirecter($target);

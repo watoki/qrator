@@ -89,4 +89,4 @@ class ResourceFixture extends Fixture {
         $this->spec->assertEquals($value, $this->returned);
     }
 
-} 
+}
