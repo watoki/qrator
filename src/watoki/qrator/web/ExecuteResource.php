@@ -3,6 +3,7 @@ namespace watoki\qrator\web;
 
 use watoki\collections\Map;
 use watoki\curir\responder\Redirecter;
+use watoki\factory\exception\InjectionException;
 use watoki\qrator\ActionDispatcher;
 use watoki\qrator\representer\ActionGenerator;
 use watoki\qrator\representer\PropertyActionGenerator;
@@ -66,6 +67,46 @@ class ExecuteResource extends ActionResource {
             'breadcrumbs' => $breadcrumbs,
             'entity' => $this->assembleResult($result)
         ];
+    }
+
+    /**
+     * @param $action
+     * @param Map $args
+     * @param $prepared
+     * @return \watoki\curir\responder\Redirecter
+     */
+    private function doAction($action, Map $args, $prepared) {
+        $representer = $this->registry->getActionRepresenter($action);
+
+        try {
+            $object = $representer->create($action, $args);
+
+            if (!$prepared && $representer->hasMissingProperties($object)) {
+                return $this->redirectToPrepare($action, $args);
+            }
+
+            return $this->fireAction($object);
+        } catch (InjectionException $e) {
+            return $this->redirectToPrepare($action, $args);
+        }
+    }
+
+    private function redirectToPrepare($action, Map $args) {
+        return $this->redirectTo('prepare', $args, array(
+            'action' => $action
+        ));
+    }
+
+    private function fireAction($action) {
+        $result = null;
+        $this->dispatcher->fire($action)
+            ->onSuccess(function ($returned) use (&$result) {
+                $result = $returned;
+            })
+            ->onException(function (\Exception $e) {
+                throw $e;
+            });
+        return $result;
     }
 
     private function assembleResult($result) {
