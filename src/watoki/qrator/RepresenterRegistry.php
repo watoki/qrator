@@ -35,19 +35,9 @@ class RepresenterRegistry {
      * @return EntityRepresenter
      */
     public function getEntityRepresenter($class) {
-        if (is_object($class)) {
-            $class = get_class($class);
-        }
-
-        if (isset($this->representers[$class])) {
-            $representer = $this->representers[$class];
-            if (!($representer instanceof EntityRepresenter)) {
-                throw new \Exception("Class [" . get_class($representer) . "] needs to implement [" . EntityRepresenter::class . "].");
-            }
-            return $representer;
-        } else {
+        return $this->getRepresenter($class, EntityRepresenter::class, function () {
             return new GenericEntityRepresenter();
-        }
+        });
     }
 
     /**
@@ -56,18 +46,24 @@ class RepresenterRegistry {
      * @return ActionRepresenter
      */
     public function getActionRepresenter($class) {
+        return $this->getRepresenter($class, ActionRepresenter::class, function () {
+            return new GenericActionRepresenter($this->factory);
+        });
+    }
+
+    private function getRepresenter($class, $interface, $defaultGenerator) {
         if (is_object($class)) {
             $class = get_class($class);
         }
 
         if (isset($this->representers[$class])) {
             $representer = $this->representers[$class];
-            if (!($representer instanceof ActionRepresenter)) {
-                throw new \Exception("Class [" . get_class($representer) . "] needs to implement [" . ActionRepresenter::class . "].");
+            if (!is_subclass_of($representer, $interface)) {
+                throw new \Exception("Class [" . get_class($representer) . "] needs to implement [" . $interface . "].");
             }
             return $representer;
         } else {
-            return new GenericActionRepresenter($this->factory);
+            return $defaultGenerator();
         }
     }
 }
