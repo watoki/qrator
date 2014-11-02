@@ -43,30 +43,59 @@ class ExecuteResource extends ActionResource {
     public function doGet($action, Map $args = null, $prepared = false) {
         $args = $args ? : new Map();
 
+        $crumbs = $this->readBreadcrumbs();
         $result = $this->doAction($action, $args, $prepared);
+
         if ($result instanceof Responder) {
             return $result;
+        } else if (!$result && $this->cookies->hasKey(ExecuteResource::LAST_ACTION_COOKIE)) {
+            $model = [
+                'entity' => null,
+                'alert' => "Action executed successfully. You are now redirected to your last action.",
+                'redirect' => ['content' => '3; URL=' . $this->urlOfLastAction()->toString()]
+            ];
+        } else {
+            $this->storeLastAction($action, $args);
+            $crumbs = $this->updateBreadcrumb($crumbs, $action, $args);
+
+            $entityModel = $this->assembleResult($result);
+
+            if ($entityModel) {
+                $model = [
+                    'entity' => $entityModel
+                ];
+            } else {
+                $model = [
+                    'alert' => "Action executed successfully. Result: " . var_export($result, true)
+                ];
+            }
         }
 
-        if (!$result && $this->cookies->hasKey(ExecuteResource::LAST_ACTION_COOKIE)) {
-            $lastAction = $this->cookies->read(ExecuteResource::LAST_ACTION_COOKIE)->payload;
+        return array_merge([
+            'breadcrumbs' => $this->assembleBreadcrumbs($crumbs),
+            'entity' => null,
+            'alert' => null,
+            'redirect' => null
+        ], $model);
+    }
 
-            $url = Url::fromString('execute');
-            $url->getParameters()->set('action', $lastAction['action']);
-            $url->getParameters()->set('args', new Map($lastAction['arguments']));
+    private function urlOfLastAction() {
+        $lastAction = $this->cookies->read(ExecuteResource::LAST_ACTION_COOKIE)->payload;
 
-            return new Redirecter($url);
-        }
+        $url = Url::fromString('execute');
+        $url->getParameters()->set('action', $lastAction['action']);
+        $url->getParameters()->set('args', new Map($lastAction['arguments']));
 
-        $this->storeLastAction($action, $args);
+        return $url;
+    }
 
-        $crumbs = $this->updateBreadcrumb($action, $args);
-        $breadcrumbs = $this->assembleBreadcrumbs($crumbs);
-
-        return [
-            'breadcrumbs' => $breadcrumbs,
-            'entity' => $this->assembleResult($result)
-        ];
+    /**
+     * @param $action
+     * @param Map $args
+     * @return array
+     */
+    public function doPost($action, Map $args = null) {
+        return $this->doGet($action, $args, true);
     }
 
     /**
@@ -117,7 +146,7 @@ class ExecuteResource extends ActionResource {
         } else if (is_object($result)) {
             return $this->assembleEntity($result);
         } else {
-            return "Action executed. Result: " . var_export($result, true);
+            return null;
         }
     }
 
@@ -217,12 +246,8 @@ class ExecuteResource extends ActionResource {
         ]), self::LAST_ACTION_COOKIE);
     }
 
-    private function updateBreadcrumb($action, Map $args) {
-
-        $crumbs = [];
-        if ($this->cookies->hasKey(self::BREADCRUMB_COOKIE)) {
-            $crumbs = $this->cookies->read(self::BREADCRUMB_COOKIE)->payload;
-
+    private function updateBreadcrumb($crumbs, $action, Map $args) {
+        if ($crumbs) {
             $newCrumbs = [];
             foreach ($crumbs as $crumb) {
                 /** @noinspection PhpUnusedLocalVariableInspection */
@@ -244,6 +269,13 @@ class ExecuteResource extends ActionResource {
         $this->cookies->create(new Cookie($crumbs), self::BREADCRUMB_COOKIE);
 
         return $crumbs;
+    }
+
+    private function readBreadcrumbs() {
+        if ($this->cookies->hasKey(self::BREADCRUMB_COOKIE)) {
+            return $this->cookies->read(self::BREADCRUMB_COOKIE)->payload;
+        }
+        return [];
     }
 
     private function assembleBreadcrumbs($crumbs) {

@@ -50,7 +50,6 @@ class PrepareResource extends ActionResource {
             'title' => $representer->getName($class),
             'action' => 'execute',
             'parameter' => [
-                ['name' => 'prepared', 'value' => 'true'],
                 ['name' => 'action', 'value' => $class],
                 ['name' => 'args[id]', 'value' => $representer->getId($action)],
             ],

@@ -53,7 +53,8 @@ class ExecuteActionsTest extends Specification {
         ]);
 
         $this->whenIExecuteTheAction('MyAction');
-        $this->resource->thenIShouldBeRedirectedTo('execute?action=MyAction&args[one]=eins&args[two]=zwei');
+        $this->thenAnAlertShouldSay("Action executed successfully. You are now redirected to your last action.");
+        $this->thenIShouldBeRedirectedTo_After_Seconds('execute?action=MyAction&args[one]=eins&args[two]=zwei', 3);
     }
 
     function testActionWithConstructorArguments() {
@@ -109,6 +110,14 @@ class ExecuteActionsTest extends Specification {
             'action' => $action,
             'arguments' => $arguments
         ]), ExecuteResource::LAST_ACTION_COOKIE);
+    }
+
+    private function thenAnAlertShouldSay($string) {
+        $this->resource->then_ShouldBe('alert', $string);
+    }
+
+    private function thenIShouldBeRedirectedTo_After_Seconds($string, $seconds) {
+        $this->resource->then_ShouldBe('redirect/content', "$seconds; URL=$string");
     }
 
 } 

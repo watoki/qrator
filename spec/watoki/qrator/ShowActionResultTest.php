@@ -175,7 +175,7 @@ class ShowActionResultTest extends Specification {
         }, 'MyAction');
 
         $this->whenIShowTheResultsOf('MyAction');
-        $this->thenItShouldReturn("Action executed. Result: NULL");
+        $this->thenAnAlertShouldSay("Action executed successfully. Result: NULL");
     }
 
     function testShowArrayProperty() {
@@ -350,8 +350,8 @@ class ShowActionResultTest extends Specification {
         $this->resource->then_ShouldBe("entity/properties/item/$propertyPos/value/actions/$actionPos/link/href", $target);
     }
 
-    private function thenItShouldReturn($string) {
-        $this->resource->then_ShouldBe('entity', $string);
+    private function thenAnAlertShouldSay($string) {
+        $this->resource->then_ShouldBe('alert', $string);
     }
 
 } 
