@@ -34,7 +34,7 @@ label {
 
 [property=properties] {
     overflow: hidden;
-    max-height: 15em;
+    max-height: 13em;
     position: relative;
     margin-bottom: .5em;
 }
@@ -45,11 +45,8 @@ label {
     height: 20%;
     width: 100%;
     content: "";
-    background: linear-gradient(to top,
-    rgba(255,255,255, 1) 0%,
-    rgba(255,255,255, 0) 60%
-    );
-    pointer-events: none; /* so the text is still selectable */
+    background: linear-gradient(to top, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 80%);
+    pointer-events: none;
 }
 
 [property=entity]:only-child [property=properties] {
@@ -76,11 +73,19 @@ h5 {
     margin-top: 1em;
 }
 
-a[href^=execute] {
-    background-color: #DFF0D8;
-    color: #3C763D;
+[property=entity] a[href^=execute] {
+    color: #FFF;
+    background-color: #3071A9;
+    border-color: #285E8E;
+
     display: inline-block;
     border-radius: 2pt;
     padding: 2pt 4pt;
     margin: 2pt 0px;
+}
+
+.panel-heading h1,
+.panel-heading [property=actions],
+.panel-heading [property=actions] * {
+    display: inline;
 }

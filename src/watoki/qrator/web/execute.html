@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Execute</title>
+    <title>qrator - execute</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/style.css">
 </head>
@@ -19,40 +19,33 @@
 
     <div>
         <div property="entity" class="panel panel-info">
-            <h1 class="panel-heading" property="name">Some Model</h1>
+            <div class="panel-heading">
+                <h1 property="name">Some Model</h1>
 
-            <div class="panel-body row">
-                <div property="properties" class="col-md-9">
+                <div property="actions">
                     <ul>
                         <li property="item">
-                            <h5 property="name">Property</h5>
-
-                            <div property="value">
-                                <span property="caption">Value</span>
-                                <span property="actions">
-                                    <a property="link" href="prepare.html"><span property="name">Some Action</span></a>
-                                </span>
-                            </div>
+                            <a property="link" href="prepare.html"><span
+                                    property="name">Some Action</span></a>
                         </li>
                     </ul>
                 </div>
-
-                <div class="col-md-3">
-                    <div class="panel panel-default ">
-                        <div class="panel-heading">Actions</div>
-                        <div class="panel-body">
-                            <div property="actions">
-                                <ul>
-                                    <li property="item">
-                                        <a property="link" href="prepare.html"><span
-                                                property="name">Some Action</span></a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
+
+            <div class="panel-body"><div property="properties">
+                <ul>
+                    <li property="item">
+                        <h5 property="name">Property</h5>
+
+                        <div property="value">
+                            <span property="caption">Value</span>
+                                <span property="actions">
+                                    <a property="link" href="prepare.html"><span property="name">Some Action</span></a>
+                                </span>
+                        </div>
+                    </li>
+                </ul>
+            </div></div>
 
         </div>
     </div>
