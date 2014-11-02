@@ -2,17 +2,16 @@
 namespace watoki\qrator\web;
 
 use watoki\collections\Map;
-use watoki\curir\responder\Redirecter;
-use watoki\factory\exception\InjectionException;
-use watoki\qrator\ActionDispatcher;
-use watoki\qrator\representer\ActionGenerator;
-use watoki\qrator\representer\PropertyActionGenerator;
-use watoki\qrator\RepresenterRegistry;
 use watoki\curir\cookie\Cookie;
 use watoki\curir\cookie\CookieStore;
 use watoki\curir\protocol\Url;
 use watoki\curir\Responder;
+use watoki\factory\exception\InjectionException;
 use watoki\factory\Factory;
+use watoki\qrator\ActionDispatcher;
+use watoki\qrator\representer\ActionGenerator;
+use watoki\qrator\representer\PropertyActionGenerator;
+use watoki\qrator\RepresenterRegistry;
 use watoki\tempan\model\ListModel;
 
 class ExecuteResource extends ActionResource {
@@ -48,6 +47,21 @@ class ExecuteResource extends ActionResource {
 
         if ($result instanceof Responder) {
             return $result;
+        }
+
+        $representer = $this->registry->getActionRepresenter($action);
+        $followUpAction = $representer->getFollowUpAction();
+
+        if ($followUpAction) {
+            $url = Url::fromString('execute');
+            $url->getParameters()->set('action', $followUpAction->getClass());
+            $url->getParameters()->set('args', new Map($followUpAction->getArguments($result)));
+
+            $model = [
+                'entity' => null,
+                'alert' => "Action executed successfully. Please stand by.",
+                'redirect' => ['content' => '3; URL=' . $url->toString()]
+            ];
         } else if (!$result && $this->cookies->hasKey(ExecuteResource::LAST_ACTION_COOKIE)) {
             $model = [
                 'entity' => null,

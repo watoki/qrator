@@ -22,6 +22,9 @@ class GenericActionRepresenter extends GenericRepresenter implements ActionRepre
         $this->factory = $factory;
     }
 
+    /** @var null|ActionGenerator */
+    private $followUpAction;
+
     /**
      * @param object|string $action
      * @return array|\watoki\qrator\form\Field[]
@@ -93,5 +96,16 @@ class GenericActionRepresenter extends GenericRepresenter implements ActionRepre
             }
         }
         return false;
+    }
+
+    public function setFollowUpAction(ActionGenerator $action) {
+        $this->followUpAction = $action;
+    }
+
+    /**
+     * @return null|\watoki\qrator\representer\ActionGenerator
+     */
+    public function getFollowUpAction() {
+        return $this->followUpAction;
     }
 }

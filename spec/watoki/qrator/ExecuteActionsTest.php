@@ -1,5 +1,7 @@
 <?php
 namespace spec\watoki\qrator;
+
+use watoki\qrator\representer\ActionGenerator;
 use watoki\qrator\web\ExecuteResource;
 use watoki\curir\cookie\Cookie;
 use watoki\curir\cookie\CookieStore;
@@ -30,8 +32,6 @@ class ExecuteActionsTest extends Specification {
     }
 
     function testStoreLastActionInCookie() {
-        $this->class->givenTheClass('MyAction');
-
         $this->dispatcher->givenAnObject('myHandler');
         $this->dispatcher->givenIAdded_AsHandlerFor('myHandler', 'MyAction');
 
@@ -46,7 +46,6 @@ class ExecuteActionsTest extends Specification {
     }
 
     function testRedirectToLastActionFromCookie() {
-        $this->class->givenTheClass('MyAction');
         $this->givenTheLastActionWas_WithArguments('MyAction', [
             'one' => 'eins',
             'two' => 'zwei'
@@ -81,6 +80,17 @@ class ExecuteActionsTest extends Specification {
         $this->resource->thenIShouldBeRedirectedTo('prepare?action=test%5CMissingConstructorArguments');
     }
 
+    function testFollowUpAction() {
+        $this->class->givenTheClass('ActionWithFollowUp');
+        $this->class->givenTheClass('FollowUpAction');
+
+        $this->givenISet_With_ToFollowAfter('FollowUpAction', ['foo' => 'bar'], 'ActionWithFollowUp');
+
+        $this->whenIExecuteTheAction('ActionWithFollowUp');
+        $this->thenAnAlertShouldSay("Action executed successfully. Please stand by.");
+        $this->thenIShouldBeRedirectedTo('FollowUpAction&args[foo]=bar');
+    }
+
     ####################################################################################################
 
     /** @var CookieStore */
@@ -89,6 +99,20 @@ class ExecuteActionsTest extends Specification {
     protected function setUp() {
         parent::setUp();
         $this->cookies = new CookieStore(new SerializerRepository(), array());
+    }
+
+    private function givenTheLastActionWas_WithArguments($action, $arguments) {
+        $this->cookies->create(new Cookie([
+            'action' => $action,
+            'arguments' => $arguments
+        ]), ExecuteResource::LAST_ACTION_COOKIE);
+    }
+
+    private function givenISet_With_ToFollowAfter($class, $args, $followed) {
+        $this->registry->givenIRegisteredAnActionRepresenterFor($followed);
+        $this->registry->representers[$followed]->setFollowUpAction(new ActionGenerator($class, function () use ($args) {
+            return $args;
+        }));
     }
 
     private function whenIExecuteTheAction($action) {
@@ -105,19 +129,16 @@ class ExecuteActionsTest extends Specification {
         ], $cookie->payload);
     }
 
-    private function givenTheLastActionWas_WithArguments($action, $arguments) {
-        $this->cookies->create(new Cookie([
-            'action' => $action,
-            'arguments' => $arguments
-        ]), ExecuteResource::LAST_ACTION_COOKIE);
-    }
-
     private function thenAnAlertShouldSay($string) {
         $this->resource->then_ShouldBe('alert', $string);
     }
 
     private function thenIShouldBeRedirectedTo_After_Seconds($string, $seconds) {
         $this->resource->then_ShouldBe('redirect/content', "$seconds; URL=$string");
+    }
+
+    private function thenIShouldBeRedirectedTo($string) {
+        $this->resource->then_ShouldContain('redirect/content', $string);
     }
 
 } 

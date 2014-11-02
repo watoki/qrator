@@ -31,4 +31,9 @@ interface ActionRepresenter extends Representer {
      */
     public function hasMissingProperties($object);
 
+    /**
+     * @return null|\watoki\qrator\representer\ActionGenerator
+     */
+    public function getFollowUpAction();
+
 } 
