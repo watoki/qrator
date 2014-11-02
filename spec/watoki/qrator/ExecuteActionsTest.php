@@ -91,6 +91,21 @@ class ExecuteActionsTest extends Specification {
         $this->thenIShouldBeRedirectedTo('FollowUpAction&args[foo]=bar');
     }
 
+    function testFollowUpActionGeneratorGetResultOfFollowedAction() {
+        $this->class->givenTheClass('ActionWithFollowUp');
+        $this->class->givenTheClass('FollowUpAction');
+
+        $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
+            return "baz";
+        }, 'ActionWithFollowUp');
+
+        $this->givenISet_WithTheCallback_ToFollowAfter('FollowUpAction', 'return ["foo" => $result];', 'ActionWithFollowUp');
+
+        $this->whenIExecuteTheAction('ActionWithFollowUp');
+        $this->thenAnAlertShouldSay("Action executed successfully. Please stand by.");
+        $this->thenIShouldBeRedirectedTo('FollowUpAction&args[foo]=baz');
+    }
+
     ####################################################################################################
 
     /** @var CookieStore */
@@ -109,10 +124,19 @@ class ExecuteActionsTest extends Specification {
     }
 
     private function givenISet_With_ToFollowAfter($class, $args, $followed) {
-        $this->registry->givenIRegisteredAnActionRepresenterFor($followed);
-        $this->registry->representers[$followed]->setFollowUpAction(new ActionGenerator($class, function () use ($args) {
+        $this->givenISet_WithTheCallback_ToFollowAfter($class, function () use ($args) {
             return $args;
-        }));
+        }, $followed);
+    }
+
+    private function givenISet_WithTheCallback_ToFollowAfter($class, $callback, $followed) {
+        if (is_string($callback)) {
+            $callback = function ($result) use ($callback) {
+                return eval($callback);
+            };
+        }
+        $this->registry->givenIRegisteredAnActionRepresenterFor($followed);
+        $this->registry->representers[$followed]->setFollowUpAction(new ActionGenerator($class, $callback));
     }
 
     private function whenIExecuteTheAction($action) {
