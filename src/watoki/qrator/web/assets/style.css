@@ -20,6 +20,12 @@ label {
     z-index: 10;
 }
 
+@media (max-width: 720px) {
+    [property=breadcrumbs] {
+        position: static;
+    }
+}
+
 [property=breadcrumbs] li {
     display: inline;
 }
@@ -34,7 +40,7 @@ label {
 
 [property=properties] {
     overflow: hidden;
-    max-height: 13em;
+    max-height: 10em;
     position: relative;
     margin-bottom: .5em;
 }
@@ -58,6 +64,28 @@ label {
     background: none;
 }
 
+[property=properties] h5:after {
+    content: ':'
+}
+
+[property=properties] [property=name],
+[property=properties] [property=value] {
+    display: inline;
+}
+
+[property=properties] [property=value] .action {
+    display: none;
+}
+
+[property=entity]:only-child [property=properties] [property=name],
+[property=entity]:only-child [property=properties] [property=value] {
+    display: block;
+}
+
+[property=entity]:only-child [property=properties] [property=value] .action {
+    display: inline-block;
+}
+
 [property=entity] .panel {
     margin-bottom: 0;
 }
@@ -73,7 +101,7 @@ h5 {
     margin-top: 1em;
 }
 
-[property=entity] a[href^=execute] {
+[property=entity] a.action {
     color: #FFF;
     background-color: #3071A9;
     border-color: #285E8E;
