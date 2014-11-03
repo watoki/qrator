@@ -21,7 +21,7 @@ class DeriveActionsFromMethodsTest extends Specification {
 
     protected function background() {
         $this->class->givenTheClass_WithTheBody('construct\SomeClass', '
-            function someMethod($one, $two) {
+            function someMethod($one, $two = null) {
                 return $one . " " . $two;
             }
         ');
@@ -38,6 +38,12 @@ class DeriveActionsFromMethodsTest extends Specification {
         $this->whenIConstructAnActionFromTheMethod_Of('someMethod', 'construct\SomeClass');
         $this->whenIExecuteTheActionWith(['one' => 'uno', 'two' => 'dos']);
         $this->thenItShouldReturn('uno dos');
+    }
+
+    function testDetermineRequiredProperties() {
+        $this->whenIConstructAnActionFromTheMethod_Of('someMethod', 'construct\SomeClass');
+        $this->thenProperty_ShouldBeRequired('one');
+        $this->thenProperty_ShouldBeOptional('two');
     }
 
     #################################################################################
@@ -69,6 +75,14 @@ class DeriveActionsFromMethodsTest extends Specification {
 
     private function thenItShouldReturn($string) {
         $this->assertEquals($string, $this->returned);
+    }
+
+    private function thenProperty_ShouldBeRequired($string) {
+        $this->assertTrue($this->representer->getProperties()[$string]->isRequired());
+    }
+
+    private function thenProperty_ShouldBeOptional($string) {
+        $this->assertFalse($this->representer->getProperties()[$string]->isRequired());
     }
 
 }
@@ -119,8 +133,9 @@ class DerivedActionRepresenter extends \watoki\qrator\representer\GenericActionR
      */
     public function getProperties($object = null) {
         $properties = new Map();
-        foreach ($this->method->getParameters() as $parameters) {
-            $properties->set($parameters->getName(), new PublicProperty($object, $parameters->getName()));
+        foreach ($this->method->getParameters() as $parameter) {
+            $property = new PublicProperty($object, $parameter->getName(), !$parameter->isDefaultValueAvailable());
+            $properties->set($parameter->getName(), $property);
         }
         return $properties;
     }
