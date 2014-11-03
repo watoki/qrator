@@ -25,13 +25,19 @@ class RegistryFixture extends Fixture {
     }
 
     public function givenIRegisteredAnActionRepresenterFor($class) {
-        $this->representers[$class] = new GenericActionRepresenter($this->spec->factory);
-        $this->registry->register($class, $this->representers[$class]);
+        if (array_key_exists($class, $this->representers)) {
+            return;
+        }
+        $this->representers[$class] = new GenericActionRepresenter($class, $this->spec->factory);
+        $this->registry->register($this->representers[$class]);
     }
 
     public function givenIRegisteredAnEntityRepresenterFor($class) {
-        $this->representers[$class] = new GenericEntityRepresenter($this->spec->factory);
-        $this->registry->register($class, $this->representers[$class]);
+        if (array_key_exists($class, $this->representers)) {
+            return;
+        }
+        $this->representers[$class] = new GenericEntityRepresenter($class);
+        $this->registry->register($this->representers[$class]);
     }
 
     public function givenIAddedTheAction_ToTheRepresenterOf($action, $class) {

@@ -14,12 +14,28 @@ abstract class GenericRepresenter implements Representer {
     /** @var null|callable */
     private $stringifier;
 
+    /** @var string */
+    private $class;
+
     /**
      * @param string $class
+     */
+    public function __construct($class) {
+        $this->class = $class;
+    }
+
+    /**
      * @return string
      */
-    public function getName($class) {
-        $class = new \ReflectionClass($class);
+    public function getClass() {
+        return $this->class;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName() {
+        $class = new \ReflectionClass($this->class);
         return preg_replace('/([a-z])([A-Z])/', '$1 $2', $class->getShortName());
     }
 
@@ -37,10 +53,10 @@ abstract class GenericRepresenter implements Representer {
     }
 
     /**
-     * @param object $object
+     * @param object|null $object
      * @return string
      */
-    public function toString($object) {
+    public function toString($object = null) {
         if ($this->stringifier) {
             return call_user_func($this->stringifier, $object);
         }
@@ -72,15 +88,15 @@ abstract class GenericRepresenter implements Representer {
     }
 
     /**
-     * @param object|string $action
+     * @param object|null $object
      * @throws \InvalidArgumentException
-     * @return \watoki\collections\Map|ObjectProperty[] indexed with property name
+     * @return \watoki\collections\Map|ObjectProperty[] indexed by property name
      */
-    public function getProperties($action) {
-        if (is_object($action)) {
-            return $this->getObjectProperties($action);
+    public function getProperties($object = null) {
+        if (is_object($object)) {
+            return $this->getObjectProperties($object);
         } else {
-            return $this->getClassProperties($action);
+            return $this->getClassProperties();
         }
     }
 
@@ -113,9 +129,9 @@ abstract class GenericRepresenter implements Representer {
         return $properties;
     }
 
-    private function getClassProperties($action) {
+    private function getClassProperties() {
         $properties = new Map();
-        $reflection = new \ReflectionClass($action);
+        $reflection = new \ReflectionClass($this->class);
 
         $canSet = [];
         $canGet = [];

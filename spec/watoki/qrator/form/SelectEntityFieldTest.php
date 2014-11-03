@@ -15,6 +15,9 @@ class SelectEntityFieldTest extends Specification {
     protected function background() {
         $this->class->givenTheClass('EntityClass');
         $this->class->givenTheClass('ListEntity');
+        $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
+            return [];
+        }, 'ListEntity');
     }
 
     function testEmptyEntityList() {
@@ -57,8 +60,9 @@ class SelectEntityFieldTest extends Specification {
     ################################################################################################
 
     private function givenASelectEntityField_For_WithTheListAction($name, $class, $action) {
+        $this->registry->givenIRegisteredAnActionRepresenterFor($action);
         $this->field->givenTheField(new SelectEntityField($name, new $action,
-            $this->registry->representers[$class], $this->dispatcher->dispatcher));
+            $this->registry->representers[$class], $this->registry->representers[$action]));
     }
 
 } 

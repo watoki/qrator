@@ -4,17 +4,18 @@ namespace spec\watoki\qrator;
 use watoki\scrut\Specification;
 
 /**
- * An Action gets published over the ActionDispatcher and the result is passed back via a Result object.
+ * An Action gets published over the ActionDispatcher and the result is passed back.
  *
  * @property \spec\watoki\qrator\fixtures\DispatcherFixture dispatcher <-
  * @property \spec\watoki\qrator\fixtures\ClassFixture class <-
+ * @property \watoki\scrut\ExceptionFixture try <-
  */
 class HandleActionsTest extends Specification {
 
     function testActionReachesHandlerObject() {
         $this->class->givenTheClass('some\MyAction');
         $this->dispatcher->givenAnObject('myHandler');
-        $this->dispatcher->givenIAdded_AsHandlerFor('myHandler', 'some\MyAction');
+        $this->dispatcher->givenISet_AsHandlerFor('myHandler', 'some\MyAction');
 
         $this->whenIDispatchTheAction('some\MyAction');
         $this->dispatcher->thenTheMethod_Of_ShouldBeInvoked('myAction', 'myHandler');
@@ -48,7 +49,7 @@ class HandleActionsTest extends Specification {
     function testActionIsPassedAsArgument() {
         $this->class->givenTheClass('argument\MyAction');
         $this->dispatcher->givenAnObject('myHandler');
-        $this->dispatcher->givenIAdded_AsHandlerFor('myHandler', 'argument\MyAction');
+        $this->dispatcher->givenISet_AsHandlerFor('myHandler', 'argument\MyAction');
 
         $this->whenIDispatchTheAction('argument\MyAction');
         $this->dispatcher->thenTheMethodOf_ShouldBeInvokedWithAnInstanceOf('myHandler', 'argument\MyAction');
@@ -70,35 +71,26 @@ class HandleActionsTest extends Specification {
             throw new \Exception("Bam!");
         }, 'fail\MyAction');
 
-        $this->whenIDispatchTheAction('fail\MyAction');
-        $this->thenTheResultShouldFailWith('Bam!');
+        $this->whenITryToDispatchTheAction('fail\MyAction');
+        $this->try->thenTheException_ShouldBeThrown('Bam!');
     }
 
     ##########################################################################################
 
-    /** @var \watoki\smokey\Result */
     private $result;
 
     private function whenIDispatchTheAction($action) {
-        $this->result = $this->dispatcher->dispatcher->fire(new $action);
+        $this->result = $this->dispatcher->registry->representers[$action]->execute(new $action);
     }
 
     private function thenTheResultShouldBeSuccessfulWith($value) {
-        $returned = null;
-        $this->result->onSuccess(function ($found) use (&$returned) {
-            $returned = $found;
-        });
-        $this->assertEquals($value, $returned);
+        $this->assertEquals($value, $this->result);
     }
 
-    private function thenTheResultShouldFailWith($message) {
-        /** @var \Exception $exception */
-        $exception = null;
-        $this->result->onException(function ($e) use (&$exception) {
-            $exception = $e;
+    private function whenITryToDispatchTheAction($string) {
+        $this->try->tryTo(function () use ($string) {
+            $this->whenIDispatchTheAction($string);
         });
-        $this->assertInstanceOf('Exception', $exception);
-        $this->assertEquals($message, $exception->getMessage());
     }
 
 } 

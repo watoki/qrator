@@ -68,7 +68,7 @@ class ShowPreparationFormTest extends Specification {
             public $one;
             public $two;
 
-            public function preFill(\watoki\smokey\Dispatcher $dispatcher) {
+            public function preFill(\watoki\qrator\ActionRepresenter $dispatcher) {
                 $this->one = "Fourtytwo";
             }
         ');
@@ -124,7 +124,7 @@ class ShowPreparationFormTest extends Specification {
     private function whenIPrepare($action) {
         $this->resource->whenIDo_With(function (PrepareResource $resource) use ($action) {
             return $resource->doGet($action, $this->resource->args);
-        }, new PrepareResource($this->factory, $this->registry->registry, new ActionDispatcher($this->factory)));
+        }, new PrepareResource($this->factory, $this->registry->registry));
     }
 
     private function thenThereShouldBe_Fields($int) {

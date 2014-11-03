@@ -2,10 +2,10 @@
 namespace watoki\qrator\representer;
 
 use watoki\collections\Map;
+use watoki\factory\Factory;
 use watoki\qrator\ActionRepresenter;
 use watoki\qrator\form\Field;
 use watoki\qrator\form\fields\StringField;
-use watoki\factory\Factory;
 
 class GenericActionRepresenter extends GenericRepresenter implements ActionRepresenter {
 
@@ -15,23 +15,60 @@ class GenericActionRepresenter extends GenericRepresenter implements ActionRepre
     /** @var Factory */
     private $factory;
 
-    /**
-     * @param Factory $factory <-
-     */
-    public function __construct(Factory $factory) {
-        $this->factory = $factory;
-    }
-
     /** @var null|ActionGenerator */
     private $followUpAction;
 
+    /** @var callable */
+    private $handler;
+
     /**
-     * @param object|string $action
+     * @param string $class
+     * @param Factory $factory <-
+     */
+    public function __construct($class, Factory $factory) {
+        parent::__construct($class);
+        $this->factory = $factory;
+        $this->handler = function () use ($class) {
+            throw new \LogicException("No handler set for [$class]");
+        };
+    }
+
+    /**
+     * @param callable|object|string $handler
+     */
+    public function setHandler($handler) {
+        if (is_callable($handler)) {
+            $this->handler = $handler;
+        } else {
+            $classReflection = new \ReflectionClass($this->getClass());
+            $methodName = lcfirst($classReflection->getShortName());
+
+            $this->handler = function ($action) use ($handler, $methodName) {
+                $handler = is_object($handler) ? $handler : $this->factory->getInstance($handler);
+                if (!method_exists($handler, $methodName) && !method_exists($handler, '__call')) {
+                    $class = get_class($handler);
+                    throw new \InvalidArgumentException("Method [$class::$methodName] does not exist.");
+                }
+                return call_user_func(array($handler, $methodName), $action);
+            };
+        }
+    }
+
+    /**
+     * @param object $object of the action to be executed
+     * @return mixed
+     */
+    public function execute($object) {
+        return call_user_func($this->handler, $object);
+    }
+
+    /**
+     * @param object|string $object
      * @return array|\watoki\qrator\form\Field[]
      */
-    public function getFields($action) {
+    public function getFields($object) {
         $fields = [];
-        foreach ($this->getProperties($action) as $property) {
+        foreach ($this->getProperties($object) as $property) {
             if (!$property->canSet() || $property->name() == 'id') {
                 continue;
             }
@@ -70,13 +107,12 @@ class GenericActionRepresenter extends GenericRepresenter implements ActionRepre
     }
 
     /**
-     * @param string $class
      * @param Map $args
      * @internal param $action
      * @return object
      */
-    public function create($class, Map $args) {
-        $action = $this->factory->getInstance($class, $args->toArray());
+    public function create(Map $args) {
+        $action = $this->factory->getInstance($this->getClass(), $args->toArray());
 
         foreach ($this->getProperties($action) as $property) {
             if ($property->canSet() && $args->has($property->name())) {

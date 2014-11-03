@@ -22,32 +22,31 @@ class RepresenterRegistry {
     }
 
     /**
-     * @param string|null $class
      * @param Representer $representer
      */
-    public function register($class, Representer $representer) {
-        $this->representers[$class] = $representer;
+    public function register(Representer $representer) {
+        $this->representers[$representer->getClass()] = $representer;
     }
 
     /**
-     * @param string|null $class
+     * @param string|object|null $class
      * @throws \Exception
      * @return EntityRepresenter
      */
     public function getEntityRepresenter($class) {
-        return $this->getRepresenter($class, EntityRepresenter::class, function () {
-            return new GenericEntityRepresenter();
+        return $this->getRepresenter($class, EntityRepresenter::class, function ($class) {
+            return new GenericEntityRepresenter($class);
         });
     }
 
     /**
-     * @param string|null $class
+     * @param string|object|null $class
      * @throws \Exception
      * @return ActionRepresenter
      */
     public function getActionRepresenter($class) {
-        return $this->getRepresenter($class, ActionRepresenter::class, function () {
-            return new GenericActionRepresenter($this->factory);
+        return $this->getRepresenter($class, ActionRepresenter::class, function ($class) {
+            return new GenericActionRepresenter($class, $this->factory);
         });
     }
 
@@ -63,7 +62,7 @@ class RepresenterRegistry {
             }
             return $representer;
         } else {
-            return $defaultGenerator();
+            return $defaultGenerator($class);
         }
     }
 }

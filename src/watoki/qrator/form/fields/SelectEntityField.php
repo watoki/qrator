@@ -1,40 +1,39 @@
 <?php
 namespace watoki\qrator\form\fields;
 
+use watoki\qrator\ActionRepresenter;
 use watoki\qrator\EntityRepresenter;
 use watoki\smokey\Dispatcher;
 
 class SelectEntityField extends SelectField {
 
-    /** @var \watoki\smokey\Dispatcher */
-    private $dispatcher;
-
     /** @var object */
     private $listAction;
 
     /** @var \watoki\qrator\EntityRepresenter */
-    private $representer;
+    private $entity;
+
+    /** @var \watoki\qrator\ActionRepresenter */
+    private $action;
 
     /**
      * @param string $name
      * @param object $listAction
      * @param EntityRepresenter $representer
-     * @param Dispatcher $dispatcher
+     * @param ActionRepresenter $action
      */
-    public function __construct($name, $listAction, EntityRepresenter $representer, Dispatcher $dispatcher) {
+    public function __construct($name, $listAction, EntityRepresenter $representer, ActionRepresenter $action) {
         parent::__construct($name);
-        $this->dispatcher = $dispatcher;
         $this->listAction = $listAction;
-        $this->representer = $representer;
+        $this->entity = $representer;
+        $this->action = $action;
     }
 
     protected function getOptions() {
         $options = [];
-        $this->dispatcher->fire($this->listAction)->onSuccess(function ($list) use (&$options) {
-            foreach ($list as $entity) {
-                $options[$this->representer->getId($entity)] = $this->representer->toString($entity);
-            }
-        });
+        foreach ($this->action->execute($this->listAction) as $entity) {
+            $options[$this->entity->getId($entity)] = $this->entity->toString($entity);
+        }
         return $options;
     }
 

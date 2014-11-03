@@ -19,19 +19,14 @@ abstract class ActionResource extends Container {
     /** @var RepresenterRegistry */
     protected $registry;
 
-    /** @var Dispatcher */
-    protected $dispatcher;
-
     /**
      * @param Factory $factory <-
      * @param RepresenterRegistry $registry <-
-     * @param ActionDispatcher $dispatcher <-
      */
-    function __construct(Factory $factory, RepresenterRegistry $registry, ActionDispatcher $dispatcher) {
+    function __construct(Factory $factory, RepresenterRegistry $registry) {
         parent::__construct($factory);
         $this->registry = $registry;
         $this->factory = $factory;
-        $this->dispatcher = $dispatcher;
     }
 
     protected function createDefaultRenderer() {

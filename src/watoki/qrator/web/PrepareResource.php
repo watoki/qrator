@@ -25,7 +25,7 @@ class PrepareResource extends ActionResource {
         $representer = $this->registry->getActionRepresenter($action);
 
         try {
-            $object = $representer->create($action, $args);
+            $object = $representer->create($args);
 
             if (!$representer->hasMissingProperties($object)) {
                 return $this->redirectTo('execute', $args, ['action' => $action]);
@@ -42,7 +42,7 @@ class PrepareResource extends ActionResource {
     private function assembleForm($action) {
         $class = is_object($action) ? get_class($action) : $action;
         if (is_object($action) && $action instanceof PreFilling) {
-            $action->preFill($this->dispatcher);
+            $action->preFill($this->registry->getActionRepresenter($action));
         }
 
         $representer = $this->registry->getActionRepresenter($class);

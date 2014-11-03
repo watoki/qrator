@@ -263,7 +263,7 @@ class ShowActionResultTest extends Specification {
 
         $this->resource->whenIDo_With(function (ExecuteResource $resource) use ($action) {
             return $resource->doGet($action, $this->resource->args);
-        }, new ExecuteResource($this->factory, $this->dispatcher->dispatcher, $this->registry->registry, $cookies));
+        }, new ExecuteResource($this->factory, $this->registry->registry, $cookies));
     }
 
     private function whenITryToShowTheResultsOf($action) {

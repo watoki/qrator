@@ -24,12 +24,11 @@ class ExecuteResource extends ActionResource {
 
     /**
      * @param Factory $factory <-
-     * @param ActionDispatcher $dispatcher <-
      * @param RepresenterRegistry $registry <-
      * @param \watoki\curir\cookie\CookieStore $cookies <-
      */
-    function __construct(Factory $factory, ActionDispatcher $dispatcher, RepresenterRegistry $registry, CookieStore $cookies) {
-        parent::__construct($factory, $registry, $dispatcher);
+    function __construct(Factory $factory, RepresenterRegistry $registry, CookieStore $cookies) {
+        parent::__construct($factory, $registry);
         $this->cookies = $cookies;
     }
 
@@ -122,13 +121,13 @@ class ExecuteResource extends ActionResource {
         $representer = $this->registry->getActionRepresenter($action);
 
         try {
-            $object = $representer->create($action, $args);
+            $object = $representer->create($args);
 
             if (!$prepared && $representer->hasMissingProperties($object)) {
                 return $this->redirectToPrepare($action, $args);
             }
 
-            return $this->fireAction($object);
+            return $representer->execute($object);
         } catch (InjectionException $e) {
             return $this->redirectToPrepare($action, $args);
         }
@@ -138,18 +137,6 @@ class ExecuteResource extends ActionResource {
         return $this->redirectTo('prepare', $args, array(
             'action' => $action
         ));
-    }
-
-    private function fireAction($action) {
-        $result = null;
-        $this->dispatcher->fire($action)
-            ->onSuccess(function ($returned) use (&$result) {
-                $result = $returned;
-            })
-            ->onException(function (\Exception $e) {
-                throw $e;
-            });
-        return $result;
     }
 
     private function assembleResult($result) {
@@ -275,7 +262,7 @@ class ExecuteResource extends ActionResource {
         }
 
         $representer = $this->registry->getActionRepresenter($action);
-        $object = $representer->create($action, $args);
+        $object = $representer->create($args);
         $caption = $representer->toString($object);
 
         $crumbs[] = [$caption, $action, $args->toArray()];

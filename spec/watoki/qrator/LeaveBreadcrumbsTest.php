@@ -18,7 +18,7 @@ class LeaveBreadcrumbsTest extends Specification {
 
     protected function background() {
         $this->class->givenTheClass('test\SomeAction');
-        $this->dispatcher->givenIAdded_AsHandlerFor('myHandler', 'test\SomeAction');
+        $this->dispatcher->givenISet_AsHandlerFor('myHandler', 'test\SomeAction');
     }
 
     function testStoreBreadcrumbsInCookie() {
@@ -92,8 +92,7 @@ class LeaveBreadcrumbsTest extends Specification {
     private function whenIExecuteTheAction($action) {
         $this->resource->whenIDo_With(function (ExecuteResource $resource) use ($action) {
             return $resource->doGet($action, $this->resource->args);
-        }, new ExecuteResource($this->factory, $this->dispatcher->dispatcher,
-            new RepresenterRegistry($this->factory), $this->cookies));
+        }, new ExecuteResource($this->factory, $this->dispatcher->registry->registry, $this->cookies));
     }
 
     private function thenTheBreadcrumbs_ShouldBeStored($array) {

@@ -25,6 +25,7 @@ class ExecuteActionsTest extends Specification {
                 $GLOBALS["handlerReached"] = true;
             }
         ');
+        $this->registry->givenIRegisteredAnActionRepresenterFor('MyAction');
         $this->dispatcher->givenIAddedTheClass_AsHandlerFor('reach\MyHandler', 'MyAction');
 
         $this->whenIExecuteTheAction('MyAction');
@@ -32,8 +33,10 @@ class ExecuteActionsTest extends Specification {
     }
 
     function testStoreLastActionInCookie() {
+        $this->class->givenTheClass('MyAction');
         $this->dispatcher->givenAnObject('myHandler');
-        $this->dispatcher->givenIAdded_AsHandlerFor('myHandler', 'MyAction');
+        $this->registry->givenIRegisteredAnActionRepresenterFor('MyAction');
+        $this->dispatcher->givenISet_AsHandlerFor('myHandler', 'MyAction');
 
         $this->resource->givenTheActionArgument_Is('one', 'uno');
         $this->resource->givenTheActionArgument_Is('two', 'dos');
@@ -50,6 +53,8 @@ class ExecuteActionsTest extends Specification {
             'one' => 'eins',
             'two' => 'zwei'
         ]);
+        $this->registry->givenIRegisteredAnActionRepresenterFor('MyAction');
+        $this->dispatcher->givenISetAnEmptyHandlerFor('MyAction');
 
         $this->whenIExecuteTheAction('MyAction');
         $this->thenAnAlertShouldSay("Action executed successfully. You are now redirected to your last action.");
@@ -63,6 +68,10 @@ class ExecuteActionsTest extends Specification {
                 $GLOBALS["two"] = $two;
             }
         ');
+
+        $this->registry->givenIRegisteredAnActionRepresenterFor('test\ConstructorAction');
+        $this->dispatcher->givenISetAnEmptyHandlerFor('test\ConstructorAction');
+
         $this->resource->givenTheActionArgument_Is('one', 'uno');
         $this->resource->givenTheActionArgument_Is('two', 'dos');
 
@@ -86,6 +95,8 @@ class ExecuteActionsTest extends Specification {
 
         $this->givenISet_With_ToFollowAfter('FollowUpAction', ['foo' => 'bar'], 'ActionWithFollowUp');
 
+        $this->dispatcher->givenISetAnEmptyHandlerFor('ActionWithFollowUp');
+
         $this->whenIExecuteTheAction('ActionWithFollowUp');
         $this->thenAnAlertShouldSay("Action executed successfully. Please stand by.");
         $this->thenIShouldBeRedirectedTo('FollowUpAction&args[foo]=bar');
@@ -95,11 +106,11 @@ class ExecuteActionsTest extends Specification {
         $this->class->givenTheClass('ActionWithFollowUp');
         $this->class->givenTheClass('FollowUpAction');
 
+        $this->givenISet_WithTheCallback_ToFollowAfter('FollowUpAction', 'return ["foo" => $result];', 'ActionWithFollowUp');
+
         $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
             return "baz";
         }, 'ActionWithFollowUp');
-
-        $this->givenISet_WithTheCallback_ToFollowAfter('FollowUpAction', 'return ["foo" => $result];', 'ActionWithFollowUp');
 
         $this->whenIExecuteTheAction('ActionWithFollowUp');
         $this->thenAnAlertShouldSay("Action executed successfully. Please stand by.");
@@ -142,7 +153,7 @@ class ExecuteActionsTest extends Specification {
     private function whenIExecuteTheAction($action) {
         $this->resource->whenIDo_With(function (ExecuteResource $resource) use ($action) {
             return $resource->doGet($action, $this->resource->args);
-        }, new ExecuteResource($this->factory, $this->dispatcher->dispatcher, $this->registry->registry, $this->cookies));
+        }, new ExecuteResource($this->factory, $this->registry->registry, $this->cookies));
     }
 
     private function then_WithArguments_ShouldBeStoredAsLastAction($action, $arguments) {

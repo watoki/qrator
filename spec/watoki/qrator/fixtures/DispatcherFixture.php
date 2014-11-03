@@ -1,39 +1,40 @@
 <?php
 namespace spec\watoki\qrator\fixtures;
 
-use watoki\qrator\ActionDispatcher;
 use watoki\scrut\Fixture;
 
+/**
+ * @property RegistryFixture registry <-
+ */
 class DispatcherFixture extends Fixture {
-
-    /** @var ActionDispatcher */
-    public $dispatcher;
 
     /** @var TestObject[] */
     public $objects = [];
-
-    public function setUp() {
-        parent::setUp();
-        $this->dispatcher = new ActionDispatcher($this->spec->factory);
-    }
 
     public function givenAnObject($object) {
         $this->objects[$object] = new TestObject();
     }
 
-    public function givenIAdded_AsHandlerFor($object, $action) {
+    private function assureRepresenter($class) {
+        $this->registry->givenIRegisteredAnActionRepresenterFor($class);
+    }
+
+    public function givenISet_AsHandlerFor($object, $action) {
+        $this->assureRepresenter($action);
         if (!array_key_exists($object, $this->objects)) {
             $this->givenAnObject($object);
         }
-        $this->dispatcher->addActionHandler($action, $this->objects[$object]);
+        $this->registry->representers[$action]->setHandler($this->objects[$object]);
     }
 
     public function givenIAddedTheClass_AsHandlerFor($class, $action) {
-        $this->dispatcher->addActionHandler($action, $class);
+        $this->assureRepresenter($action);
+        $this->registry->representers[$action]->setHandler($class);
     }
 
     public function givenIAddedTheClosure_AsHandlerFor($callable, $action) {
-        $this->dispatcher->addActionHandler($action, $callable);
+        $this->assureRepresenter($action);
+        $this->registry->representers[$action]->setHandler($callable);
     }
 
     public function thenTheMethod_Of_ShouldBeInvoked($method, $object) {
@@ -42,6 +43,11 @@ class DispatcherFixture extends Fixture {
 
     public function thenTheMethodOf_ShouldBeInvokedWithAnInstanceOf($object, $class) {
         $this->spec->assertInstanceOf($class, $this->objects[$object]->args[0][0]);
+    }
+
+    public function givenISetAnEmptyHandlerFor($action) {
+        $this->givenIAddedTheClosure_AsHandlerFor(function () {
+        }, $action);
     }
 }
 

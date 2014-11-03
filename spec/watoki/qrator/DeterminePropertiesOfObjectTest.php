@@ -95,21 +95,19 @@ class DeterminePropertiesOfObjectTest extends Specification {
     /** @var \watoki\qrator\representer\property\ObjectProperty[] */
     private $properties;
 
-    /** @var \watoki\qrator\ActionRepresenter */
-    private $representer;
-
     protected function setUp() {
         parent::setUp();
-        $this->representer = new GenericActionRepresenter($this->factory);
     }
 
     private function whenIDetermineThePropertiesOfAnInstanceOf($class) {
-        $this->properties = $this->representer->getProperties($this->representer->create($class, new Map($this->args)));
+        $representer = new GenericActionRepresenter($class, $this->factory);
+        $this->properties = $representer->getProperties($representer->create(new Map($this->args)));
         return true;
     }
 
     private function whenIDetermineThePropertiesOf($class) {
-        $this->properties = $this->representer->getProperties($class);
+        $representer = new GenericActionRepresenter($class, $this->factory);
+        $this->properties = $representer->getProperties($class);
         return true;
     }
 

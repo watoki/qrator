@@ -63,17 +63,6 @@ class PrepareActionsTest extends Specification {
         $this->resource->thenIShouldBeRedirectedTo('prepare?action=ComplexAction&args[one]=uno&args[three]=tres');
     }
 
-    function testGetActionInstanceFromFactory() {
-        $this->class->givenTheClass('OtherClass');
-        $this->givenISetAnInstanceOf_AsSingletonFor('OtherClass', 'ComplexAction');
-        $this->dispatcher->givenAnObject('myHandler');
-        $this->dispatcher->givenIAdded_AsHandlerFor('myHandler', 'OtherClass');
-
-        $this->whenIExecuteTheAction('ComplexAction');
-        $this->resource->thenIShouldNotBeRedirected();
-        $this->dispatcher->thenTheMethodOf_ShouldBeInvokedWithAnInstanceOf('myHandler', 'OtherClass');
-    }
-
     function testInflateArguments() {
         $this->class->givenTheClass_WithTheBody('inflateArgs\InflatableAction', '
             public $inflateMe;
@@ -134,7 +123,7 @@ class PrepareActionsTest extends Specification {
 
         $this->resource->whenIDo_With(function (ExecuteResource $resource) use ($action) {
             return $resource->doGet($action, $this->resource->args, $this->prepared);
-        }, new ExecuteResource($this->factory, $this->dispatcher->dispatcher, $this->registry->registry, $cookies));
+        }, new ExecuteResource($this->factory, $this->registry->registry, $cookies));
     }
 
     private function givenISetTheField_Of_ToBeAnInstanceOf($field, $class, $fieldClass) {

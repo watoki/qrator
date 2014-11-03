@@ -4,22 +4,26 @@ namespace watoki\qrator;
 interface Representer {
 
     /**
-     * @param string $class
      * @return string
      */
-    public function getName($class);
+    public function getClass();
 
     /**
-     * @param object $object
      * @return string
      */
-    public function toString($object);
+    public function getName();
 
     /**
-     * @param object|string $action Object or class reference
-     * @return array|\watoki\qrator\representer\property\ObjectProperty[]
+     * @param object|null $object
+     * @return string
      */
-    public function getProperties($action);
+    public function toString($object = null);
+
+    /**
+     * @param object|null $object
+     * @return \watoki\collections\Map|\watoki\qrator\representer\property\ObjectProperty[]  indexed by property name
+     */
+    public function getProperties($object = null);
 
     /**
      * @param object $object

@@ -1,14 +1,15 @@
 <?php
 namespace watoki\qrator\form;
 
+use watoki\qrator\ActionRepresenter;
 use watoki\smokey\Dispatcher;
 
 interface PreFilling {
 
     /**
-     * @param Dispatcher $dispatcher
+     * @param ActionRepresenter $representer
      * @return void
      */
-    public function preFill(Dispatcher $dispatcher);
+    public function preFill(ActionRepresenter $representer);
 
 } 

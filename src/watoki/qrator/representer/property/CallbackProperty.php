@@ -1,7 +1,7 @@
 <?php
 namespace watoki\qrator\representer\property;
 
-class CallbackObjectProperty extends ObjectProperty {
+class CallbackProperty extends ObjectProperty {
 
     /** @var null|callable */
     private $getCallback;
