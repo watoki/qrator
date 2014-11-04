@@ -79,7 +79,7 @@ class GenericActionRepresenter extends BasicActionRepresenter {
      * @return mixed
      */
     public function execute($object) {
-        return call_user_func($this->handler, $object);
+        return $this->executeHandler($this->handler, $object);
     }
 
     /**

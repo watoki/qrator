@@ -100,6 +100,15 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
 
     /**
      * @param callable|object|string $handler
+     * @param object $object
+     * @return mixed
+     */
+    protected function executeHandler($handler, $object) {
+        return call_user_func($this->makeCallable($handler), $object);
+    }
+
+    /**
+     * @param callable|object|string $handler
      * @return callable
      */
     protected function makeCallable($handler) {
