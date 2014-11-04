@@ -64,17 +64,17 @@ class ShowPreparationFormTest extends Specification {
     }
 
     function testPreFillForm() {
-        $this->class->givenTheClass_Implementing_WithTheBody('PreFillingAction', '\watoki\qrator\form\PreFilling', '
+        $this->class->givenTheClass_WithTheBody('PreFillingAction', '
             public $one;
             public $two;
-
-            public function preFill(\watoki\qrator\ActionRepresenter $dispatcher) {
-                $this->one = "Fourtytwo";
-            }
         ');
+        $this->registry->givenIRegisteredAnActionRepresenterFor('PreFillingAction');
+        $this->registry->givenIHaveSetFor_ThePrefiller('PreFillingAction', function ($action) {
+            $action->one = "FortyTwo";
+        });
 
         $this->whenIPrepare('PreFillingAction');
-        $this->thenField_ShouldBeHaveTheValue(1, 'Fourtytwo');
+        $this->thenField_ShouldBeHaveTheValue(1, 'FortyTwo');
         $this->thenField_ShouldBeHaveNoValue(2);
     }
 

@@ -53,4 +53,8 @@ class RegistryFixture extends Fixture {
         $this->representers[$class]->addPropertyAction($property, new PropertyActionGenerator($action));
     }
 
+    public function givenIHaveSetFor_ThePrefiller($action, $callback) {
+        $this->representers[$action]->setPreFiller($callback);
+    }
+
 } 

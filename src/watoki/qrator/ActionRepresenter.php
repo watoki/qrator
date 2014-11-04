@@ -41,4 +41,10 @@ interface ActionRepresenter extends Representer {
      */
     public function getFollowUpAction();
 
+    /**
+     * @param object $object
+     * @return void
+     */
+    public function preFill($object);
+
 } 

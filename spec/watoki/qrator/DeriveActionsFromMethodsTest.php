@@ -67,7 +67,7 @@ class DeriveActionsFromMethodsTest extends Specification {
     }
 
     private function thenTheActionShouldHaveTheName($string) {
-        $this->assertEquals($string, $this->representer->getName('anything'));
+        $this->assertEquals($string, $this->representer->getName());
     }
 
     private function thenTheActionShouldHaveTheClass($string) {

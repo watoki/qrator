@@ -21,6 +21,9 @@ class GenericActionRepresenter extends GenericRepresenter implements ActionRepre
     /** @var callable */
     private $handler;
 
+    /** @var callable */
+    private $preFiller;
+
     /**
      * @param string $class
      * @param Factory $factory <-
@@ -30,6 +33,8 @@ class GenericActionRepresenter extends GenericRepresenter implements ActionRepre
         $this->factory = $factory;
         $this->handler = function () use ($class) {
             throw new \LogicException("No handler set for [$class]");
+        };
+        $this->preFiller = function ($action) {
         };
     }
 
@@ -143,5 +148,16 @@ class GenericActionRepresenter extends GenericRepresenter implements ActionRepre
      */
     public function getFollowUpAction() {
         return $this->followUpAction;
+    }
+
+    public function preFill($object) {
+        call_user_func($this->preFiller, $object);
+    }
+
+    /**
+     * @param callable $preFiller
+     */
+    public function setPreFiller($preFiller) {
+        $this->preFiller = $preFiller;
     }
 }

@@ -233,7 +233,7 @@ class ExecuteResource extends ActionResource {
 
         $representer = $this->registry->getActionRepresenter($action);
         return [
-            'name' => $representer->getName($action),
+            'name' => $representer->getName(),
             'link' => [
                 'href' => $target->toString()
             ]

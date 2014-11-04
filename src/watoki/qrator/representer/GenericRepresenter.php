@@ -77,7 +77,7 @@ abstract class GenericRepresenter implements Representer {
                     ->join('|')
                 . ']';
         }
-        return $this->getName(get_class($object)) . $propertyString;
+        return $this->getName() . $propertyString;
     }
 
     /**

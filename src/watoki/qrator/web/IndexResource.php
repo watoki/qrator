@@ -31,7 +31,7 @@ class IndexResource extends Container {
                 $actionClass = $action->getClass();
                 $representer = $this->registry->getActionRepresenter($actionClass);
                 return [
-                    'name' => $representer->getName($actionClass),
+                    'name' => $representer->getName(),
                     'link' => [
                         'href' => 'execute?action=' . $actionClass
                     ]

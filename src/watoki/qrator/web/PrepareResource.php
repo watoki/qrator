@@ -4,7 +4,6 @@ namespace watoki\qrator\web;
 use watoki\collections\Map;
 use watoki\qrator\ActionRepresenter;
 use watoki\qrator\form\Field;
-use watoki\qrator\form\PreFilling;
 use watoki\qrator\Representer;
 use watoki\factory\exception\InjectionException;
 
@@ -41,13 +40,15 @@ class PrepareResource extends ActionResource {
 
     private function assembleForm($action) {
         $class = is_object($action) ? get_class($action) : $action;
-        if (is_object($action) && $action instanceof PreFilling) {
-            $action->preFill($this->registry->getActionRepresenter($action));
+
+        $representer = $this->registry->getActionRepresenter($action);
+
+        if (is_object($action)) {
+            $representer->preFill($action);
         }
 
-        $representer = $this->registry->getActionRepresenter($class);
         $form = [
-            'title' => $representer->getName($class),
+            'title' => $representer->getName(),
             'action' => 'execute',
             'parameter' => [
                 ['name' => 'action', 'value' => $class],
