@@ -113,7 +113,7 @@ class ShowPreparationFormTest extends Specification {
         $this->class->givenTheClass_WithTheBody('preparation\IncompleteConstructor', '
             public $three;
             function __construct($one, $two) {}
-            function setFour() {}
+            function setFour($f) {}
         ');
         $this->whenIPrepare('preparation\IncompleteConstructor');
         $this->thenThereShouldBe_Fields(4);

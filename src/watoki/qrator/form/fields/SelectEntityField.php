@@ -23,6 +23,13 @@ class SelectEntityField extends SelectField {
         $this->entityClass = $entityClass;
     }
 
+    /**
+     * @return string
+     */
+    public function getEntityClass() {
+        return $this->entityClass;
+    }
+
     protected function getOptions() {
         $representer = $this->registry->getEntityRepresenter($this->entityClass);
         $listActionGenerator = $representer->getListAction();

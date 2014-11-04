@@ -27,6 +27,13 @@ class ArrayField extends TemplatedField {
     }
 
     /**
+     * @return \watoki\qrator\form\Field
+     */
+    public function getInnerField() {
+        return $this->innerField;
+    }
+
+    /**
      * @return array
      */
     protected function getModel() {

@@ -2,6 +2,7 @@
 namespace watoki\qrator;
 
 use watoki\collections\Map;
+use watoki\qrator\representer\Property;
 
 interface ActionRepresenter extends Representer {
 
@@ -12,16 +13,16 @@ interface ActionRepresenter extends Representer {
     public function execute($object);
 
     /**
-     * @param object|null $object
+     * @param object $object
      * @return array|\watoki\qrator\form\Field[] Without ID
      */
     public function getFields($object);
 
     /**
-     * @param string $name
+     * @param \watoki\qrator\representer\Property $property
      * @return \watoki\qrator\form\Field
      */
-    public function getField($name);
+    public function getField(Property $property);
 
     /**
      * @param \watoki\collections\Map|null $args

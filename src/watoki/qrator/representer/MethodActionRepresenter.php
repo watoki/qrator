@@ -6,6 +6,7 @@ use watoki\factory\Factory;
 use watoki\factory\providers\CallbackProvider;
 use watoki\qrator\representer\generic\GenericActionRepresenter;
 use watoki\qrator\representer\property\PublicProperty;
+use watoki\qrator\RepresenterRegistry;
 
 class MethodActionRepresenter extends GenericActionRepresenter {
 
@@ -16,9 +17,10 @@ class MethodActionRepresenter extends GenericActionRepresenter {
      * @param string $className
      * @param string $methodName
      * @param Factory $factory <-
+     * @param RepresenterRegistry $registry <-
      */
-    public function __construct($className, $methodName, Factory $factory) {
-        parent::__construct(self::asClass($className, $methodName), $factory);
+    public function __construct($className, $methodName, Factory $factory, RepresenterRegistry $registry) {
+        parent::__construct(self::asClass($className, $methodName), $factory, $registry);
 
         $this->method = new \ReflectionMethod($className, $methodName);
         $this->createClassDefinition();

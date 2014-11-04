@@ -4,18 +4,30 @@ namespace watoki\qrator\representer\basic;
 use watoki\collections\Map;
 use watoki\factory\Factory;
 use watoki\qrator\ActionRepresenter;
+use watoki\qrator\form\fields\ArrayField;
+use watoki\qrator\form\fields\SelectEntityField;
 use watoki\qrator\form\fields\StringField;
+use watoki\qrator\representer\Property;
+use watoki\qrator\representer\property\types\ArrayType;
+use watoki\qrator\representer\property\types\IdentifierType;
+use watoki\qrator\representer\property\types\StringType;
+use watoki\qrator\RepresenterRegistry;
 
 abstract class BasicActionRepresenter extends BasicRepresenter implements ActionRepresenter {
 
     /** @var \watoki\factory\Factory */
     protected $factory;
 
+    /** @var RepresenterRegistry */
+    private $registry;
+
     /**
      * @param Factory $factory <-
+     * @param RepresenterRegistry $registry <-
      */
-    function __construct(Factory $factory) {
+    function __construct(Factory $factory, RepresenterRegistry $registry) {
         $this->factory = $factory;
+        $this->registry = $registry;
     }
 
     /**
@@ -30,7 +42,7 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
         foreach ($this->getProperties($action) as $property) {
             if ($property->canSet() && $args->has($property->name())) {
                 $value = $args->get($property->name());
-                $inflated = $this->getField($property->name())->inflate($value);
+                $inflated = $this->getField($property)->inflate($value);
                 $property->set($action, $inflated);
             }
         }
@@ -39,7 +51,7 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
     }
 
     /**
-     * @param object|string $object
+     * @param object $object
      * @return array|\watoki\qrator\form\Field[]
      */
     public function getFields($object) {
@@ -49,7 +61,7 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
                 continue;
             }
 
-            $field = $this->getField($property->name());
+            $field = $this->getField($property);
             $fields[] = $field;
 
             if (is_object($object) && $property->canGet()) {
@@ -64,11 +76,21 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
     }
 
     /**
-     * @param string $name
+     * @param \watoki\qrator\representer\Property $property
      * @return \watoki\qrator\form\Field
      */
-    public function getField($name) {
-        return new StringField($name);
+    public function getField(Property $property) {
+        return $this->getFieldForType($property->name(), $property->type());
+    }
+
+    protected function getFieldForType($name, $type) {
+        if ($type instanceof ArrayType) {
+            return new ArrayField($name, $this->getFieldForType($name, $type->getItemType()));
+        } else if ($type instanceof IdentifierType) {
+            return new SelectEntityField($name, $type->getTarget(), $this->registry);
+        } else {
+            return new StringField($name);
+        }
     }
 
     /**

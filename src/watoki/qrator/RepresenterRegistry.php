@@ -65,7 +65,7 @@ class RepresenterRegistry {
      */
     public function getActionRepresenter($class) {
         return $this->getRepresenter($class, ActionRepresenter::class, function ($class) {
-            return new GenericActionRepresenter($class, $this->factory);
+            return new GenericActionRepresenter($class, $this->factory, $this);
         });
     }
 

@@ -12,6 +12,7 @@ use watoki\qrator\representer\property\types\IntegerType;
 use watoki\qrator\representer\property\types\MultiType;
 use watoki\qrator\representer\property\types\NullableType;
 use watoki\qrator\representer\property\types\StringType;
+use watoki\qrator\RepresenterRegistry;
 use watoki\scrut\Specification;
 
 /**
@@ -35,9 +36,9 @@ class DeterminePropertiesOfObjectTest extends Specification {
     function testFindAccessorProperties() {
         $this->class->givenTheClass_WithTheBody('accessors\SomeClass', '
             function getGetter() { return "seven"; }
-            function setSetter() { }
+            function setSetter($a) { }
             function getBoth() {}
-            function setBoth() {}
+            function setBoth($a) {}
             function notAnAccessor() {}
             function getNeither ($becauseOfTheParameter) {}
         ');
@@ -212,7 +213,7 @@ class DeterminePropertiesOfObjectTest extends Specification {
     }
 
     private function whenIDetermineThePropertiesOf($class) {
-        $representer = new GenericActionRepresenter($class, $this->factory);
+        $representer = new GenericActionRepresenter($class, $this->factory, new RepresenterRegistry($this->factory));
         $this->object = $representer->create(new Map($this->args));
         $this->properties = $representer->getProperties($this->object);
         return true;

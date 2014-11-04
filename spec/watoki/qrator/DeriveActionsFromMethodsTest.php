@@ -73,7 +73,7 @@ class DeriveActionsFromMethodsTest extends Specification {
     private $returned;
 
     private function whenIConstructAnActionFromTheMethod_Of($method, $class) {
-        $this->representer = new MethodActionRepresenter($class, $method, $this->factory);
+        $this->representer = new MethodActionRepresenter($class, $method, $this->factory, $this->registry->registry);
         $this->registry->registry->register($this->representer);
     }
 

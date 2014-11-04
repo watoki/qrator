@@ -51,7 +51,8 @@ class PropertyReader {
         }
 
         $accessors = array_filter($reflection->getMethods(\ReflectionMethod::IS_PUBLIC), function (\ReflectionMethod $method) {
-            return substr($method->getName(), 0, 3) == 'set' || substr($method->getName(), 0, 3) == 'get' && empty($method->getParameters());
+            return substr($method->getName(), 0, 3) == 'set' && $method->getNumberOfParameters() == 1
+            || substr($method->getName(), 0, 3) == 'get' && empty($method->getParameters());
         });
 
         foreach ($accessors as $method) {

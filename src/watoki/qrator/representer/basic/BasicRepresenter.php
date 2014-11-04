@@ -2,7 +2,6 @@
 namespace watoki\qrator\representer\basic;
 
 use watoki\qrator\Representer;
-use watoki\qrator\representer\property\ObjectProperty;
 use watoki\qrator\representer\property\PropertyReader;
 use watoki\qrator\representer\Property;
 
