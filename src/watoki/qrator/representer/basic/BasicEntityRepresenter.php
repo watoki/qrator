@@ -2,6 +2,7 @@
 namespace watoki\qrator\representer\basic;
 
 use watoki\qrator\EntityRepresenter;
+use watoki\qrator\representer\ActionGenerator;
 
 abstract class BasicEntityRepresenter extends BasicRepresenter implements EntityRepresenter {
 
@@ -14,8 +15,20 @@ abstract class BasicEntityRepresenter extends BasicRepresenter implements Entity
         return $this->toString($object);
     }
 
+    protected function wrapInActionGenerators($classes) {
+        $generators = [];
+        foreach ($classes as $class => $args) {
+            if (is_numeric($class)) {
+                $class = $args;
+                $args = [];
+            }
+            $generators[] = new ActionGenerator($class, $args);
+        }
+        return $generators;
+    }
+
     /**
-     * @return \watoki\qrator\representer\ActionGenerator[]
+     * @return ActionGenerator[]
      */
     public function getActions() {
         return [];
@@ -23,7 +36,7 @@ abstract class BasicEntityRepresenter extends BasicRepresenter implements Entity
 
     /**
      * @param string $property
-     * @return \watoki\qrator\representer\ActionGenerator[]
+     * @return ActionGenerator[]
      */
     public function getPropertyActions($property) {
         return [];
