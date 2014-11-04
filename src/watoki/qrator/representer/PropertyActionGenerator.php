@@ -5,10 +5,10 @@ class PropertyActionGenerator extends ActionGenerator {
 
     /**
      * @param string $class
-     * @param null|callable $argumentGenerator Takes entity ID and property ID and returns array with action arguments
+     * @param null|callable $arguments Takes entity ID and property ID and returns array with action arguments
      */
-    public function __construct($class, $argumentGenerator = null) {
-        return parent::__construct($class, $argumentGenerator ? $argumentGenerator : function ($id, $propertyId) {
+    public function __construct($class, $arguments = null) {
+        return parent::__construct($class, $arguments ? $arguments : function ($id, $propertyId) {
             if (!$id || !$propertyId) {
                 return [];
             }

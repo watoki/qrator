@@ -11,17 +11,25 @@ class ActionGenerator {
 
     /**
      * @param string $class
-     * @param null|callable $argumentGenerator Takes entity ID and return array with action arguments
+     * @param null|array|callable $arguments Takes entity ID and return array with action arguments
      */
-    public function __construct($class, $argumentGenerator = null) {
-        $this->argumentGenerator = $argumentGenerator ? : function ($id) {
-            if (!$id) {
-                return [];
-            }
-            return [
-                'id' => $id
-            ];
-        };
+    public function __construct($class, $arguments = null) {
+        if (is_array($arguments)) {
+            $this->argumentGenerator = function () use ($arguments) {
+                return $arguments;
+            };
+        } else if ($arguments) {
+            $this->argumentGenerator = $arguments;
+        } else {
+            $this->argumentGenerator = function ($id) {
+                if (!$id) {
+                    return [];
+                }
+                return [
+                    'id' => $id
+                ];
+            };
+        }
         $this->class = $class;
     }
 

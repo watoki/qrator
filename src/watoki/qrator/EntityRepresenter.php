@@ -21,12 +21,12 @@ interface EntityRepresenter extends Representer {
     public function getPropertyActions($property);
 
     /**
-     * @return object|null
+     * @return \watoki\qrator\representer\ActionGenerator|null
      */
     public function getReadAction();
 
     /**
-     * @return object|null
+     * @return \watoki\qrator\representer\ActionGenerator|null
      */
     public function getListAction();
 

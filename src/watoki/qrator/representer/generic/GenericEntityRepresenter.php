@@ -16,10 +16,10 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
     /** @var null|callable */
     private $renderer;
 
-    /** @var object|null */
+    /** @var ActionGenerator|null */
     private $listAction;
 
-    /** @var object|null */
+    /** @var ActionGenerator|null */
     private $readAction;
 
     /** @var null|callable */
@@ -110,30 +110,30 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
     }
 
     /**
-     * @return null|object
+     * @return null|ActionGenerator
      */
     public function getListAction() {
         return $this->listAction;
     }
 
     /**
-     * @param null|object $listAction
+     * @param null|ActionGenerator $listAction
      */
-    public function setListAction($listAction) {
+    public function setListAction(ActionGenerator $listAction) {
         $this->listAction = $listAction;
     }
 
     /**
-     * @return null|object
+     * @return null|ActionGenerator
      */
     public function getReadAction() {
         return $this->readAction;
     }
 
     /**
-     * @param null|object $readAction
+     * @param null|ActionGenerator $readAction
      */
-    public function setReadAction($readAction) {
+    public function setReadAction(ActionGenerator $readAction) {
         $this->readAction = $readAction;
     }
 }

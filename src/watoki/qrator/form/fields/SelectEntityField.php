@@ -1,6 +1,7 @@
 <?php
 namespace watoki\qrator\form\fields;
 
+use watoki\collections\Map;
 use watoki\qrator\RepresenterRegistry;
 
 class SelectEntityField extends SelectField {
@@ -24,10 +25,12 @@ class SelectEntityField extends SelectField {
 
     protected function getOptions() {
         $representer = $this->registry->getEntityRepresenter($this->entityClass);
-        $listAction = $representer->getListAction();
+        $listActionGenerator = $representer->getListAction();
+        $actionRepresenter = $this->registry->getActionRepresenter($listActionGenerator->getClass());
+        $action = $actionRepresenter->create(new Map($listActionGenerator->getArguments(null)));
 
         $options = [];
-        foreach ($this->registry->getActionRepresenter($listAction)->execute($listAction) as $entity) {
+        foreach ($actionRepresenter->execute($action) as $entity) {
             $options[$representer->getId($entity)] = $representer->toString($entity);
         }
         return $options;
