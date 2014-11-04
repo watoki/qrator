@@ -2,7 +2,7 @@
 namespace spec\watoki\qrator;
 
 use watoki\collections\Map;
-use watoki\qrator\representer\GenericActionRepresenter;
+use watoki\qrator\representer\generic\GenericActionRepresenter;
 use watoki\scrut\Specification;
 
 /**

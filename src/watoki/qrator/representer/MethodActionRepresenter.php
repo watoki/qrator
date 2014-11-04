@@ -6,15 +6,13 @@ namespace watoki\qrator\representer;
 use watoki\collections\Map;
 use watoki\factory\Factory;
 use watoki\factory\providers\CallbackProvider;
+use watoki\qrator\representer\generic\GenericActionRepresenter;
 use watoki\qrator\representer\property\PublicProperty;
 
 class MethodActionRepresenter extends GenericActionRepresenter{
 
     /** @var \ReflectionMethod */
     private $method;
-
-    /** @var Factory */
-    private $factory;
 
     /**
      * @param string $className
@@ -23,7 +21,7 @@ class MethodActionRepresenter extends GenericActionRepresenter{
      */
     public function __construct($className, $methodName, Factory $factory) {
         parent::__construct($className, $factory);
-        $this->factory = $factory;
+
         $this->method = new \ReflectionMethod($className, $methodName);
 
         $fullClassName = $this->getClass();

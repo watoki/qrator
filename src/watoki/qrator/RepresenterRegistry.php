@@ -2,8 +2,8 @@
 namespace watoki\qrator;
 
 use watoki\qrator\Representer;
-use watoki\qrator\representer\GenericActionRepresenter;
-use watoki\qrator\representer\GenericEntityRepresenter;
+use watoki\qrator\representer\generic\GenericActionRepresenter;
+use watoki\qrator\representer\generic\GenericEntityRepresenter;
 use watoki\factory\Factory;
 
 class RepresenterRegistry {

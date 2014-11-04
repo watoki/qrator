@@ -1,41 +1,21 @@
 <?php
-namespace watoki\qrator\representer;
+namespace watoki\qrator\representer\basic;
 
 use watoki\collections\Map;
+use watoki\qrator\Representer;
 use watoki\qrator\representer\property\AccessorProperty;
 use watoki\qrator\representer\property\ClassProperty;
 use watoki\qrator\representer\property\ConstructorProperty;
 use watoki\qrator\representer\property\ObjectProperty;
 use watoki\qrator\representer\property\PublicProperty;
-use watoki\qrator\Representer;
 
-abstract class GenericRepresenter implements Representer {
-
-    /** @var null|callable */
-    private $stringifier;
-
-    /** @var string */
-    private $class;
-
-    /**
-     * @param string $class
-     */
-    public function __construct($class) {
-        $this->class = $class;
-    }
-
-    /**
-     * @return string
-     */
-    public function getClass() {
-        return $this->class;
-    }
+abstract class BasicRepresenter implements Representer {
 
     /**
      * @return string
      */
     public function getName() {
-        $class = new \ReflectionClass($this->class);
+        $class = new \ReflectionClass($this->getClass());
         return preg_replace('/([a-z])([A-Z])/', '$1 $2', $class->getShortName());
     }
 
@@ -57,10 +37,6 @@ abstract class GenericRepresenter implements Representer {
      * @return string
      */
     public function toString($object = null) {
-        if ($this->stringifier) {
-            return call_user_func($this->stringifier, $object);
-        }
-
         $propertyString = '';
         $properties = $this->getProperties($object);
         if (!$properties->isEmpty()) {
@@ -81,13 +57,6 @@ abstract class GenericRepresenter implements Representer {
     }
 
     /**
-     * @param callable $callback
-     */
-    public function setStringifier($callback) {
-        $this->stringifier = $callback;
-    }
-
-    /**
      * @param object|null $object
      * @throws \InvalidArgumentException
      * @return \watoki\collections\Map|ObjectProperty[] indexed by property name
@@ -101,7 +70,7 @@ abstract class GenericRepresenter implements Representer {
     }
 
     private function getObjectProperties($action) {
-        /** @var Map|Property[] $properties */
+        /** @var Map|\watoki\qrator\representer\Property[] $properties */
         $properties = new Map();
         $reflection = new \ReflectionClass($action);
 
@@ -131,7 +100,7 @@ abstract class GenericRepresenter implements Representer {
 
     private function getClassProperties() {
         $properties = new Map();
-        $reflection = new \ReflectionClass($this->class);
+        $reflection = new \ReflectionClass($this->getClass());
 
         $canSet = [];
         $canGet = [];
@@ -168,4 +137,5 @@ abstract class GenericRepresenter implements Representer {
         }
         return $properties;
     }
-}
+
+} 

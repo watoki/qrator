@@ -1,11 +1,13 @@
 <?php
-namespace watoki\qrator\representer;
+namespace watoki\qrator\representer\generic;
 
-use watoki\qrator\EntityRepresenter;
+use watoki\qrator\representer\ActionGenerator;
+use watoki\qrator\representer\basic\BasicEntityRepresenter;
+use watoki\qrator\representer\PropertyActionGenerator;
 
-class GenericEntityRepresenter extends GenericRepresenter implements EntityRepresenter {
+class GenericEntityRepresenter extends BasicEntityRepresenter {
 
-    /** @var array|ActionGenerator[] */
+    /** @var array|\watoki\qrator\representer\ActionGenerator[] */
     private $actions = [];
 
     /** @var array|array[] Arrays of PropertyActionGenerator indexed by property names */
@@ -19,6 +21,45 @@ class GenericEntityRepresenter extends GenericRepresenter implements EntityRepre
 
     /** @var object|null */
     private $readAction;
+
+    /** @var null|callable */
+    private $stringifier;
+
+    /** @var string */
+    private $class;
+
+    /**
+     * @param string $class
+     */
+    public function __construct($class) {
+        $this->class = $class;
+    }
+
+    /**
+     * @return string
+     */
+    public function getClass() {
+        return $this->class;
+    }
+
+    /**
+     * @param object|null $object
+     * @return string
+     */
+    public function toString($object = null) {
+        if ($this->stringifier) {
+            return call_user_func($this->stringifier, $object);
+        }
+
+        return parent::toString($object);
+    }
+
+    /**
+     * @param callable $callback
+     */
+    public function setStringifier($callback) {
+        $this->stringifier = $callback;
+    }
 
     /**
      * @param ActionGenerator $action
@@ -65,7 +106,7 @@ class GenericEntityRepresenter extends GenericRepresenter implements EntityRepre
         if ($this->renderer) {
             return call_user_func($this->renderer, $object);
         }
-        return $this->toString($object);
+        return parent::render($object);
     }
 
     /**

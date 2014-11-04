@@ -2,8 +2,8 @@
 namespace spec\watoki\qrator\fixtures;
 
 use watoki\qrator\representer\ActionGenerator;
-use watoki\qrator\representer\GenericActionRepresenter;
-use watoki\qrator\representer\GenericEntityRepresenter;
+use watoki\qrator\representer\generic\GenericActionRepresenter;
+use watoki\qrator\representer\generic\GenericEntityRepresenter;
 use watoki\qrator\representer\PropertyActionGenerator;
 use watoki\qrator\RepresenterRegistry;
 use watoki\scrut\Fixture;
@@ -16,7 +16,7 @@ class RegistryFixture extends Fixture {
     /** @var RepresenterRegistry */
     public $registry;
 
-    /** @var GenericActionRepresenter[]|GenericEntityRepresenter[] */
+    /** @var GenericActionRepresenter[]|\watoki\qrator\representer\generic\GenericEntityRepresenter[] */
     public $representers = array();
 
     public function setUp() {
