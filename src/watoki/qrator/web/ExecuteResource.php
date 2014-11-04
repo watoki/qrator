@@ -4,11 +4,12 @@ namespace watoki\qrator\web;
 use watoki\collections\Map;
 use watoki\curir\cookie\Cookie;
 use watoki\curir\cookie\CookieStore;
+use watoki\curir\delivery\WebResponse;
+use watoki\curir\error\HttpError;
 use watoki\curir\protocol\Url;
 use watoki\curir\Responder;
 use watoki\factory\exception\InjectionException;
 use watoki\factory\Factory;
-use watoki\qrator\ActionDispatcher;
 use watoki\qrator\representer\ActionGenerator;
 use watoki\qrator\representer\PropertyActionGenerator;
 use watoki\qrator\RepresenterRegistry;
@@ -115,6 +116,7 @@ class ExecuteResource extends ActionResource {
      * @param $action
      * @param Map $args
      * @param $prepared
+     * @throws \watoki\curir\error\HttpError
      * @return \watoki\curir\responder\Redirecter
      */
     private function doAction($action, Map $args, $prepared) {
@@ -130,6 +132,8 @@ class ExecuteResource extends ActionResource {
             return $representer->execute($object);
         } catch (InjectionException $e) {
             return $this->redirectToPrepare($action, $args);
+        } catch (\Exception $e) {
+            throw new HttpError(WebResponse::STATUS_BAD_REQUEST, $e->getMessage(), $e->getMessage(), 0, $e);
         }
     }
 

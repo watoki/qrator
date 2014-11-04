@@ -3,6 +3,7 @@ namespace spec\watoki\qrator;
 
 use watoki\curir\cookie\CookieStore;
 use watoki\curir\cookie\SerializerRepository;
+use watoki\curir\error\HttpError;
 use watoki\qrator\web\ExecuteResource;
 use watoki\scrut\Specification;
 
@@ -126,6 +127,7 @@ class ShowActionResultTest extends Specification {
         }, 'MyAction');
 
         $this->whenITryToShowTheResultsOf('MyAction');
+        $this->try->thenA_ShouldBeThrown(HttpError::class);
         $this->try->thenTheException_ShouldBeThrown('Something went wrong');
     }
 
