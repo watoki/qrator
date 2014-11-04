@@ -58,7 +58,7 @@ class ExecuteActionsTest extends Specification {
 
         $this->whenIExecuteTheAction('MyAction');
         $this->thenAnAlertShouldSay("Action executed successfully. You are now redirected to your last action.");
-        $this->thenIShouldBeRedirectedTo_After_Seconds('execute?action=MyAction&args[one]=eins&args[two]=zwei', 3);
+        $this->thenIShouldBeRedirectedTo_After_Seconds('execute?action=MyAction&args[one]=eins&args[two]=zwei', 1);
     }
 
     function testActionWithConstructorArguments() {

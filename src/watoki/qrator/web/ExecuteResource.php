@@ -59,13 +59,13 @@ class ExecuteResource extends ActionResource {
             $model = [
                 'entity' => null,
                 'alert' => "Action executed successfully. Please stand by.",
-                'redirect' => ['content' => '3; URL=' . $url->toString()]
+                'redirect' => ['content' => '1; URL=' . $url->toString()]
             ];
         } else if (!$result && $this->cookies->hasKey(ExecuteResource::LAST_ACTION_COOKIE)) {
             $model = [
                 'entity' => null,
                 'alert' => "Action executed successfully. You are now redirected to your last action.",
-                'redirect' => ['content' => '3; URL=' . $this->urlOfLastAction()->toString()]
+                'redirect' => ['content' => '1; URL=' . $this->urlOfLastAction()->toString()]
             ];
         } else {
             $this->storeLastAction($action, $args);
