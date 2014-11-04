@@ -42,6 +42,15 @@ class MapPropertyTypesToFieldsTest extends Specification {
         $this->thenTheTargetOf_ShouldBe('entity', \DateTime::class);
     }
 
+    function testMultiProperty() {
+        $this->class->givenTheClass_WithTheBody('mapMulti\Action', '
+            /** @var \DateTime-ID|string */
+            public $multi;
+        ');
+        $this->whenIGetTheFieldsOf('mapMulti\Action');
+        $this->then_ShouldBeA('multi', SelectEntityField::class);
+    }
+
     ##################################################################################################
 
     /** @var \watoki\qrator\form\Field[] */

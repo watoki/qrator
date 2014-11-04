@@ -10,6 +10,7 @@ use watoki\qrator\form\fields\StringField;
 use watoki\qrator\representer\Property;
 use watoki\qrator\representer\property\types\ArrayType;
 use watoki\qrator\representer\property\types\IdentifierType;
+use watoki\qrator\representer\property\types\MultiType;
 use watoki\qrator\representer\property\types\StringType;
 use watoki\qrator\RepresenterRegistry;
 
@@ -88,6 +89,8 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
             return new ArrayField($name, $this->getFieldForType($name, $type->getItemType()));
         } else if ($type instanceof IdentifierType) {
             return new SelectEntityField($name, $type->getTarget(), $this->registry);
+        } else if ($type instanceof MultiType) {
+            return $this->getFieldForType($name, $type->getTypes()[0]);
         } else {
             return new StringField($name);
         }
