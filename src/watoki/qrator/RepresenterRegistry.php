@@ -5,6 +5,7 @@ use watoki\qrator\Representer;
 use watoki\qrator\representer\generic\GenericActionRepresenter;
 use watoki\qrator\representer\generic\GenericEntityRepresenter;
 use watoki\factory\Factory;
+use watoki\qrator\representer\MethodActionRepresenter;
 
 class RepresenterRegistry {
 
@@ -22,10 +23,28 @@ class RepresenterRegistry {
     }
 
     /**
+     * @param string $class
+     * @return bool
+     */
+    public function isRegistered($class) {
+        return array_key_exists($class, $this->representers);
+    }
+
+    /**
      * @param Representer $representer
      */
     public function register(Representer $representer) {
         $this->representers[$representer->getClass()] = $representer;
+    }
+
+    /**
+     * @param string $handler
+     * @param array|string[] $methods
+     */
+    public function registerMethods($handler, $methods) {
+        foreach ($methods as $method) {
+            $this->register(new MethodActionRepresenter($handler, $method, $this->factory));
+        }
     }
 
     /**

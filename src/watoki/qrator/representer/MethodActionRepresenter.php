@@ -1,8 +1,6 @@
 <?php
 namespace watoki\qrator\representer;
 
-
-
 use watoki\collections\Map;
 use watoki\factory\Factory;
 use watoki\factory\providers\CallbackProvider;
@@ -20,7 +18,7 @@ class MethodActionRepresenter extends GenericActionRepresenter{
      * @param Factory $factory <-
      */
     public function __construct($className, $methodName, Factory $factory) {
-        parent::__construct($className, $factory);
+        parent::__construct(self::asClass($className, $methodName), $factory);
 
         $this->method = new \ReflectionMethod($className, $methodName);
 
@@ -44,10 +42,6 @@ class MethodActionRepresenter extends GenericActionRepresenter{
             $args[] = $properties[$parameter->getName()]->get();
         }
         return $this->method->invokeArgs($handler, $args);
-    }
-
-    public function getClass() {
-        return self::asClass(parent::getClass(), $this->method->getName());
     }
 
     public static function asClass($class, $method) {
