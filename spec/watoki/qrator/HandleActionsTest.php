@@ -9,6 +9,7 @@ use watoki\scrut\Specification;
  * @property \spec\watoki\qrator\fixtures\DispatcherFixture dispatcher <-
  * @property \spec\watoki\qrator\fixtures\ClassFixture class <-
  * @property \watoki\scrut\ExceptionFixture try <-
+ * @property \spec\watoki\qrator\fixtures\RegistryFixture registry <-
  */
 class HandleActionsTest extends Specification {
 
@@ -75,12 +76,23 @@ class HandleActionsTest extends Specification {
         $this->try->thenTheException_ShouldBeThrown('Bam!');
     }
 
+    function testCreateRepresentersOnTheFly() {
+        /** @var \watoki\qrator\representer\generic\GenericEntityRepresenter $representer */
+        $representer = $this->registry->registry->getEntityRepresenter(\DateTime::class);
+        $representer->setStringifier(function (\DateTime $d) {
+            return $d->format('Y-m-d');
+        });
+
+        $again = $this->registry->registry->getEntityRepresenter(\DateTime::class);
+        $this->assertEquals('2001-02-03', $again->toString(new \DateTime('2001-02-03')));
+    }
+
     ##########################################################################################
 
     private $result;
 
     private function whenIDispatchTheAction($action) {
-        $this->result = $this->dispatcher->registry->representers[$action]->execute(new $action);
+        $this->result = $this->registry->representers[$action]->execute(new $action);
     }
 
     private function thenTheResultShouldBeSuccessfulWith($value) {

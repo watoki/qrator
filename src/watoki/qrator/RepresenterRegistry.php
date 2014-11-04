@@ -55,14 +55,14 @@ class RepresenterRegistry {
             $class = get_class($class);
         }
 
-        if (isset($this->representers[$class])) {
-            $representer = $this->representers[$class];
-            if (!is_subclass_of($representer, $interface)) {
-                throw new \Exception("Class [" . get_class($representer) . "] needs to implement [" . $interface . "].");
-            }
-            return $representer;
-        } else {
-            return $defaultGenerator($class);
+        if (!isset($this->representers[$class])) {
+            $this->representers[$class] = $defaultGenerator($class);
         }
+
+        $representer = $this->representers[$class];
+        if (!is_subclass_of($representer, $interface)) {
+            throw new \Exception("Class [" . get_class($representer) . "] needs to implement [" . $interface . "].");
+        }
+        return $representer;
     }
 }
