@@ -24,11 +24,11 @@ interface ActionRepresenter extends Representer {
     public function getField($name);
 
     /**
-     * @param \watoki\collections\Map $args
+     * @param \watoki\collections\Map|null $args
      * @internal param $action
      * @return object
      */
-    public function create(Map $args);
+    public function create(Map $args = null);
 
     /**
      * @param object $object

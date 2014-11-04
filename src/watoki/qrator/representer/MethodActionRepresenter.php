@@ -8,7 +8,7 @@ use watoki\factory\Factory;
 use watoki\factory\providers\CallbackProvider;
 use watoki\qrator\representer\property\PublicProperty;
 
-class MethodActionRepresenter extends \watoki\qrator\representer\GenericActionRepresenter{
+class MethodActionRepresenter extends GenericActionRepresenter{
 
     /** @var \ReflectionMethod */
     private $method;

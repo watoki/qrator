@@ -116,7 +116,8 @@ class GenericActionRepresenter extends GenericRepresenter implements ActionRepre
      * @internal param $action
      * @return object
      */
-    public function create(Map $args) {
+    public function create(Map $args = null) {
+        $args = $args ? : new Map();
         $action = $this->factory->getInstance($this->getClass(), $args->toArray());
 
         foreach ($this->getProperties($action) as $property) {
