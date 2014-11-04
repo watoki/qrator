@@ -2,11 +2,8 @@
 namespace spec\watoki\qrator;
 
 use watoki\collections\Map;
-use watoki\factory\Factory;
-use watoki\factory\providers\CallbackProvider;
 use watoki\qrator\representer\MethodActionRepresenter;
-use watoki\qrator\representer\property\ObjectProperty;
-use watoki\qrator\representer\property\PublicProperty;
+use watoki\qrator\web\PrepareResource;
 use watoki\scrut\Specification;
 
 /**
@@ -17,6 +14,7 @@ use watoki\scrut\Specification;
  * @property \spec\watoki\qrator\fixtures\ClassFixture class <-
  * @property \spec\watoki\qrator\fixtures\DispatcherFixture dispatcher <-
  * @property \spec\watoki\qrator\fixtures\RegistryFixture registry <-
+ * @property \spec\watoki\qrator\fixtures\ResourceFixture resource <-
  */
 class DeriveActionsFromMethodsTest extends Specification {
 
@@ -52,6 +50,12 @@ class DeriveActionsFromMethodsTest extends Specification {
         $this->thenTheActionShouldHaveMissingProperties();
     }
 
+    function testShowPreparationFormOfDerivedAction() {
+        $this->whenIConstructAnActionFromTheMethod_Of('someMethod', 'construct\SomeClass');
+        $this->whenIShowThePerparationFormOfThisAction();
+        $this->thenTheActionShouldBe('construct\SomeClass__someMethod');
+    }
+
     #################################################################################
 
     /** @var \watoki\qrator\ActionRepresenter */
@@ -61,6 +65,7 @@ class DeriveActionsFromMethodsTest extends Specification {
 
     private function whenIConstructAnActionFromTheMethod_Of($method, $class) {
         $this->representer = new MethodActionRepresenter($class, $method, $this->factory);
+        $this->registry->registry->register($this->representer);
     }
 
     private function whenIExecuteTheActionWith($args) {
@@ -93,6 +98,17 @@ class DeriveActionsFromMethodsTest extends Specification {
 
     private function thenTheActionShouldHaveMissingProperties() {
         $this->assertTrue($this->representer->hasMissingProperties($this->representer->create()));
+    }
+
+    private function whenIShowThePerparationFormOfThisAction() {
+        $this->resource->whenIDo_With(function (PrepareResource $resource) {
+            return $resource->doGet($this->representer->getClass());
+        }, new PrepareResource($this->factory, $this->registry->registry));
+    }
+
+    private function thenTheActionShouldBe($string) {
+        $this->resource->then_ShouldBe('form/parameter/0/name', 'action');
+        $this->resource->then_ShouldBe('form/parameter/0/value', $string);
     }
 
 }

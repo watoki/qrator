@@ -26,8 +26,14 @@ class MethodActionRepresenter extends GenericActionRepresenter{
         $this->factory = $factory;
         $this->method = new \ReflectionMethod($className, $methodName);
 
-        $factory->setProvider($this->getClass(), new CallbackProvider(function () {
-            return new \StdClass();
+        $fullClassName = $this->getClass();
+
+        if (!class_exists($fullClassName)) {
+            $this->createClassDefinition($fullClassName);
+        }
+
+        $factory->setProvider($this->getClass(), new CallbackProvider(function () use ($fullClassName) {
+            return new $fullClassName;
         }));
     }
 
@@ -68,5 +74,13 @@ class MethodActionRepresenter extends GenericActionRepresenter{
                 new PublicProperty($object, $parameter->getName(), !$parameter->isDefaultValueAvailable()));
         }
         return $properties;
+    }
+
+    private function createClassDefinition($fullClassName) {
+        $parts = explode('\\', $fullClassName);
+        $shortName = array_pop($parts);
+        $namespace = implode('\\', $parts);
+
+        eval(($namespace ? "namespace $namespace; " : '') . "class $shortName {}");
     }
 }
