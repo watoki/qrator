@@ -96,9 +96,12 @@ label {
 
 h5 {
     font-weight: bold;
-    text-transform: capitalize;
     margin-bottom: .5em;
     margin-top: 1em;
+}
+
+th, h5 {
+    text-transform: capitalize;
 }
 
 a.action {
