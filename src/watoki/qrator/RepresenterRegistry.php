@@ -43,7 +43,7 @@ class RepresenterRegistry {
      */
     public function registerMethods($handler, $methods) {
         foreach ($methods as $method) {
-            $this->register(new MethodActionRepresenter($handler, $method, $this->factory));
+            $this->register(new MethodActionRepresenter($handler, $method, $this->factory, $this));
         }
     }
 
