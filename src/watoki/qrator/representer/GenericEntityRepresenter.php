@@ -14,6 +14,12 @@ class GenericEntityRepresenter extends GenericRepresenter implements EntityRepre
     /** @var null|callable */
     private $renderer;
 
+    /** @var object|null */
+    private $listAction;
+
+    /** @var object|null */
+    private $readAction;
+
     /**
      * @param ActionGenerator $action
      */
@@ -60,5 +66,33 @@ class GenericEntityRepresenter extends GenericRepresenter implements EntityRepre
             return call_user_func($this->renderer, $object);
         }
         return $this->toString($object);
+    }
+
+    /**
+     * @return null|object
+     */
+    public function getListAction() {
+        return $this->listAction;
+    }
+
+    /**
+     * @param null|object $listAction
+     */
+    public function setListAction($listAction) {
+        $this->listAction = $listAction;
+    }
+
+    /**
+     * @return null|object
+     */
+    public function getReadAction() {
+        return $this->readAction;
+    }
+
+    /**
+     * @param null|object $readAction
+     */
+    public function setReadAction($readAction) {
+        $this->readAction = $readAction;
     }
 }

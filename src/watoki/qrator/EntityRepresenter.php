@@ -20,4 +20,14 @@ interface EntityRepresenter extends Representer {
      */
     public function getPropertyActions($property);
 
+    /**
+     * @return object|null
+     */
+    public function getReadAction();
+
+    /**
+     * @return object|null
+     */
+    public function getListAction();
+
 } 

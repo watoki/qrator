@@ -57,4 +57,8 @@ class RegistryFixture extends Fixture {
         $this->representers[$action]->setPreFiller($callback);
     }
 
+    public function givenIHaveSet_AsTheListActionFor($action, $entity) {
+        $this->representers[$entity]->setListAction(new $action);
+    }
+
 } 

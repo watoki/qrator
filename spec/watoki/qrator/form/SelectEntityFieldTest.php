@@ -13,7 +13,6 @@ use watoki\scrut\Specification;
 class SelectEntityFieldTest extends Specification {
 
     protected function background() {
-        $this->class->givenTheClass('EntityClass');
         $this->class->givenTheClass('ListEntity');
         $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
             return [];
@@ -21,8 +20,10 @@ class SelectEntityFieldTest extends Specification {
     }
 
     function testEmptyEntityList() {
+        $this->class->givenTheClass('EntityClass');
         $this->registry->givenIRegisteredAnEntityRepresenterFor('EntityClass');
-        $this->givenASelectEntityField_WithTheListAction('test', 'ListEntity');
+        $this->registry->givenIHaveSet_AsTheListActionFor('ListEntity', 'EntityClass');
+        $this->givenASelectEntityField_WithTheEntity('test', 'EntityClass');
 
         $this->field->whenIRenderTheField();
         $this->field->thenTheOutputShouldBe(
@@ -36,8 +37,8 @@ class SelectEntityFieldTest extends Specification {
             function getId() { return strtolower($this->name); }
         ');
         $this->registry->givenIRegisteredAnEntityRepresenterFor('NamedEntity');
-        $this->givenASelectEntityField_WithTheListAction('test', 'ListEntity');
-
+        $this->registry->givenIHaveSet_AsTheListActionFor('ListEntity', 'NamedEntity');
+        $this->givenASelectEntityField_WithTheEntity('test', 'NamedEntity');
 
         $this->class->givenTheClass_WithTheBody('EntityHandler', '
             function listEntity() {
@@ -59,9 +60,9 @@ class SelectEntityFieldTest extends Specification {
 
     ################################################################################################
 
-    private function givenASelectEntityField_WithTheListAction($name, $action) {
-        $this->registry->givenIRegisteredAnActionRepresenterFor($action);
-        $this->field->givenTheField(new SelectEntityField($name, new $action, $this->registry->registry));
+    private function givenASelectEntityField_WithTheEntity($name, $entity) {
+        $this->registry->givenIRegisteredAnActionRepresenterFor($entity);
+        $this->field->givenTheField(new SelectEntityField($name, $entity, $this->registry->registry));
     }
 
 } 
