@@ -47,7 +47,11 @@ class MethodActionRepresenter extends GenericActionRepresenter{
     }
 
     public function getClass() {
-        return parent::getClass() . '__' . $this->method->getName();
+        return self::asClass(parent::getClass(), $this->method->getName());
+    }
+
+    public static function asClass($class, $method) {
+        return $class . '__' . $method;
     }
 
     /**
