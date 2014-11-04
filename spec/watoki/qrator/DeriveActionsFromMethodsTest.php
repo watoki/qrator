@@ -47,6 +47,11 @@ class DeriveActionsFromMethodsTest extends Specification {
         $this->thenProperty_ShouldBeOptional('two');
     }
 
+    function testDetermineMissingProperties() {
+        $this->whenIConstructAnActionFromTheMethod_Of('someMethod', 'construct\SomeClass');
+        $this->thenTheActionShouldHaveMissingProperties();
+    }
+
     #################################################################################
 
     /** @var \watoki\qrator\ActionRepresenter */
@@ -84,6 +89,10 @@ class DeriveActionsFromMethodsTest extends Specification {
 
     private function thenProperty_ShouldBeOptional($string) {
         $this->assertFalse($this->representer->getProperties()[$string]->isRequired());
+    }
+
+    private function thenTheActionShouldHaveMissingProperties() {
+        $this->assertTrue($this->representer->hasMissingProperties($this->representer->create()));
     }
 
 }

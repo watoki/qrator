@@ -54,14 +54,18 @@ class MethodActionRepresenter extends GenericActionRepresenter{
     }
 
     /**
-     * @param object|null $object Object or class reference
+     * @param object|null $object
      * @return \watoki\collections\Map|\watoki\qrator\representer\property\ObjectProperty[]  indexed by property name
      */
     public function getProperties($object = null) {
         $properties = new Map();
         foreach ($this->method->getParameters() as $parameter) {
-            $property = new PublicProperty($object, $parameter->getName(), !$parameter->isDefaultValueAvailable());
-            $properties->set($parameter->getName(), $property);
+            $name = $parameter->getName();
+            if ($object && !isset($object->$name)) {
+                $object->$name = null;
+            }
+            $properties->set($parameter->getName(),
+                new PublicProperty($object, $parameter->getName(), !$parameter->isDefaultValueAvailable()));
         }
         return $properties;
     }
