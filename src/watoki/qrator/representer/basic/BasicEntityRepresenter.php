@@ -1,6 +1,7 @@
 <?php
 namespace watoki\qrator\representer\basic;
 
+use watoki\collections\Map;
 use watoki\qrator\EntityRepresenter;
 use watoki\qrator\representer\ActionGenerator;
 
