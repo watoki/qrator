@@ -118,7 +118,7 @@ class ShowActionResultTest extends Specification {
 
         $this->whenIShowTheResultsOf('MyAction');
         $this->thenThereShouldBe_Entities(3);
-        $this->thenEntity_ShouldHave_Properties(1, 6);
+        $this->thenEntity_ShouldHave_Properties(1, 4);
     }
 
     function testThrowExceptions() {

@@ -55,4 +55,20 @@ abstract class BasicEntityRepresenter extends BasicRepresenter implements Entity
     public function getListAction() {
         return null;
     }
+
+    /**
+     * @param null|object $object
+     * @return void|Map|\watoki\qrator\representer\Property[]
+     */
+    public function getCondensedProperties($object) {
+        $properties = $this->getProperties($object);
+        $slice = new Map();
+        foreach ($properties->keys() as $i => $name) {
+            $slice->set($name, $properties->get($name));
+            if ($i == 5) {
+                break;
+            }
+        }
+        return $slice;
+    }
 }

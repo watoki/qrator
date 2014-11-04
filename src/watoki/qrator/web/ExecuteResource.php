@@ -73,10 +73,12 @@ class ExecuteResource extends ActionResource {
             $crumbs = $this->updateBreadcrumb($crumbs, $action, $args);
 
             $entityModel = $this->assembleResult($result);
+            $entity = isset($entityModel[0]) ? $entityModel[0] : $entityModel;
 
             if ($entityModel) {
                 $model = [
-                    'entity' => $entityModel
+                    'entity' => $entityModel,
+                    'properties' => $entity['properties'],
                 ];
             } else {
                 $model = [
@@ -146,7 +148,7 @@ class ExecuteResource extends ActionResource {
     private function assembleResult($result) {
         if (is_array($result)) {
             return array_map(function ($entity) {
-                return $this->assembleEntity($entity);
+                return $this->assembleEntity($entity, true);
             }, $result);
         } else if (is_object($result)) {
             return $this->assembleEntity($result);
@@ -155,20 +157,21 @@ class ExecuteResource extends ActionResource {
         }
     }
 
-    private function assembleEntity($entity) {
+    private function assembleEntity($entity, $short = false) {
         $representer = $this->registry->getEntityRepresenter($entity);
         return [
             'name' => $representer->toString($entity),
-            'properties' => new ListModel($this->assembleProperties($entity)),
+            'properties' => new ListModel($this->assembleProperties($entity, $short)),
             'actions' => new ListModel($this->assembleActions($representer->getActions(), $entity)),
         ];
     }
 
-    private function assembleProperties($entity) {
+    private function assembleProperties($entity, $short) {
         $properties = [];
 
         $representer = $this->registry->getEntityRepresenter($entity);
-        foreach ($representer->getProperties($entity) as $property) {
+        $entityProperties = $short ? $representer->getCondensedProperties($entity) : $representer->getProperties($entity);
+        foreach ($entityProperties as $property) {
             if ($property->canGet($entity)) {
                 $properties[] = $this->assembleProperty($entity, $property->name(), $property->get($entity));
             }

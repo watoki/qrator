@@ -30,4 +30,10 @@ interface EntityRepresenter extends Representer {
      */
     public function getListAction();
 
+    /**
+     * @param object|null $object
+     * @return \watoki\collections\Map|\watoki\qrator\representer\Property[]  indexed by property name
+     */
+    public function getCondensedProperties($object);
+
 } 

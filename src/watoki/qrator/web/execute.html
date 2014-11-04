@@ -23,7 +23,10 @@
         Something happened.
     </div>
 
-    <div>
+    <a href="javascript:" onclick="document.getElementById('list').style.display = 'block';document.getElementById('table').style.display = 'none';return false;">List</a>
+    <a href="javascript:" onclick="document.getElementById('list').style.display = 'none';document.getElementById('table').style.display = 'block';return false;">Table</a>
+
+    <div id="list">
 
         <div property="entity" class="panel panel-info">
             <div class="panel-heading">
@@ -54,13 +57,18 @@
                         </li>
 
                         <li property="item">
-                            <h5 property="name">Property</h5>
+                            <h5 property="name">Something</h5>
 
                             <div property="value">
-                                <span property="caption">Value</span>
-                                <span property="actions">
-                                    <a class="action" property="link" href="prepare.html"><span property="name">Some Action</span></a>
-                                </span>
+                                <span property="caption">That</span>
+                            </div>
+                        </li>
+
+                        <li property="item">
+                            <h5 property="name">Something else</h5>
+
+                            <div property="value">
+                                <span property="caption">This</span>
                             </div>
                         </li>
                     </ul>
@@ -69,6 +77,48 @@
         </div>
 
     </div>
+
+    <table style="display: none;" id="table" class="table table-striped">
+        <thead>
+        <tr property="properties">
+            <th property="item"><span property="name">Property</span></th>
+            <th property="item"><span property="name">Something</span></th>
+            <th property="item"><span property="name">Something else</span></th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr property="entity">
+            <span property="properties">
+                <td property="item">
+                    <span property="value"><span property="caption">Value</span></span>
+                </td>
+                <td property="item">This</td>
+                <td property="item">That</td>
+            </span>
+            <td>
+                <span property="actions">
+                    <span property="item">
+                        <a class="action" property="link" href="prepare.html"><span property="name">Some Action</span></a>
+                    </span>
+                </span>
+            </td>
+        </tr>
+        <tr property="entity">
+            <td>More</td>
+            <td>Of</td>
+            <td>This</td>
+            <td>
+                <span property="actions">
+                    <a class="action" property="link" href="prepare.html"><span property="name">Some Action</span></a>
+                </span>
+                <span property="actions">
+                    <a class="action" property="link" href="prepare.html"><span property="name">Another Action</span></a>
+                </span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 
 </div>
 
