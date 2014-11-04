@@ -16,6 +16,11 @@ class MethodActionRepresenter extends \watoki\qrator\representer\GenericActionRe
     /** @var Factory */
     private $factory;
 
+    /**
+     * @param string $className
+     * @param string $methodName
+     * @param Factory $factory <-
+     */
     public function __construct($className, $methodName, Factory $factory) {
         parent::__construct($className, $factory);
         $this->factory = $factory;
