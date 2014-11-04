@@ -7,9 +7,7 @@ use watoki\curir\protocol\Url;
 use watoki\curir\rendering\adapter\TempanRenderer;
 use watoki\curir\responder\Redirecter;
 use watoki\factory\Factory;
-use watoki\qrator\ActionDispatcher;
 use watoki\qrator\RepresenterRegistry;
-use watoki\smokey\Dispatcher;
 
 abstract class ActionResource extends Container {
 

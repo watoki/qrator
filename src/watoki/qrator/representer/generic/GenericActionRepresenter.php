@@ -49,10 +49,10 @@ class GenericActionRepresenter extends BasicActionRepresenter {
     }
 
     /**
-     * @param object|null $object
+     * @param object $object
      * @return string
      */
-    public function toString($object = null) {
+    public function toString($object) {
         if ($this->stringifier) {
             return call_user_func($this->stringifier, $object);
         }

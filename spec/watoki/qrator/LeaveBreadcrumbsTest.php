@@ -2,11 +2,10 @@
 namespace spec\watoki\qrator;
 
 use watoki\collections\Map;
-use watoki\qrator\RepresenterRegistry;
-use watoki\qrator\web\ExecuteResource;
 use watoki\curir\cookie\Cookie;
 use watoki\curir\cookie\CookieStore;
 use watoki\curir\cookie\SerializerRepository;
+use watoki\qrator\web\ExecuteResource;
 use watoki\scrut\Specification;
 
 /**

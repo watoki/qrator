@@ -109,10 +109,6 @@ class PrepareActionsTest extends Specification {
 
     private $prepared = false;
 
-    private function givenISetAnInstanceOf_AsSingletonFor($class, $action) {
-        $this->factory->setSingleton($action, new $class);
-    }
-
     private function whenIExecuteThePreparedAction($action) {
         $this->prepared = true;
         $this->whenIExecuteTheAction($action);

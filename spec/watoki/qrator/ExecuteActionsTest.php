@@ -142,6 +142,7 @@ class ExecuteActionsTest extends Specification {
 
     private function givenISet_WithTheCallback_ToFollowAfter($class, $callback, $followed) {
         if (is_string($callback)) {
+            /** @noinspection PhpUnusedParameterInspection */
             $callback = function ($result) use ($callback) {
                 return eval($callback);
             };

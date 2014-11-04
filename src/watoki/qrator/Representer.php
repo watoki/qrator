@@ -14,10 +14,10 @@ interface Representer {
     public function getName();
 
     /**
-     * @param object|null $object
+     * @param object $object
      * @return string
      */
-    public function toString($object = null);
+    public function toString($object);
 
     /**
      * @param object|null $object

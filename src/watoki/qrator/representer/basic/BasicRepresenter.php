@@ -33,10 +33,10 @@ abstract class BasicRepresenter implements Representer {
     }
 
     /**
-     * @param object|null $object
+     * @param object $object
      * @return string
      */
-    public function toString($object = null) {
+    public function toString($object) {
         $propertyString = '';
         $properties = $this->getProperties($object);
         if (!$properties->isEmpty()) {
