@@ -3,6 +3,15 @@ namespace spec\watoki\qrator;
 
 use watoki\collections\Map;
 use watoki\qrator\representer\generic\GenericActionRepresenter;
+use watoki\qrator\representer\Property;
+use watoki\qrator\representer\property\types\ArrayType;
+use watoki\qrator\representer\property\types\ClassType;
+use watoki\qrator\representer\property\types\FloatType;
+use watoki\qrator\representer\property\types\IdentifierType;
+use watoki\qrator\representer\property\types\IntegerType;
+use watoki\qrator\representer\property\types\MultiType;
+use watoki\qrator\representer\property\types\NullableType;
+use watoki\qrator\representer\property\types\StringType;
 use watoki\scrut\Specification;
 
 /**
@@ -10,74 +19,80 @@ use watoki\scrut\Specification;
  */
 class DeterminePropertiesOfObjectTest extends Specification {
 
-    function testFindPublicPropertiesAndAccessors() {
-        $this->class->givenTheClass_WithTheBody('fields\one\SomeClass', '
+    function testFindPublicProperties() {
+        $this->class->givenTheClass_WithTheBody('publicProperties\SomeClass', '
             public $public = "one";
-            public $publicAndGetter = "two";
-            public $publicAndSetter = "three";
             private $private = "four";
-
-            function getPublicAndGetter() { return "five"; }
-            function setPublicAndSetter() { }
-            function getPrivate() { return "six"; }
-            function getGetter() { return "seven"; }
-            function setSetter() { }
         ');
 
-        $this->whenIDetermineThePropertiesOf('fields\one\SomeClass');
-        $this->thenThereShouldBe_Properties(6);
+        $this->whenIDetermineThePropertiesOf('publicProperties\SomeClass');
+        $this->thenThereShouldBe_Properties(1);
         $this->then_ShouldBeGettable('public');
         $this->then_ShouldBeSettable('public');
-        $this->then_ShouldNotBeSettable('private');
-        $this->then_ShouldNotBeGettable('setter');
-
-        $this->whenIDetermineThePropertiesOfAnInstanceOf('fields\one\SomeClass');
-        $this->thenThereShouldBe_Properties(6);
         $this->thenTheValueOf_ShouldBe('public', 'one');
-        $this->thenTheValueOf_ShouldBe('publicAndGetter', 'two');
-        $this->thenTheValueOf_ShouldBe('publicAndSetter', 'three');
-        $this->thenTheValueOf_ShouldBe('private', 'six');
-        $this->thenTheValueOf_ShouldBe('getter', 'seven');
+    }
+
+    function testFindAccessorProperties() {
+        $this->class->givenTheClass_WithTheBody('accessors\SomeClass', '
+            function getGetter() { return "seven"; }
+            function setSetter() { }
+            function getBoth() {}
+            function setBoth() {}
+            function notAnAccessor() {}
+            function getNeither ($becauseOfTheParameter) {}
+        ');
+
+        $this->whenIDetermineThePropertiesOf('accessors\SomeClass');
+        $this->thenThereShouldBe_Properties(3);
+        $this->then_ShouldBeGettable('getter');
+        $this->then_ShouldNotBeSettable('getter');
+        $this->then_ShouldBeSettable('setter');
         $this->then_ShouldNotBeGettable('setter');
     }
 
-    function testFindPropertiesInConstructor() {
+    function testPublicTrumpAccessor() {
+        $this->class->givenTheClass_WithTheBody('both\SomeClass', '
+            public $publicAndGetter = "public";
+            function getPublicAndGetter() { return "getter"; }
+        ');
+
+        $this->whenIDetermineThePropertiesOf('both\SomeClass');
+        $this->thenThereShouldBe_Properties(1);
+        $this->thenTheValueOf_ShouldBe('publicAndGetter', 'public');
+    }
+
+    function testFindConstructorProperties() {
         $this->class->givenTheClass_WithTheBody('constructor\ClassWithConstructor', '
-            public $three;
-            function __construct($one, $two = null, $three = null, $four = null) {}
+            function __construct($one = null) {}
+        ');
+
+        $this->whenIDetermineThePropertiesOf('constructor\ClassWithConstructor');
+        $this->thenThereShouldBe_Properties(1);
+        $this->then_ShouldBeSettable('one');
+        $this->then_ShouldNotBeGettable('one');
+    }
+
+    function testMergeProperties() {
+        $this->class->givenTheClass_WithTheBody('mergeProperties\SomeClass', '
+            public $one;
+            function __construct($one = null, $two = null) {}
             function getTwo() {}
         ');
 
-        $this->givenTheActionArgument_Is('one', 'uno');
-
-        $this->whenIDetermineThePropertiesOfAnInstanceOf('constructor\ClassWithConstructor');
-        $this->thenThereShouldBe_Properties(4);
-
-        $this->then_ShouldBeSettable('one');
-        $this->then_ShouldNotBeGettable('one');
-
+        $this->whenIDetermineThePropertiesOf('mergeProperties\SomeClass');
+        $this->thenThereShouldBe_Properties(2);
+        $this->then_ShouldBeGettable('one');
         $this->then_ShouldBeGettable('two');
-        $this->then_ShouldBeGettable('three');
-        $this->then_ShouldNotBeGettable('four');
     }
 
     function testRequiredProperties() {
         $this->class->givenTheClass_WithTheBody('required\SomeClass', '
             public $two;
-            public $three;
             public $four;
             function __construct($one, $two, $three = null) {}
         ');
         $this->givenTheActionArgument_Is('one', 'uno');
         $this->givenTheActionArgument_Is('two', 'dos');
-
-        $this->whenIDetermineThePropertiesOfAnInstanceOf('required\SomeClass');
-        $this->thenThereShouldBe_Properties(4);
-
-        $this->then_ShouldBeRequired('one');
-        $this->then_ShouldBeRequired('two');
-        $this->then_ShouldBeOptional('three');
-        $this->then_ShouldBeOptional('four');
 
         $this->whenIDetermineThePropertiesOf('required\SomeClass');
         $this->thenThereShouldBe_Properties(4);
@@ -88,26 +103,118 @@ class DeterminePropertiesOfObjectTest extends Specification {
         $this->then_ShouldBeOptional('four');
     }
 
+    function testPublicPropertyTypes() {
+        $this->class->givenTheClass_WithTheBody('publicTypes\SomeClass', '
+            /** @var int */
+            public $int;
+
+            /** @var string */
+            public $string;
+
+            /** @var \DateTime */
+            public $class;
+
+            public $unknown;
+        ');
+
+        $this->whenIDetermineThePropertiesOf('publicTypes\SomeClass');
+        $this->thenThereShouldBe_Properties(4);
+        $this->then_ShouldHaveTheType('int', IntegerType::class);
+        $this->then_ShouldHaveTheType('string', StringType::class);
+        $this->then_ShouldHaveTheType('class', ClassType::class);
+        $this->thenTheClassOf_ShouldBe('class', \DateTime::class);
+        $this->then_ShouldHaveNoType('unknown');
+    }
+
+    function testAccessorTypes() {
+        $this->class->givenTheClass_WithTheBody('accessorTypes\SomeClass', '
+            /** @return long */
+            function getOne() {}
+
+            /** @param float $two */
+            function setTwo($two) {}
+
+            function setThree(\DateTime $three) {}
+        ');
+
+        $this->whenIDetermineThePropertiesOf('accessorTypes\SomeClass');
+        $this->thenThereShouldBe_Properties(3);
+        $this->then_ShouldHaveTheType('one', IntegerType::class);
+        $this->then_ShouldHaveTheType('two', FloatType::class);
+        $this->then_ShouldHaveTheType('three', ClassType::class);
+    }
+
+    function testConstructorTypes() {
+        $this->class->givenTheClass_WithTheBody('constructorTypes\SomeClass', '
+            /** @param integer $one */
+            function __construct($one, \DateTime $two) {}
+        ');
+        $this->givenTheActionArgument_Is('one', 'uno');
+        $this->givenTheActionArgument_Is('two', new \DateTime());
+
+        $this->whenIDetermineThePropertiesOf('constructorTypes\SomeClass');
+        $this->thenThereShouldBe_Properties(2);
+        $this->then_ShouldHaveTheType('one', IntegerType::class);
+        $this->then_ShouldHaveTheType('two', ClassType::class);
+    }
+
+    function testComplexTypes() {
+        $this->class->givenTheClass_WithTheBody('ComplexTypes\SomeClass', '
+            /** @var null|int */
+            public $int;
+
+            /** @var array|string[] */
+            public $array;
+
+            /** @var int|string */
+            public $multi;
+
+            /** @var string */
+            public $merged;
+
+            /** @return double */
+            function getMerged() {}
+
+            /** @var \DateTime-ID */
+            public $identifier;
+        ');
+
+        $this->whenIDetermineThePropertiesOf('ComplexTypes\SomeClass');
+        $this->thenThereShouldBe_Properties(5);
+
+        $this->then_ShouldHaveTheType('int', NullableType::class);
+        $this->thenTheInnerTypeOf_ShouldBe('int', IntegerType::class);
+
+        $this->then_ShouldHaveTheType('array', ArrayType::class);
+        $this->thenTheItemTypeOf_ShouldBe('array', StringType::class);
+
+        $this->then_ShouldHaveTheType('multi', MultiType::class);
+        $this->thenTheTypesOf_ShouldBe('multi', [IntegerType::class, StringType::class]);
+
+        $this->then_ShouldHaveTheType('merged', MultiType::class);
+        $this->thenTheTypesOf_ShouldBe('merged', [StringType::class, FloatType::class]);
+
+        $this->then_ShouldHaveTheType('identifier', IdentifierType::class);
+        $this->thenTheTargetOf_ShouldBe('identifier', \DateTime::class);
+    }
+
     ##################################################################################################
 
     private $args = [];
 
-    /** @var \watoki\qrator\representer\property\ObjectProperty[] */
+    private $object;
+
+    /** @var Property[] */
     private $properties;
 
     protected function setUp() {
         parent::setUp();
     }
 
-    private function whenIDetermineThePropertiesOfAnInstanceOf($class) {
-        $representer = new GenericActionRepresenter($class, $this->factory);
-        $this->properties = $representer->getProperties($representer->create(new Map($this->args)));
-        return true;
-    }
-
     private function whenIDetermineThePropertiesOf($class) {
         $representer = new GenericActionRepresenter($class, $this->factory);
-        $this->properties = $representer->getProperties($class);
+        $this->object = $representer->create(new Map($this->args));
+        $this->properties = $representer->getProperties($this->object);
         return true;
     }
 
@@ -116,7 +223,7 @@ class DeterminePropertiesOfObjectTest extends Specification {
     }
 
     private function thenTheValueOf_ShouldBe($name, $value) {
-        $this->assertEquals($value, $this->properties[$name]->get());
+        $this->assertEquals($value, $this->properties[$name]->get($this->object));
     }
 
     private function then_ShouldNotBeGettable($name) {
@@ -145,6 +252,56 @@ class DeterminePropertiesOfObjectTest extends Specification {
 
     private function then_ShouldBeOptional($name) {
         $this->assertFalse($this->properties[$name]->isRequired(), "$name should be optional");
+    }
+
+    private function then_ShouldHaveTheType($name, $type) {
+        $this->assertInstanceOf($type, $this->properties[$name]->type());
+    }
+
+    private function then_ShouldHaveNoType($name) {
+        $this->assertEquals(null, $this->properties[$name]->type());
+    }
+
+    private function thenTheClassOf_ShouldBe($name, $class) {
+        $type = $this->properties[$name]->type();
+        if (!($type instanceof ClassType)) {
+            $this->fail("Not a ClassType: $name");
+        }
+        $this->assertEquals($class, $type->getClass());
+    }
+
+    private function thenTheInnerTypeOf_ShouldBe($name, $expectedType) {
+        $type = $this->properties[$name]->type();
+        if (!($type instanceof NullableType)) {
+            $this->fail("Not a NullableType: $name");
+        }
+        $this->assertInstanceOf($expectedType, $type->getType());
+    }
+
+    private function thenTheItemTypeOf_ShouldBe($name, $expectedType) {
+        $type = $this->properties[$name]->type();
+        if (!($type instanceof ArrayType)) {
+            $this->fail("Not an ArrayType: $name");
+        }
+        $this->assertInstanceOf($expectedType, $type->getItemType());
+    }
+
+    private function thenTheTypesOf_ShouldBe($name, $types) {
+        $type = $this->properties[$name]->type();
+        if (!($type instanceof MultiType)) {
+            $this->fail("Not an MultiType: $name");
+        }
+        $this->assertEquals($types, array_map(function ($type) {
+            return get_class($type);
+        }, $type->getTypes()));
+    }
+
+    private function thenTheTargetOf_ShouldBe($name, $class) {
+        $type = $this->properties[$name]->type();
+        if (!($type instanceof IdentifierType)) {
+            $this->fail("Not a IdentifierType: $name");
+        }
+        $this->assertEquals($class, $type->getTarget());
     }
 
 } 

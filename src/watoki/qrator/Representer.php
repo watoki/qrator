@@ -21,7 +21,7 @@ interface Representer {
 
     /**
      * @param object|null $object
-     * @return \watoki\collections\Map|\watoki\qrator\representer\property\ObjectProperty[]  indexed by property name
+     * @return \watoki\collections\Map|\watoki\qrator\representer\Property[]  indexed by property name
      */
     public function getProperties($object = null);
 

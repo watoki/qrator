@@ -3,6 +3,8 @@ namespace spec\watoki\qrator;
 
 use watoki\collections\Map;
 use watoki\qrator\representer\MethodActionRepresenter;
+use watoki\qrator\representer\property\types\ClassType;
+use watoki\qrator\representer\property\types\StringType;
 use watoki\qrator\web\PrepareResource;
 use watoki\scrut\Specification;
 
@@ -20,8 +22,9 @@ class DeriveActionsFromMethodsTest extends Specification {
 
     protected function background() {
         $this->class->givenTheClass_WithTheBody('construct\SomeClass', '
-            function someMethod($one, $two = null) {
-                return $one . " " . $two;
+            /** @param string $one */
+            function someMethod($one, \DateTime $two = null) {
+                return $one . " " . $two->format("Y-m-d");
             }
         ');
     }
@@ -35,8 +38,8 @@ class DeriveActionsFromMethodsTest extends Specification {
 
     function testInvokeMethodWithArgumentsOfAction() {
         $this->whenIConstructAnActionFromTheMethod_Of('someMethod', 'construct\SomeClass');
-        $this->whenIExecuteTheActionWith(['one' => 'uno', 'two' => 'dos']);
-        $this->thenItShouldReturn('uno dos');
+        $this->whenIExecuteTheActionWith(['one' => 'uno', 'two' => new \DateTime('2001-02-03')]);
+        $this->thenItShouldReturn('uno 2001-02-03');
     }
 
     function testDetermineRequiredProperties() {
@@ -56,6 +59,12 @@ class DeriveActionsFromMethodsTest extends Specification {
         $this->thenTheActionShouldBe('construct\SomeClass__someMethod');
     }
 
+    function testDetermineArgumentTypes() {
+        $this->whenIConstructAnActionFromTheMethod_Of('someMethod', 'construct\SomeClass');
+        $this->then_ShouldHaveTheType('one', StringType::class);
+        $this->then_ShouldHaveTheType('two', ClassType::class);
+    }
+
     #################################################################################
 
     /** @var \watoki\qrator\ActionRepresenter */
@@ -73,7 +82,8 @@ class DeriveActionsFromMethodsTest extends Specification {
     }
 
     private function thenTheActionShouldHaveTheProperties($properties) {
-        $this->assertEquals($properties, $this->representer->getProperties(new \StdClass())->keys()->toArray());
+        $object = $this->representer->create(new Map(['one' => 'uno']));
+        $this->assertEquals($properties, $this->representer->getProperties($object)->keys()->toArray());
     }
 
     private function thenTheActionShouldHaveTheName($string) {
@@ -97,7 +107,8 @@ class DeriveActionsFromMethodsTest extends Specification {
     }
 
     private function thenTheActionShouldHaveMissingProperties() {
-        $this->assertTrue($this->representer->hasMissingProperties($this->representer->create()));
+        $object = $this->representer->create(new Map(['one' => 'uno']));
+        $this->assertTrue($this->representer->hasMissingProperties($object));
     }
 
     private function whenIShowThePerparationFormOfThisAction() {
@@ -109,6 +120,10 @@ class DeriveActionsFromMethodsTest extends Specification {
     private function thenTheActionShouldBe($string) {
         $this->resource->then_ShouldBe('form/parameter/0/name', 'action');
         $this->resource->then_ShouldBe('form/parameter/0/value', $string);
+    }
+
+    private function then_ShouldHaveTheType($name, $typeClass) {
+        $this->assertInstanceOf($typeClass, $this->representer->getProperties()[$name]->type());
     }
 
 }

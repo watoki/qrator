@@ -7,7 +7,7 @@ use watoki\factory\providers\CallbackProvider;
 use watoki\qrator\representer\generic\GenericActionRepresenter;
 use watoki\qrator\representer\property\PublicProperty;
 
-class MethodActionRepresenter extends GenericActionRepresenter{
+class MethodActionRepresenter extends GenericActionRepresenter {
 
     /** @var \ReflectionMethod */
     private $method;
@@ -21,16 +21,7 @@ class MethodActionRepresenter extends GenericActionRepresenter{
         parent::__construct(self::asClass($className, $methodName), $factory);
 
         $this->method = new \ReflectionMethod($className, $methodName);
-
-        $fullClassName = $this->getClass();
-
-        if (!class_exists($fullClassName)) {
-            $this->createClassDefinition($fullClassName);
-        }
-
-        $factory->setProvider($this->getClass(), new CallbackProvider(function () use ($fullClassName) {
-            return new $fullClassName;
-        }));
+        $this->createClassDefinition();
     }
 
     public function execute($object) {
@@ -39,7 +30,7 @@ class MethodActionRepresenter extends GenericActionRepresenter{
 
         $args = [];
         foreach ($this->method->getParameters() as $parameter) {
-            $args[] = $properties[$parameter->getName()]->get();
+            $args[] = $properties[$parameter->getName()]->get($object);
         }
         return $this->method->invokeArgs($handler, $args);
     }
@@ -55,28 +46,46 @@ class MethodActionRepresenter extends GenericActionRepresenter{
         return ucfirst(preg_replace('/([a-z])([A-Z])/', '$1 $2', $this->method->getShortName()));
     }
 
-    /**
-     * @param object|null $object
-     * @return \watoki\collections\Map|\watoki\qrator\representer\property\ObjectProperty[]  indexed by property name
-     */
-    public function getProperties($object = null) {
-        $properties = new Map();
-        foreach ($this->method->getParameters() as $parameter) {
-            $name = $parameter->getName();
-            if ($object && !isset($object->$name)) {
-                $object->$name = null;
-            }
-            $properties->set($parameter->getName(),
-                new PublicProperty($object, $parameter->getName(), !$parameter->isDefaultValueAvailable()));
+    private function createClassDefinition() {
+        $fullClassName = $this->getClass();
+        if (class_exists($fullClassName)) {
+            return;
         }
-        return $properties;
-    }
 
-    private function createClassDefinition($fullClassName) {
         $parts = explode('\\', $fullClassName);
         $shortName = array_pop($parts);
         $namespace = implode('\\', $parts);
 
-        eval(($namespace ? "namespace $namespace; " : '') . "class $shortName {}");
+        $properties = [];
+        $parameters = [];
+        $body = [];
+        $getters = [];
+
+        foreach ($this->method->getParameters() as $parameter) {
+            $name = $parameter->getName();
+            $parameters[] = '$' . $name
+                . ($parameter->isDefaultValueAvailable() ? ' = ' . var_export($parameter->getDefaultValue(), true) : '');
+            $body[] = '$this->' . $name . ' = $' . $name . ';';
+            $properties[] = 'private $' . $name . ';';
+
+            $hint = null;
+            $matches = [];
+            if ($parameter->getClass()) {
+                $hint = $parameter->getClass()->getName();
+            } else if (preg_match('/@param\s+(\S+)\s+\$' . $name . '/', $this->method->getDocComment(), $matches)) {
+                $hint = $matches[1];
+            }
+            $getters[] = ($hint ? "/**\n   * @return " . $hint . "\n   */\n  " : '')
+                . 'function get' . ucfirst($name) . '() { return $this->' . $name . '; }';
+        }
+
+        $code = ($namespace ? "namespace $namespace;\n" : '') . "class $shortName {\n"
+            . '  ' . implode("\n  ", $properties) . "\n"
+            . '  function __construct(' . implode(', ', $parameters) . ") {\n"
+            . '    ' . implode("\n    ", $body) . "\n"
+            . '  }' . "\n"
+            . '  ' . implode("\n  ", $getters) . "\n"
+            . '}';
+        eval($code);
     }
 }

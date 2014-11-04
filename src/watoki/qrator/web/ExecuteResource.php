@@ -169,8 +169,8 @@ class ExecuteResource extends ActionResource {
 
         $representer = $this->registry->getEntityRepresenter($entity);
         foreach ($representer->getProperties($entity) as $property) {
-            if ($property->canGet()) {
-                $properties[] = $this->assembleProperty($entity, $property->name(), $property->get());
+            if ($property->canGet($entity)) {
+                $properties[] = $this->assembleProperty($entity, $property->name(), $property->get($entity));
             }
         }
 

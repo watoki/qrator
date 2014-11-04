@@ -31,7 +31,7 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
             if ($property->canSet() && $args->has($property->name())) {
                 $value = $args->get($property->name());
                 $inflated = $this->getField($property->name())->inflate($value);
-                $property->set($inflated);
+                $property->set($action, $inflated);
             }
         }
 
@@ -52,8 +52,8 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
             $field = $this->getField($property->name());
             $fields[] = $field;
 
-            if ($property->canGet()) {
-                $field->setValue($property->get());
+            if (is_object($object) && $property->canGet()) {
+                $field->setValue($property->get($object));
             }
 
             if ($property->isRequired()) {
@@ -77,7 +77,7 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
      */
     public function hasMissingProperties($object) {
         foreach ($this->getProperties($object) as $property) {
-            if ($property->canGet() && $property->get() === null) {
+            if ($property->canGet() && $property->get($object) === null) {
                 return true;
             }
         }

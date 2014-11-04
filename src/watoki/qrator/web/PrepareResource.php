@@ -41,17 +41,19 @@ class PrepareResource extends ActionResource {
     private function assembleForm($action) {
         $representer = $this->registry->getActionRepresenter($action);
 
+        $parameters = [
+            ['name' => 'action', 'value' => $representer->getClass()],
+        ];
+
         if (is_object($action)) {
             $representer->preFill($action);
+            $parameters[] = ['name' => 'args[id]', 'value' => $representer->getId($action)];
         }
 
         $form = [
             'title' => $representer->getName(),
             'action' => 'execute',
-            'parameter' => [
-                ['name' => 'action', 'value' => $representer->getClass()],
-                ['name' => 'args[id]', 'value' => $representer->getId($action)],
-            ],
+            'parameter' => $parameters,
             'field' => $this->assembleFields($action, $representer)
         ];
         return $form;
