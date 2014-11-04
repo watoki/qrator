@@ -20,7 +20,7 @@ abstract class BasicEntityRepresenter extends BasicRepresenter implements Entity
         foreach ($classes as $class => $args) {
             if (is_numeric($class)) {
                 $class = $args;
-                $args = [];
+                $args = null;
             }
             $generators[] = new ActionGenerator($class, $args);
         }
