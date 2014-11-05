@@ -1,3 +1,18 @@
+.container {
+    margin-top: 2em;
+}
+
+.top {
+    padding: 1em;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 1em;
+    margin-top: -2em;
+}
+
+.top .views {
+    text-align: right;
+}
+
 .no-show {
     display: none;
 }
@@ -19,16 +34,6 @@ ul {
 
 label {
     width: 100%;
-}
-
-.top {
-    padding: 1em;
-    border-bottom: 1px solid #eee;
-    margin-bottom: 1em;
-}
-
-.top .views {
-    text-align: right;
 }
 
 [property=breadcrumbs] li {
@@ -118,10 +123,16 @@ a.action {
     border-radius: 2pt;
     padding: 2pt 4pt;
     margin: 2pt 0;
+
+    white-space: nowrap;
 }
 
 .panel-heading h1,
 .panel-heading [property=actions],
 .panel-heading [property=actions] * {
     display: inline;
+}
+
+.panel-heading [property=actions] {
+    margin-left: 1em;
 }
