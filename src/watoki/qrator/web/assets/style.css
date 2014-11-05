@@ -135,4 +135,5 @@ a.action {
 
 .panel-heading [property=actions] {
     margin-left: 1em;
+    line-height: 2em;
 }
