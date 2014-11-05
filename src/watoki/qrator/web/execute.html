@@ -21,9 +21,11 @@
         </ul>
 
         <div class="col-md-2 views" class="views">
-            <a href="javascript:" onclick="document.getElementById('list').style.display = 'block';document.getElementById('table').style.display = 'none';return false;">List</a>
+            <a href="javascript:"
+               onclick="document.getElementById('list').style.display = 'block';document.getElementById('table').style.display = 'none';return false;">List</a>
             |
-            <a href="javascript:" onclick="document.getElementById('list').style.display = 'none';document.getElementById('table').style.display = 'block';return false;">Table</a>
+            <a href="javascript:"
+               onclick="document.getElementById('list').style.display = 'none';document.getElementById('table').style.display = 'block';return false;">Table</a>
         </div>
     </div>
 
@@ -83,30 +85,32 @@
 
     </div>
 
-    <table id="table" property="table" class="table table-striped">
-        <thead>
-        <tr property="properties">
-            <th property="item"><span property="name">Property</span></th>
-            <th property="item"><span property="name">Something</span></th>
-            <th property="item"><span property="name">Something else</span></th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr property="entity">
-            <td property="property">
-                <span property="value"><span property="caption">Value</span></span>
-            </td>
-            <td property="property">This</td>
-            <td property="property">That</td>
-            <td>
+    <div id="table" property="table" class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr property="properties">
+                <th property="item"><span property="name">Property</span></th>
+                <th property="item"><span property="name">Something</span></th>
+                <th property="item"><span property="name">Something else</span></th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr property="entity">
+                <td property="property">
+                    <span property="value"><span property="caption">Value</span></span>
+                </td>
+                <td property="property">This</td>
+                <td property="property">That</td>
+                <td>
                 <span property="action">
                     <a class="action" property="link" href="prepare.html"><span property="name">Some Action</span></a>
                 </span>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
 </div>
 
