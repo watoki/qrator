@@ -94,6 +94,7 @@ class ExecuteResource extends ActionResource {
         return array_merge([
             'breadcrumbs' => $this->assembleBreadcrumbs($crumbs),
             'entity' => null,
+            'properties' => null,
             'alert' => null,
             'redirect' => null
         ], $model);
