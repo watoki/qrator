@@ -8,6 +8,7 @@ use watoki\curir\delivery\WebResponse;
 use watoki\curir\error\HttpError;
 use watoki\curir\protocol\Url;
 use watoki\curir\Responder;
+use watoki\dom\Element;
 use watoki\factory\exception\InjectionException;
 use watoki\factory\Factory;
 use watoki\qrator\representer\ActionGenerator;
@@ -73,12 +74,15 @@ class ExecuteResource extends ActionResource {
             $crumbs = $this->updateBreadcrumb($crumbs, $action, $args);
 
             $entityModel = $this->assembleResult($result);
-            $entity = isset($entityModel[0]) ? $entityModel[0] : $entityModel;
+            $noShow = count($entityModel) > 1 ? 'list' : 'table';;
 
             if ($entityModel) {
                 $model = [
                     'entity' => $entityModel,
-                    'properties' => $entity['properties'],
+                    'properties' => $entityModel[0]['properties'],
+                    $noShow => ['class' => function (Element $e) {
+                            return $e->getAttribute('class')->getValue() . ' no-show';
+                        }]
                 ];
             } else {
                 $model = [
@@ -151,7 +155,7 @@ class ExecuteResource extends ActionResource {
                 return $this->assembleEntity($entity, true);
             }, $result);
         } else if (is_object($result)) {
-            return $this->assembleEntity($result);
+            return [$this->assembleEntity($result)];
         } else {
             return null;
         }
@@ -159,10 +163,14 @@ class ExecuteResource extends ActionResource {
 
     private function assembleEntity($entity, $short = false) {
         $representer = $this->registry->getEntityRepresenter($entity);
+        $properties = $this->assembleProperties($entity, $short);
+        $actions = $this->assembleActions($representer->getActions(), $entity);
         return [
             'name' => $representer->toString($entity),
-            'properties' => new ListModel($this->assembleProperties($entity, $short)),
-            'actions' => new ListModel($this->assembleActions($representer->getActions(), $entity)),
+            'properties' => new ListModel($properties),
+            'actions' => new ListModel($actions),
+            'property' => $properties,
+            'action' => $actions,
         ];
     }
 

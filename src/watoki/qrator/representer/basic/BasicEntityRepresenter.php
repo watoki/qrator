@@ -7,8 +7,6 @@ use watoki\qrator\representer\ActionGenerator;
 
 abstract class BasicEntityRepresenter extends BasicRepresenter implements EntityRepresenter {
 
-    const CONDENSED_LIMIT = 5;
-
     /**
      * @param object $object
      * @return string
@@ -60,17 +58,10 @@ abstract class BasicEntityRepresenter extends BasicRepresenter implements Entity
 
     /**
      * @param null|object $object
-     * @return void|Map|\watoki\qrator\representer\Property[]
+     * @return Map|\watoki\qrator\representer\Property[]
      */
     public function getCondensedProperties($object) {
         $properties = $this->getProperties($object);
-        $slice = new Map();
-        foreach ($properties->keys() as $i => $name) {
-            $slice->set($name, $properties->get($name));
-            if ($i == self::CONDENSED_LIMIT - 1) {
-                break;
-            }
-        }
-        return $slice;
+        return $properties->select($properties->keys()->limit(5));
     }
 }

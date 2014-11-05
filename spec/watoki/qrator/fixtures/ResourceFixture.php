@@ -93,4 +93,8 @@ class ResourceFixture extends Fixture {
         $this->spec->assertEquals($value, $this->returned);
     }
 
+    public function then_ShouldExist($modelPath) {
+        $this->spec->assertNotNull($this->get($modelPath));
+    }
+
 }

@@ -105,6 +105,8 @@ class ShowActionResultTest extends Specification {
         $this->whenIShowTheResultsOf('MyAction');
         $this->thenThereShouldBe_Properties(1);
         $this->thenProperty_ShouldHaveTheName_AndValue(1, 'one', '2012-03-04 15:16');
+
+        $this->thenThe_ShouldNotBeShown('table');
     }
 
     function testDisplayCollection() {
@@ -119,6 +121,8 @@ class ShowActionResultTest extends Specification {
         $this->whenIShowTheResultsOf('MyAction');
         $this->thenThereShouldBe_Entities(3);
         $this->thenEntity_ShouldHave_Properties(1, 3);
+
+        $this->thenThe_ShouldNotBeShown('list');
     }
 
     function testThrowExceptions() {
@@ -275,44 +279,44 @@ class ShowActionResultTest extends Specification {
     }
 
     private function thenTheNameShouldBe($string) {
-        $this->resource->then_ShouldBe('entity/name', $string);
+        $this->resource->then_ShouldBe('entity/0/name', $string);
     }
 
     private function thenThereShouldBe_Properties($int) {
-        $this->resource->thenThereShouldBe_Of($int, 'entity/properties/item');
+        $this->resource->thenThereShouldBe_Of($int, 'entity/0/properties/item');
     }
 
     private function thenThereShouldBe_Actions($int) {
-        $this->resource->thenThereShouldBe_Of($int, 'entity/actions/item');
+        $this->resource->thenThereShouldBe_Of($int, 'entity/0/actions/item');
     }
 
     private function thenThereShouldBeNoProperties() {
-        $this->resource->then_ShouldBe('entity/properties/isEmpty', true);
+        $this->resource->then_ShouldBe('entity/0/properties/isEmpty', true);
     }
 
     private function thenThereShouldBeNoActions() {
-        $this->resource->then_ShouldBe('entity/actions/isEmpty', true);
+        $this->resource->then_ShouldBe('entity/0/actions/isEmpty', true);
     }
 
     private function thenAction_ShouldHaveTheName($int, $string) {
         $int--;
-        $this->resource->then_ShouldBe("entity/actions/item/$int/name", $string);
+        $this->resource->then_ShouldBe("entity/0/actions/item/$int/name", $string);
     }
 
     private function thenAction_ShouldLinkTo($int, $string) {
         $int--;
-        $this->resource->then_ShouldBe("entity/actions/item/$int/link/href", $string);
+        $this->resource->then_ShouldBe("entity/0/actions/item/$int/link/href", $string);
     }
 
     private function thenProperty_ShouldHaveTheName_AndValue($int, $name, $value) {
         $this->thenProperty_ShouldHaveTheName($int, $name);
         $int--;
-        $this->resource->then_ShouldBe("entity/properties/item/$int/value/caption", $value);
+        $this->resource->then_ShouldBe("entity/0/properties/item/$int/value/caption", $value);
     }
 
     private function thenProperty_ShouldHaveTheName($int, $name) {
         $int--;
-        $this->resource->then_ShouldBe("entity/properties/item/$int/name", $name);
+        $this->resource->then_ShouldBe("entity/0/properties/item/$int/name", $name);
     }
 
     private function thenThereShouldBe_Entities($int) {
@@ -326,34 +330,38 @@ class ShowActionResultTest extends Specification {
 
     private function thenProperty_ShouldHave_Value($pos, $count) {
         $pos--;
-        $this->resource->thenThereShouldBe_Of($count, "entity/properties/item/$pos/value");
+        $this->resource->thenThereShouldBe_Of($count, "entity/0/properties/item/$pos/value");
     }
 
     private function thenProperty_ShouldHaveValue_WithTheCaption($propertyPos, $valuePos, $caption) {
         $propertyPos--;
         $valuePos--;
-        $this->resource->then_ShouldBe("entity/properties/item/$propertyPos/value/$valuePos/caption", $caption);
+        $this->resource->then_ShouldBe("entity/0/properties/item/$propertyPos/value/$valuePos/caption", $caption);
     }
 
     private function thenProperty_ShouldHave_Actions($propertyPos, $count) {
         $propertyPos--;
-        $this->resource->thenThereShouldBe_Of($count, "entity/properties/item/$propertyPos/value/actions");
+        $this->resource->thenThereShouldBe_Of($count, "entity/0/properties/item/$propertyPos/value/actions");
     }
 
     private function thenProperty_ShouldHaveAction_WithTheName($propertyPos, $actionPos, $name) {
         $propertyPos--;
         $actionPos--;
-        $this->resource->then_ShouldBe("entity/properties/item/$propertyPos/value/actions/$actionPos/name", $name);
+        $this->resource->then_ShouldBe("entity/0/properties/item/$propertyPos/value/actions/$actionPos/name", $name);
     }
 
     private function thenProperty_ShouldHaveAction_WithTheLinkTarget($propertyPos, $actionPos, $target) {
         $propertyPos--;
         $actionPos--;
-        $this->resource->then_ShouldBe("entity/properties/item/$propertyPos/value/actions/$actionPos/link/href", $target);
+        $this->resource->then_ShouldBe("entity/0/properties/item/$propertyPos/value/actions/$actionPos/link/href", $target);
     }
 
     private function thenAnAlertShouldSay($string) {
         $this->resource->then_ShouldBe('alert', $string);
+    }
+
+    private function thenThe_ShouldNotBeShown($element) {
+        $this->resource->then_ShouldExist("$element/class");
     }
 
 } 
