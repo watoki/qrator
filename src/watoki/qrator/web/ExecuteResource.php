@@ -81,8 +81,8 @@ class ExecuteResource extends ActionResource {
                     'entity' => $entityModel,
                     'properties' => $entityModel[0]['properties'],
                     $noShow => ['class' => function (Element $e) {
-                            return $e->getAttribute('class')->getValue() . ' no-show';
-                        }]
+                        return $e->getAttribute('class')->getValue() . ' no-show';
+                    }]
                 ];
             } else {
                 $model = [
@@ -131,17 +131,15 @@ class ExecuteResource extends ActionResource {
 
         try {
             $object = $representer->create($args);
-
-            if (!$prepared && $representer->hasMissingProperties($object)) {
-                return $this->redirectToPrepare($action, $args);
-            }
-
-            return $representer->execute($object);
         } catch (InjectionException $e) {
             return $this->redirectToPrepare($action, $args);
-        } catch (\Exception $e) {
-            throw new HttpError(WebResponse::STATUS_BAD_REQUEST, $e->getMessage(), $e->getMessage(), 0, $e);
         }
+
+        if (!$prepared && $representer->hasMissingProperties($object)) {
+            return $this->redirectToPrepare($action, $args);
+        }
+
+        return $representer->execute($object);
     }
 
     private function redirectToPrepare($action, Map $args) {

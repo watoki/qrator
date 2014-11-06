@@ -4,6 +4,7 @@ namespace spec\watoki\qrator;
 use watoki\curir\cookie\CookieStore;
 use watoki\curir\cookie\SerializerRepository;
 use watoki\curir\error\HttpError;
+use watoki\factory\exception\InjectionException;
 use watoki\qrator\web\ExecuteResource;
 use watoki\scrut\Specification;
 
@@ -131,7 +132,6 @@ class ShowActionResultTest extends Specification {
         }, 'MyAction');
 
         $this->whenITryToShowTheResultsOf('MyAction');
-        $this->try->thenA_ShouldBeThrown(HttpError::class);
         $this->try->thenTheException_ShouldBeThrown('Something went wrong');
     }
 
@@ -260,6 +260,15 @@ class ShowActionResultTest extends Specification {
         $this->thenProperty_ShouldHaveAction_WithTheLinkTarget(1, 1, 'execute?action=propertyActions%5CPropertyAction&args[id]=someID&args[object]=otherID');
         $this->thenProperty_ShouldHaveAction_WithTheName(1, 2, 'Property Another');
         $this->thenProperty_ShouldHaveAction_WithTheLinkTarget(1, 2, 'execute?action=propertyActions%5CPropertyAnother&args[id]=someID&args[object]=otherID');
+    }
+
+    function testEdgeCaseDoNotRedirectOnInjectionExceptionDuringExecution() {
+        $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
+            throw new InjectionException('Something went wrong');
+        }, 'MyAction');
+
+        $this->whenITryToShowTheResultsOf('MyAction');
+        $this->try->thenTheException_ShouldBeThrown('Something went wrong');
     }
 
     ###########################################################################################
