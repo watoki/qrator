@@ -65,16 +65,20 @@ class GenericActionRepresenter extends BasicActionRepresenter {
 
     /**
      * @param callable $callback
+     * @return $this
      */
     public function setStringifier($callback) {
         $this->stringifier = $callback;
+        return $this;
     }
 
     /**
      * @param callable|object|string $handler
+     * @return $this
      */
     public function setHandler($handler) {
         $this->handler = $this->makeCallable($handler);
+        return $this;
     }
 
     /**
@@ -99,13 +103,20 @@ class GenericActionRepresenter extends BasicActionRepresenter {
     /**
      * @param string $name
      * @param Field $field
+     * @return $this
      */
     public function setField($name, Field $field) {
         $this->fields[$name] = $field;
+        return $this;
     }
 
+    /**
+     * @param ActionGenerator $action
+     * @return $this
+     */
     public function setFollowUpAction(ActionGenerator $action) {
         $this->followUpAction = $action;
+        return $this;
     }
 
     /**
@@ -121,8 +132,10 @@ class GenericActionRepresenter extends BasicActionRepresenter {
 
     /**
      * @param callable $preFiller
+     * @return $this
      */
     public function setPreFiller($preFiller) {
         $this->preFiller = $preFiller;
+        return $this;
     }
 }

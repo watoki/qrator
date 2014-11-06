@@ -56,16 +56,20 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
 
     /**
      * @param callable $callback
+     * @return $this
      */
     public function setStringifier($callback) {
         $this->stringifier = $callback;
+        return $this;
     }
 
     /**
      * @param ActionGenerator $action
+     * @return $this
      */
     public function addAction(ActionGenerator $action) {
         $this->actions[] = $action;
+        return $this;
     }
 
     /**
@@ -78,9 +82,11 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
     /**
      * @param string $property
      * @param PropertyActionGenerator $action
+     * @return $this
      */
     public function addPropertyAction($property, PropertyActionGenerator $action) {
         $this->propertyActions[$property][] = $action;
+        return $this;
     }
 
     /**
@@ -94,8 +100,13 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
         return $this->propertyActions[$property];
     }
 
+    /**
+     * @param callable $renderer
+     * @return $this
+     */
     public function setRenderer($renderer) {
         $this->renderer = $renderer;
+        return $this;
     }
 
     /**
@@ -118,9 +129,11 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
 
     /**
      * @param null|ActionGenerator $listAction
+     * @return $this
      */
     public function setListAction(ActionGenerator $listAction) {
         $this->listAction = $listAction;
+        return $this;
     }
 
     /**
@@ -132,8 +145,10 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
 
     /**
      * @param null|ActionGenerator $readAction
+     * @return $this
      */
     public function setReadAction(ActionGenerator $readAction) {
         $this->readAction = $readAction;
+        return $this;
     }
 }
