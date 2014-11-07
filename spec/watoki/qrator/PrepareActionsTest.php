@@ -88,7 +88,8 @@ class PrepareActionsTest extends Specification {
         $this->resource->givenTheActionArgument_Is('inflateMe', '2012-03-04 15:16');
 
         $this->registry->givenIRegisteredAnActionRepresenterFor('inflateArgs\InflatableAction');
-        $this->givenISetTheField_Of_ToBeAnInstanceOf('inflateMe', 'inflateArgs\InflatableAction', 'inflateArgs\MySpecialField');
+        $this->registry->givenISetTheField_Of_ToBeAnInstanceOf('inflateMe', 'inflateArgs\InflatableAction',
+            'inflateArgs\MySpecialField');
 
         $this->whenIExecuteTheAction('inflateArgs\InflatableAction');
         $this->class->then_ShouldBe('inflateArgs\MyHandler::$action->inflateMe instanceof \DateTime', true);
@@ -115,10 +116,6 @@ class PrepareActionsTest extends Specification {
         $this->resource->whenIDo_With(function (ExecuteResource $resource) use ($action) {
             return $resource->doGet($action, $this->resource->args, $this->prepared);
         }, new ExecuteResource($this->factory, $this->registry->registry, $cookies));
-    }
-
-    private function givenISetTheField_Of_ToBeAnInstanceOf($field, $class, $fieldClass) {
-        $this->registry->representers[$class]->setField($field, new $fieldClass($field));
     }
 
 } 

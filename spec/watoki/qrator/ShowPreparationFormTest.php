@@ -108,7 +108,7 @@ class ShowPreparationFormTest extends Specification {
         $this->class->givenTheClass_WithTheBody('ActionWithHiddenField', '
             public $foo;
         ');
-        $this->givenISetTheField_Of_To('foo', 'ActionWithHiddenField', new HiddenField('foo'));
+        $this->registry->givenISetTheField_Of_To('foo', 'ActionWithHiddenField', new HiddenField('foo'));
 
         $this->whenIPrepare('ActionWithHiddenField');
 
@@ -145,11 +145,6 @@ class ShowPreparationFormTest extends Specification {
     }
 
     ###############################################################################################
-
-    private function givenISetTheField_Of_To($name, $class, $field) {
-        $this->registry->givenIRegisteredAnActionRepresenterFor($class);
-        $this->registry->representers[$class]->setField($name, $field);
-    }
 
     private function whenIPrepare($action) {
         $this->resource->whenIDo_With(function (PrepareResource $resource) use ($action) {

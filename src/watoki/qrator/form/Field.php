@@ -75,4 +75,18 @@ abstract class Field {
         return $this->required;
     }
 
+    /**
+     * @return string Will be added to the head on the PrepareResource page
+     */
+    public function requireHead() {
+        return '';
+    }
+
+    /**
+     * @return string Will be added to the foot on the PrepareResource page
+     */
+    public function requireFoot() {
+        return '';
+    }
+
 }

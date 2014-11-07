@@ -2,12 +2,20 @@
 namespace watoki\qrator\web;
 
 use watoki\collections\Map;
+use watoki\dom\Element;
+use watoki\dom\Text;
 use watoki\factory\exception\InjectionException;
 use watoki\qrator\form\Field;
 use watoki\qrator\form\fields\HiddenField;
 use watoki\qrator\Representer;
 
 class PrepareResource extends ActionResource {
+
+    /** @var array|string[] */
+    private $head = [];
+
+    /** @var array|string[] */
+    private $foot = [];
 
     /**
      * @param string $action
@@ -29,7 +37,12 @@ class PrepareResource extends ActionResource {
         }
 
         return [
-            'form' => $this->assembleForm($action, $args)
+            'form' => $this->assembleForm($action, $args),
+            'head' => function (Element $element) {
+                    $element->getChildren()->append(new Text(implode("\n", array_unique($this->head))));
+                    return true;
+                },
+            'foot' => implode("\n", array_unique($this->foot))
         ];
     }
 
@@ -41,6 +54,12 @@ class PrepareResource extends ActionResource {
         ];
 
         $fields = $representer->getFields();
+
+        foreach ($fields as $field) {
+            $this->head[] = $field->requireHead();
+            $this->foot[] = $field->requireFoot();
+        }
+
         $this->fill($fields, $args);
         $representer->preFill($fields);
 
