@@ -223,8 +223,8 @@ class ShowActionResultTest extends Specification {
     function testShowCollectionObjectProperty() {
         $this->class->givenTheClass_WithTheBody('collectionObject\SomeEntity', '
             function getArray() { return new \watoki\collections\Liste([
-                new \StdClass,
-                new \StdClass,
+                ["foo" => "bar"],
+                ["bar" => "baz"],
             ]); }
         ');
         $this->class->givenTheClass_WithTheBody('collectionObject\MyHandler', '
@@ -237,6 +237,7 @@ class ShowActionResultTest extends Specification {
         $this->whenIShowTheResultsOf('MyAction');
         $this->thenThereShouldBe_Properties(1);
         $this->thenProperty_ShouldHave_Value(1, 2);
+        $this->thenProperty_ShouldHaveValue_WithTheCaption(1, 1, 'Array(    [foo] => bar)');
     }
 
     function testShowActionsForProperties() {
@@ -379,7 +380,8 @@ class ShowActionResultTest extends Specification {
     private function thenProperty_ShouldHaveValue_WithTheCaption($propertyPos, $valuePos, $caption) {
         $propertyPos--;
         $valuePos--;
-        $this->resource->then_ShouldBe("entity/0/properties/item/$propertyPos/value/$valuePos/caption", $caption);
+        $value = $this->resource->get("entity/0/properties/item/$propertyPos/value/$valuePos/caption");
+        $this->assertEquals($caption, str_replace("\n", '', $value));
     }
 
     private function thenProperty_ShouldHave_Actions($propertyPos, $count) {

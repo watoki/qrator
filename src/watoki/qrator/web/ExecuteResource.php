@@ -199,11 +199,11 @@ class ExecuteResource extends ActionResource {
         ];
     }
 
-    private function assembleValue($entity, $name, $value) {
-        if ($this->isArray($value)) {
+    private function assembleValue($entity, $name, $value, $recurse = true) {
+        if ($recurse && $this->isArray($value)) {
             $values = [];
             foreach ($value as $item) {
-                $values[] = $this->assembleValue($entity, $name, $item);
+                $values[] = $this->assembleValue($entity, $name, $item, false);
             }
             return $values;
         } else if (is_object($value)) {
@@ -219,7 +219,7 @@ class ExecuteResource extends ActionResource {
             ];
         }
         return [
-            'caption' => $value,
+            'caption' => print_r($value, true),
             'actions' => null,
         ];
     }
