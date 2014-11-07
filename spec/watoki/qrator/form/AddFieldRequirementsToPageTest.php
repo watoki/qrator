@@ -16,8 +16,8 @@ class AddFieldRequirementsToPageTest extends Specification {
     function testAddRequirementsOfOneField() {
         $this->class->givenTheClass_Extending_WithTheBody('fieldRequirements\SomeField', '\watoki\qrator\form\Field', '
             public function render() { return "Field"; }
-            public function requireHead() { return "<meta name=\"this is so meta\"/>"; }
-            public function requireFoot() { return "<script src=\"someScript.js\"/>"; }
+            public function addToHead() { return "<meta name=\"this is so meta\"/>"; }
+            public function addToFoot() { return "<script src=\"someScript.js\"/>"; }
         ');
         $this->class->givenTheClass_WithTheBody('fieldRequirements\SomeAction', '
             public $someProperty;
