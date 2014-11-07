@@ -3,49 +3,39 @@ namespace watoki\qrator\representer\basic;
 
 use watoki\collections\Map;
 use watoki\qrator\EntityRepresenter;
-use watoki\qrator\representer\ActionGenerator;
 
 abstract class BasicEntityRepresenter extends BasicRepresenter implements EntityRepresenter {
 
     /**
-     * @param object $object
+     * @param object $entity
      * @return string
      */
-    public function render($object) {
-        return $this->toString($object);
-    }
-
-    protected function wrapInActionGenerators($classes) {
-        $generators = [];
-        foreach ($classes as $class => $args) {
-            if (is_numeric($class)) {
-                $class = $args;
-                $args = null;
-            }
-            $generators[] = new ActionGenerator($class, $args);
-        }
-        return $generators;
+    public function render($entity) {
+        return $this->toString($entity);
     }
 
     /**
-     * @return ActionGenerator[]
+     * @param object $entity
+     * @return object[]
      */
-    public function getActions() {
+    public function getActions($entity) {
         return [];
     }
 
     /**
-     * @param string $property
-     * @return ActionGenerator[]
+     * @param object $entity
+     * @param \watoki\qrator\representer\Property $property
+     * @return object[]
      */
-    public function getPropertyActions($property) {
+    public function getPropertyActions($entity, $property) {
         return [];
     }
 
     /**
+     * @param object $entity
      * @return object|null
      */
-    public function getReadAction() {
+    public function getReadAction($entity) {
         return null;
     }
 

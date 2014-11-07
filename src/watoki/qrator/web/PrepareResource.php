@@ -47,7 +47,6 @@ class PrepareResource extends ActionResource {
 
         if (is_object($action)) {
             $representer->preFill($action);
-            $parameters[] = ['name' => 'args[id]', 'value' => $representer->getId($action)];
         }
 
         $form = [

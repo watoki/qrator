@@ -1,10 +1,9 @@
 <?php
 namespace spec\watoki\qrator\fixtures;
 
-use watoki\qrator\representer\ActionGenerator;
 use watoki\qrator\representer\generic\GenericActionRepresenter;
 use watoki\qrator\representer\generic\GenericEntityRepresenter;
-use watoki\qrator\representer\PropertyActionGenerator;
+use watoki\qrator\representer\Property;
 use watoki\qrator\RepresenterRegistry;
 use watoki\scrut\Fixture;
 
@@ -18,6 +17,10 @@ class RegistryFixture extends Fixture {
 
     /** @var GenericActionRepresenter[]|\watoki\qrator\representer\generic\GenericEntityRepresenter[] */
     public $representers = array();
+
+    private $actions = [];
+
+    private $propertyActions = [];
 
     public function setUp() {
         parent::setUp();
@@ -41,8 +44,17 @@ class RegistryFixture extends Fixture {
     }
 
     public function givenIAddedTheAction_ToTheRepresenterOf($action, $class) {
-        $this->class->givenTheClass($action);
-        $this->representers[$class]->addAction(new ActionGenerator($action));
+        $this->class->givenTheClass_WithTheBody($action, 'public $id;');
+
+        $this->actions[$class][] = $action;
+        $this->representers[$class]->setActions(function ($entity) use ($class) {
+            return array_map(function ($action) use ($entity) {
+                $object = new $action;
+                if (isset($entity->id))
+                    $object->id = $entity->id;
+                return $object;
+            }, $this->actions[$class]);
+        });
     }
 
     public function givenIHaveTheTheRenderer_For($callable, $class) {
@@ -50,7 +62,15 @@ class RegistryFixture extends Fixture {
     }
 
     public function givenIAddedAnAction_ForTheProperty_Of($action, $property, $class) {
-        $this->representers[$class]->addPropertyAction($property, new PropertyActionGenerator($action));
+        $this->propertyActions[$class][$property][] = $action;
+        $this->representers[$class]->setPropertyAction($property, function ($entity, Property $propertyObject) use ($property, $class) {
+            return array_map(function ($action) use ($entity, $propertyObject) {
+                $object = new $action;
+                $object->id = $entity->id;
+                $object->object = $propertyObject->get($entity)->id;
+                return $object;
+            }, $this->propertyActions[$class][$property]);
+        });
     }
 
     public function givenIHaveSetFor_ThePrefiller($action, $callback) {
@@ -58,7 +78,7 @@ class RegistryFixture extends Fixture {
     }
 
     public function givenIHaveSet_AsTheListActionFor($action, $entity) {
-        $this->representers[$entity]->setListAction(new ActionGenerator($action));
+        $this->representers[$entity]->setListAction(new $action);
     }
 
 } 

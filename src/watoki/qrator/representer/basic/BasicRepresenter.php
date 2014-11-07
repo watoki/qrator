@@ -17,19 +17,6 @@ abstract class BasicRepresenter implements Representer {
 
     /**
      * @param object $object
-     * @return mixed
-     */
-    public function getId($object) {
-        $properties = $this->getProperties($object);
-        if (isset($properties['id']) && $properties['id']->canGet()) {
-            return $properties['id']->get($object);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * @param object $object
      * @return string
      */
     public function toString($object) {

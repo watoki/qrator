@@ -32,13 +32,13 @@ class SelectEntityField extends SelectField {
 
     protected function getOptions() {
         $representer = $this->registry->getEntityRepresenter($this->entityClass);
-        $listActionGenerator = $representer->getListAction();
-        $actionRepresenter = $this->registry->getActionRepresenter($listActionGenerator->getClass());
-        $action = $actionRepresenter->create(new Map($listActionGenerator->getArguments(null)));
+        $listAction = $representer->getListAction();
+
+        $actionRepresenter = $this->registry->getActionRepresenter($listAction);
 
         $options = [];
-        foreach ($actionRepresenter->execute($action) as $entity) {
-            $options[$representer->getId($entity)] = $representer->toString($entity);
+        foreach ($actionRepresenter->execute($listAction) as $entity) {
+            $options[$representer->getProperties($entity)['id']->get($entity)] = $representer->toString($entity);
         }
         return $options;
     }

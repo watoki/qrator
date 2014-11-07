@@ -165,26 +165,6 @@ class ShowActionResultTest extends Specification {
         $this->thenAction_ShouldLinkTo(2, 'execute?action=SomeAnother&args[id]=42');
     }
 
-    function testEntityActionWithMethods() {
-        $this->class->givenTheClass_WithTheBody('methods\Entity', '
-            public function getId() { return "73"; }
-        ');
-        $this->class->givenTheClass_WithTheBody('methods\MyHandler', '
-            function myAction() {
-                return new Entity();
-            }
-        ');
-        $this->dispatcher->givenIAddedTheClass_AsHandlerFor('methods\MyHandler', 'MyAction');
-
-        $this->registry->givenIRegisteredAnEntityRepresenterFor('methods\Entity');
-        $this->registry->givenIAddedTheAction_ToTheRepresenterOf('SomeAction', 'methods\Entity');
-        $this->registry->givenIAddedTheAction_ToTheRepresenterOf('SomeAnother', 'methods\Entity');
-
-        $this->whenIShowTheResultsOf('MyAction');
-        $this->thenAction_ShouldLinkTo(1, 'execute?action=SomeAction&args[id]=73');
-        $this->thenAction_ShouldLinkTo(2, 'execute?action=SomeAnother&args[id]=73');
-    }
-
     function testNoResult() {
         $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
             return null;

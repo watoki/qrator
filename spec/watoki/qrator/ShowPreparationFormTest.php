@@ -1,7 +1,6 @@
 <?php
 namespace spec\watoki\qrator;
 
-use watoki\qrator\ActionDispatcher;
 use watoki\qrator\web\PrepareResource;
 use watoki\scrut\Specification;
 
@@ -87,8 +86,8 @@ class ShowPreparationFormTest extends Specification {
 
         $this->whenIPrepare('ActionWithId');
 
-        $this->thenThereShouldBe_Fields(1);
-        $this->thenThereShouldBeAHiddenField_WithValue('args[id]', '42');
+        $this->thenThereShouldBe_Fields(2);
+        $this->thenField_ShouldBeHiddenWithTheName_AndValue(1, 'args[id]', '42');
     }
 
     function testMakeFieldsRequired() {
@@ -157,6 +156,12 @@ class ShowPreparationFormTest extends Specification {
 
     private function givenISetTheFieldFor_To_For($field, $class, $representedClass) {
         $this->registry->representers[$representedClass]->setField($field, new $class);
+    }
+
+    private function thenField_ShouldBeHiddenWithTheName_AndValue($int, $name, $value) {
+        $this->assertContains('type="hidden"', $this->getRenderedField($int));
+        $this->thenField_ShouldBeHaveTheName($int, $name);
+        $this->thenField_ShouldBeHaveTheValue($int, $value);
     }
 
     private function thenField_ShouldBeHaveTheName($int, $string) {

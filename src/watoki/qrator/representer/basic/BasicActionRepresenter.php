@@ -5,13 +5,13 @@ use watoki\collections\Map;
 use watoki\factory\Factory;
 use watoki\qrator\ActionRepresenter;
 use watoki\qrator\form\fields\ArrayField;
+use watoki\qrator\form\fields\HiddenField;
 use watoki\qrator\form\fields\SelectEntityField;
 use watoki\qrator\form\fields\StringField;
 use watoki\qrator\representer\Property;
 use watoki\qrator\representer\property\types\ArrayType;
 use watoki\qrator\representer\property\types\IdentifierType;
 use watoki\qrator\representer\property\types\MultiType;
-use watoki\qrator\representer\property\types\StringType;
 use watoki\qrator\RepresenterRegistry;
 
 abstract class BasicActionRepresenter extends BasicRepresenter implements ActionRepresenter {
@@ -58,7 +58,7 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
     public function getFields($object) {
         $fields = [];
         foreach ($this->getProperties($object) as $property) {
-            if (!$property->canSet() || $property->name() == 'id') {
+            if (!$property->canSet()) {
                 continue;
             }
 
@@ -85,7 +85,9 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
     }
 
     protected function getFieldForType($name, $type) {
-        if ($type instanceof ArrayType) {
+        if ($name == 'id') {
+            return new HiddenField('id');
+        } else if ($type instanceof ArrayType) {
             return new ArrayField($name, $this->getFieldForType($name, $type->getItemType()));
         } else if ($type instanceof IdentifierType) {
             return new SelectEntityField($name, $type->getTarget(), $this->registry);
@@ -110,9 +112,10 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
     }
 
     /**
-     * @return null|\watoki\qrator\representer\ActionGenerator
+     * @param object $result
+     * @return null|object
      */
-    public function getFollowUpAction() {
+    public function getFollowUpAction($result) {
         return null;
     }
 

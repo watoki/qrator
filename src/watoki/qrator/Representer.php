@@ -25,10 +25,4 @@ interface Representer {
      */
     public function getProperties($object = null);
 
-    /**
-     * @param object $object
-     * @return mixed
-     */
-    public function getId($object);
-
 }

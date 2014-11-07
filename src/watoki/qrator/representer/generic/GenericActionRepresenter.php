@@ -3,7 +3,6 @@ namespace watoki\qrator\representer\generic;
 
 use watoki\factory\Factory;
 use watoki\qrator\form\Field;
-use watoki\qrator\representer\ActionGenerator;
 use watoki\qrator\representer\basic\BasicActionRepresenter;
 use watoki\qrator\representer\Property;
 use watoki\qrator\RepresenterRegistry;
@@ -13,8 +12,8 @@ class GenericActionRepresenter extends BasicActionRepresenter {
     /** @var array|Field[] */
     private $fields = [];
 
-    /** @var null|ActionGenerator */
-    private $followUpAction;
+    /** @var null|callable */
+    private $followUpActionGenerator;
 
     /** @var callable */
     private $handler;
@@ -130,19 +129,21 @@ class GenericActionRepresenter extends BasicActionRepresenter {
     }
 
     /**
-     * @param ActionGenerator $action
+     * @param callable $generator
      * @return $this
      */
-    public function setFollowUpAction(ActionGenerator $action) {
-        $this->followUpAction = $action;
+    public function setFollowUpAction($generator) {
+        $this->followUpActionGenerator = $generator;
         return $this;
     }
 
     /**
-     * @return null|ActionGenerator
+     * @return null|object
      */
-    public function getFollowUpAction() {
-        return $this->followUpAction;
+    public function getFollowUpAction($result) {
+        return $this->followUpActionGenerator
+            ? call_user_func($this->followUpActionGenerator, $result)
+            : null;
     }
 
     public function preFill($object) {

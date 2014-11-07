@@ -7,20 +7,20 @@ use watoki\qrator\representer\PropertyActionGenerator;
 
 class GenericEntityRepresenter extends BasicEntityRepresenter {
 
-    /** @var array|\watoki\qrator\representer\ActionGenerator[] */
-    private $actions = [];
+    /** @var callable */
+    private $actionsGenerator;
 
-    /** @var array|array[] Arrays of PropertyActionGenerator indexed by property names */
-    private $propertyActions = [];
+    /** @var array|callable[] */
+    private $propertyActionGenerators = [];
 
     /** @var null|callable */
     private $renderer;
 
-    /** @var ActionGenerator|null */
+    /** @var callable|null */
     private $listAction;
 
-    /** @var ActionGenerator|null */
-    private $readAction;
+    /** @var callable|null */
+    private $readActionGenerator;
 
     /** @var null|callable */
     private $stringifier;
@@ -36,6 +36,9 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
      */
     public function __construct($class) {
         $this->class = $class;
+        $this->actionsGenerator = function () {
+            return [];
+        };
     }
 
     /**
@@ -67,40 +70,42 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
     }
 
     /**
-     * @param ActionGenerator $action
+     * @param callable $generator
      * @return $this
      */
-    public function addAction(ActionGenerator $action) {
-        $this->actions[] = $action;
+    public function setActions($generator) {
+        $this->actionsGenerator = $generator;
         return $this;
     }
 
     /**
-     * @return array|ActionGenerator[]
+     * @param object $entity
+     * @return array|object[]
      */
-    public function getActions() {
-        return $this->actions;
+    public function getActions($entity) {
+        return call_user_func($this->actionsGenerator, $entity);
     }
 
     /**
      * @param string $property
-     * @param PropertyActionGenerator $action
+     * @param callable $generator
      * @return $this
      */
-    public function addPropertyAction($property, PropertyActionGenerator $action) {
-        $this->propertyActions[$property][] = $action;
+    public function setPropertyAction($property, $generator) {
+        $this->propertyActionGenerators[$property] = $generator;
         return $this;
     }
 
     /**
-     * @param string $property
-     * @return array|PropertyActionGenerator[]
+     * @param object $entity
+     * @param \watoki\qrator\representer\Property $property
+     * @return array|object[]
      */
-    public function getPropertyActions($property) {
-        if (!isset($this->propertyActions[$property])) {
+    public function getPropertyActions($entity, $property) {
+        if (!isset($this->propertyActionGenerators[$property->name()])) {
             return [];
         }
-        return $this->propertyActions[$property];
+        return call_user_func($this->propertyActionGenerators[$property->name()], $entity, $property);
     }
 
     /**
@@ -113,45 +118,48 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
     }
 
     /**
-     * @param object $object
+     * @param object $entity
      * @return string
      */
-    public function render($object) {
+    public function render($entity) {
         if ($this->renderer) {
-            return call_user_func($this->renderer, $object);
+            return call_user_func($this->renderer, $entity);
         }
-        return parent::render($object);
+        return parent::render($entity);
     }
 
     /**
-     * @return null|ActionGenerator
+     * @return null|object
      */
     public function getListAction() {
         return $this->listAction;
     }
 
     /**
-     * @param null|ActionGenerator $listAction
+     * @param null|object $listAction
      * @return $this
      */
-    public function setListAction(ActionGenerator $listAction) {
+    public function setListAction($listAction) {
         $this->listAction = $listAction;
         return $this;
     }
 
     /**
-     * @return null|ActionGenerator
+     * @param object $entity
+     * @return null|object
      */
-    public function getReadAction() {
-        return $this->readAction;
+    public function getReadAction($entity) {
+        return $this->readActionGenerator
+            ? call_user_func($this->readActionGenerator, $entity)
+            : null;
     }
 
     /**
-     * @param null|ActionGenerator $readAction
+     * @param null|callable $generator
      * @return $this
      */
-    public function setReadAction(ActionGenerator $readAction) {
-        $this->readAction = $readAction;
+    public function setReadAction($generator) {
+        $this->readActionGenerator = $generator;
         return $this;
     }
 

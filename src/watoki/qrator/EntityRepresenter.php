@@ -4,29 +4,32 @@ namespace watoki\qrator;
 interface EntityRepresenter extends Representer {
 
     /**
-     * @param object $object
+     * @param object $entity
      * @return string
      */
-    public function render($object);
+    public function render($entity);
 
     /**
-     * @return \watoki\qrator\representer\ActionGenerator[]
+     * @param object $entity
+     * @return object[]
      */
-    public function getActions();
+    public function getActions($entity);
 
     /**
-     * @param string $property
-     * @return \watoki\qrator\representer\ActionGenerator[]
+     * @param object $entity
+     * @param \watoki\qrator\representer\Property $property
+     * @return object[]
      */
-    public function getPropertyActions($property);
+    public function getPropertyActions($entity, $property);
 
     /**
-     * @return \watoki\qrator\representer\ActionGenerator|null
+     * @param object $entity
+     * @return object|null
      */
-    public function getReadAction();
+    public function getReadAction($entity);
 
     /**
-     * @return \watoki\qrator\representer\ActionGenerator|null
+     * @return object|null
      */
     public function getListAction();
 

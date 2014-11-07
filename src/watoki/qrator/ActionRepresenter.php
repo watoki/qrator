@@ -14,7 +14,7 @@ interface ActionRepresenter extends Representer {
 
     /**
      * @param object $object
-     * @return array|\watoki\qrator\form\Field[] Without ID
+     * @return array|\watoki\qrator\form\Field[]
      */
     public function getFields($object);
 
@@ -38,9 +38,10 @@ interface ActionRepresenter extends Representer {
     public function hasMissingProperties($object);
 
     /**
-     * @return null|\watoki\qrator\representer\ActionGenerator
+     * @param object $result
+     * @return null|object
      */
-    public function getFollowUpAction();
+    public function getFollowUpAction($result);
 
     /**
      * @param object $object

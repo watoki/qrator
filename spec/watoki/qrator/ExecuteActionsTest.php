@@ -1,11 +1,10 @@
 <?php
 namespace spec\watoki\qrator;
 
-use watoki\qrator\representer\ActionGenerator;
-use watoki\qrator\web\ExecuteResource;
 use watoki\curir\cookie\Cookie;
 use watoki\curir\cookie\CookieStore;
 use watoki\curir\cookie\SerializerRepository;
+use watoki\qrator\web\ExecuteResource;
 use watoki\scrut\Specification;
 
 /**
@@ -106,20 +105,21 @@ class ExecuteActionsTest extends Specification {
         $this->class->givenTheClass('ActionWithFollowUp');
         $this->class->givenTheClass('FollowUpAction');
 
-        $this->givenISet_With_ToFollowAfter('FollowUpAction', ['foo' => 'bar'], 'ActionWithFollowUp');
+        $this->givenISet_ToFollowAfter('return new FollowUpAction();', 'ActionWithFollowUp');
 
         $this->dispatcher->givenISetAnEmptyHandlerFor('ActionWithFollowUp');
 
         $this->whenIExecuteTheAction('ActionWithFollowUp');
         $this->thenAnAlertShouldSay("Action executed successfully. Please stand by.");
-        $this->thenIShouldBeRedirectedTo('FollowUpAction&args[foo]=bar');
+        $this->thenIShouldBeRedirectedTo('FollowUpAction');
     }
 
     function testFollowUpActionGeneratorGetResultOfFollowedAction() {
-        $this->class->givenTheClass('ActionWithFollowUp');
+        $this->class->givenTheClass_WithTheBody('FollowUpActionWithProperty',
+            'function __construct($result) { $this->foo = $result; }');
         $this->class->givenTheClass('FollowUpAction');
 
-        $this->givenISet_WithTheCallback_ToFollowAfter('FollowUpAction', 'return ["foo" => $result];', 'ActionWithFollowUp');
+        $this->givenISet_ToFollowAfter('return new FollowUpActionWithProperty($result);', 'ActionWithFollowUp');
 
         $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
             return "baz";
@@ -127,7 +127,7 @@ class ExecuteActionsTest extends Specification {
 
         $this->whenIExecuteTheAction('ActionWithFollowUp');
         $this->thenAnAlertShouldSay("Action executed successfully. Please stand by.");
-        $this->thenIShouldBeRedirectedTo('FollowUpAction&args[foo]=baz');
+        $this->thenIShouldBeRedirectedTo('FollowUpActionWithProperty&args[foo]=baz');
     }
 
     ####################################################################################################
@@ -147,21 +147,11 @@ class ExecuteActionsTest extends Specification {
         ]), ExecuteResource::LAST_ACTION_COOKIE);
     }
 
-    private function givenISet_With_ToFollowAfter($class, $args, $followed) {
-        $this->givenISet_WithTheCallback_ToFollowAfter($class, function () use ($args) {
-            return $args;
-        }, $followed);
-    }
-
-    private function givenISet_WithTheCallback_ToFollowAfter($class, $callback, $followed) {
-        if (is_string($callback)) {
-            /** @noinspection PhpUnusedParameterInspection */
-            $callback = function ($result) use ($callback) {
-                return eval($callback);
-            };
-        }
+    private function givenISet_ToFollowAfter($generator, $followed) {
         $this->registry->givenIRegisteredAnActionRepresenterFor($followed);
-        $this->registry->representers[$followed]->setFollowUpAction(new ActionGenerator($class, $callback));
+        $this->registry->representers[$followed]->setFollowUpAction(function ($result) use ($generator) {
+            return eval($generator);
+        });
     }
 
     private function whenIExecuteTheAction($action) {

@@ -9,8 +9,8 @@ use watoki\curir\Responder;
 use watoki\dom\Element;
 use watoki\factory\exception\InjectionException;
 use watoki\factory\Factory;
-use watoki\qrator\representer\ActionGenerator;
-use watoki\qrator\representer\PropertyActionGenerator;
+use watoki\qrator\ActionRepresenter;
+use watoki\qrator\representer\Property;
 use watoki\qrator\RepresenterRegistry;
 use watoki\tempan\model\ListModel;
 
@@ -49,12 +49,14 @@ class ExecuteResource extends ActionResource {
         }
 
         $representer = $this->registry->getActionRepresenter($action);
-        $followUpAction = $representer->getFollowUpAction();
+        $followUpAction = $representer->getFollowUpAction($result);
 
         if ($followUpAction) {
+            $followUpRepresenter = $this->registry->getActionRepresenter($followUpAction);
+
             $url = Url::fromString('execute');
-            $url->getParameters()->set('action', $followUpAction->getClass());
-            $url->getParameters()->set('args', new Map($followUpAction->getArguments($result)));
+            $url->getParameters()->set('action', $followUpRepresenter->getClass());
+            $url->getParameters()->set('args', $this->getArguments($followUpRepresenter, $followUpAction));
 
             $model = [
                 'entity' => null,
@@ -168,7 +170,7 @@ class ExecuteResource extends ActionResource {
     private function assembleEntity($entity, $short = false) {
         $representer = $this->registry->getEntityRepresenter($entity);
         $properties = $this->assembleProperties($entity, $short);
-        $actions = $this->assembleActions($representer->getActions(), $entity);
+        $actions = $this->assembleActions($representer->getActions($entity), $entity);
         return [
             'name' => $representer->toString($entity),
             'properties' => new ListModel($properties),
@@ -185,70 +187,67 @@ class ExecuteResource extends ActionResource {
         $entityProperties = $short ? $representer->getCondensedProperties($entity) : $representer->getProperties($entity);
         foreach ($entityProperties as $property) {
             if ($property->canGet($entity)) {
-                $properties[] = $this->assembleProperty($entity, $property->name(), $property->get($entity));
+                $properties[] = $this->assembleProperty($entity, $property);
             }
         }
 
         return $properties;
     }
 
-    private function assembleProperty($entity, $name, $value) {
+    private function assembleProperty($entity, Property $property) {
         return [
-            'name' => $name,
-            'value' => $this->assembleValue($entity, $name, $value)
+            'name' => $property->name(),
+            'value' => $this->assembleValue($entity, $property)
         ];
     }
 
-    private function assembleValue($entity, $name, $value, $recurse = true) {
-        if ($recurse && $this->isArray($value)) {
+    private function assembleValue($entity, Property $property) {
+        $value = $property->get($entity);
+
+        if ($this->isArray($value)) {
             $values = [];
             foreach ($value as $item) {
-                $values[] = $this->assembleValue($entity, $name, $item, false);
+                $values[] = $this->assembleValueWithActions($entity, $property, $item);
             }
             return $values;
-        } else if (is_object($value)) {
+        } else {
+            return $this->assembleValueWithActions($entity, $property, $value);
+        }
+    }
+
+    private function assembleValueWithActions($entity, Property $property, $value) {
+        if (is_object($value)) {
             $entityRepresenter = $this->registry->getEntityRepresenter($entity);
             $propertyRepresenter = $this->registry->getEntityRepresenter($value);
 
             return [
                 'caption' => $propertyRepresenter->render($value),
                 'actions' => array_merge(
-                    $this->assembleActions($propertyRepresenter->getActions(), $value),
-                    $this->assemblePropertyActions($entityRepresenter->getPropertyActions($name), $value, $entity)
+                    $this->assembleActions($propertyRepresenter->getActions($entity), $value),
+                    $this->assembleActions($entityRepresenter->getPropertyActions($entity, $property), $value, $entity)
                 ),
             ];
         }
+
         return [
             'caption' => print_r($value, true),
             'actions' => null,
         ];
     }
 
-    private function assemblePropertyActions($actions, $object, $entity) {
-        $representer = $this->registry->getEntityRepresenter($entity);
-        $id = $representer->getId($entity);
-
-        $propertyRepresenter = $this->registry->getEntityRepresenter($object);
-        $propertyId = $propertyRepresenter->getId($object);;
-
-        return array_map(function (PropertyActionGenerator $action) use ($id, $propertyId) {
-            return $this->assembleAction($action->getClass(), $action->getArguments($id, $propertyId));
+    private function assembleActions($actions) {
+        return array_map(function ($action) {
+            return $this->assembleAction($action);
         }, $actions);
     }
 
-    private function assembleActions($actions, $entity) {
-        $representer = $this->registry->getEntityRepresenter($entity);
-        $id = $representer->getId($entity);
-
-        return array_map(function (ActionGenerator $action) use ($id) {
-            return $this->assembleAction($action->getClass(), $action->getArguments($id));
-        }, $actions);
-    }
-
-    private function assembleAction($action, $arguments) {
+    private function assembleAction($action) {
         $target = Url::fromString('execute');
-        $target->getParameters()->set('action', $action);
-        $target->getParameters()->set('args', new Map($arguments));
+
+        $representer = $this->registry->getActionRepresenter($action);
+
+        $target->getParameters()->set('action', $representer->getClass());
+        $target->getParameters()->set('args', $this->getArguments($representer, $action));
 
 
         $representer = $this->registry->getActionRepresenter($action);
@@ -258,6 +257,14 @@ class ExecuteResource extends ActionResource {
                 'href' => $target->toString()
             ]
         ];
+    }
+
+    private function getArguments(ActionRepresenter $representer, $action) {
+        return $representer->getProperties($action)->map(function (Property $property) use ($action) {
+            return $property->get($action);
+        })->filter(function ($value) {
+            return !!$value;
+        });
     }
 
     private function storeLastAction($action, Map $args) {
