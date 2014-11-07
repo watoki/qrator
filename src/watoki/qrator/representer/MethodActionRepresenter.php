@@ -21,6 +21,8 @@ class MethodActionRepresenter extends GenericActionRepresenter {
 
         $this->method = new \ReflectionMethod($className, $methodName);
         $this->createClassDefinition();
+
+        $this->setName(ucfirst(preg_replace('/([a-z])([A-Z])/', '$1 $2', $this->method->getShortName())));
     }
 
     public function execute($object) {
@@ -36,13 +38,6 @@ class MethodActionRepresenter extends GenericActionRepresenter {
 
     public static function asClass($class, $method) {
         return $class . '__' . $method;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName() {
-        return ucfirst(preg_replace('/([a-z])([A-Z])/', '$1 $2', $this->method->getShortName()));
     }
 
     private function createClassDefinition() {

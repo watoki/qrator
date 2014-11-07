@@ -28,6 +28,9 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
     /** @var string */
     private $class;
 
+    /** @var string|null */
+    private $name;
+
     /**
      * @param string $class
      */
@@ -149,6 +152,22 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
      */
     public function setReadAction(ActionGenerator $readAction) {
         $this->readAction = $readAction;
+        return $this;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getName() {
+        return $this->name ?: parent::getName();
+    }
+
+    /**
+     * @param null|string $name
+     * @return $this
+     */
+    public function setName($name) {
+        $this->name = $name;
         return $this;
     }
 }

@@ -1,6 +1,9 @@
 <?php
 namespace spec\watoki\qrator;
 
+use watoki\curir\cookie\CookieStore;
+use watoki\qrator\RootAction;
+use watoki\qrator\web\ExecuteResource;
 use watoki\qrator\web\IndexResource;
 use watoki\scrut\Specification;
 
@@ -12,22 +15,14 @@ use watoki\scrut\Specification;
  */
 class ListRootActionsTest extends Specification {
 
-    function testNoActionsRegistered() {
+    function testForwardToRootAction() {
         $this->whenIOpenTheIndexResource();
-        $this->thenThereShouldBeNoActions();
+        $this->resource->thenIShouldBeRedirectedTo('execute?action=watoki%5Cqrator%5CRootAction');
     }
 
-    function testTwoActionsRegistered() {
-        $this->registry->givenIRegisteredAnEntityRepresenterFor(null);
-        $this->registry->givenIAddedTheAction_ToTheRepresenterOf('some\ActionOne', null);
-        $this->registry->givenIAddedTheAction_ToTheRepresenterOf('other\ActionTwo', null);
-
-        $this->whenIOpenTheIndexResource();
-        $this->thenThereShouldBe_Actions(2);
-        $this->thenAction_ShouldBe(1, 'Action One');
-        $this->thenAction_ShouldBe(2, 'Action Two');
-        $this->thenAction_ShouldLinkTo(1, 'execute?action=some\ActionOne');
-        $this->thenAction_ShouldLinkTo(2, 'execute?action=other\ActionTwo');
+    function testRootActionReturnsItself() {
+        $this->whenIExecute(RootAction::class);
+        $this->thenItShouldShouldTheEntity('Qrator');
     }
 
     ####################################################################################################
@@ -38,22 +33,15 @@ class ListRootActionsTest extends Specification {
         }, new IndexResource($this->factory, $this->registry->registry));
     }
 
-    private function thenThereShouldBeNoActions() {
-        $this->thenThereShouldBe_Actions(0);
+    private function whenIExecute($class) {
+        $cookies = $this->factory->getInstance(CookieStore::class, ['source' => []]);
+        $this->resource->whenIDo_With(function (ExecuteResource $resource) use ($class) {
+            return $resource->doGet($class);
+        }, new ExecuteResource($this->factory, $this->registry->registry, $cookies));
     }
 
-    private function thenThereShouldBe_Actions($int) {
-        $this->resource->thenThereShouldBe_Of($int, 'action');
-    }
-
-    private function thenAction_ShouldBe($pos, $string) {
-        $pos--;
-        $this->resource->then_ShouldBe("action/$pos/name", $string);
-    }
-
-    private function thenAction_ShouldLinkTo($pos, $string) {
-        $pos--;
-        $this->resource->then_ShouldBe("action/$pos/link/href", $string);
+    private function thenItShouldShouldTheEntity($string) {
+        $this->resource->then_ShouldBe('entity/0/name', $string);
     }
 
 } 

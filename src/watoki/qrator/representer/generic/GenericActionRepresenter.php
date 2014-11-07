@@ -28,6 +28,9 @@ class GenericActionRepresenter extends BasicActionRepresenter {
     /** @var string */
     private $class;
 
+    /** @var string */
+    private $name;
+
     /**
      * @param string $class
      * @param Factory $factory <-
@@ -42,6 +45,22 @@ class GenericActionRepresenter extends BasicActionRepresenter {
         };
         $this->preFiller = function ($action) {
         };
+    }
+
+    /**
+     * @return string
+     */
+    public function getName() {
+        return $this->name ?: parent::getName();
+    }
+
+    /**
+     * @param string $name
+     * @return $this
+     */
+    public function setName($name) {
+        $this->name = $name;
+        return $this;
     }
 
     /**

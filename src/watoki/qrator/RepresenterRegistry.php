@@ -20,6 +20,16 @@ class RepresenterRegistry {
      */
     public function __construct(Factory $factory) {
         $this->factory = $factory;
+
+        $this->register((new GenericActionRepresenter(RootAction::class, $factory, $this))
+                ->setHandler(function () {
+                    return new RootEntity();
+                })
+        );
+
+        $this->register((new GenericEntityRepresenter(RootEntity::class))
+                ->setName('Qrator')
+        );
     }
 
     /**
