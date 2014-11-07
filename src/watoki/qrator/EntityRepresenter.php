@@ -17,10 +17,11 @@ interface EntityRepresenter extends Representer {
 
     /**
      * @param object $entity
-     * @param \watoki\qrator\representer\Property $property
+     * @param string $propertyName
+     * @param mixed $value
      * @return \watoki\qrator\representer\ActionLink[]
      */
-    public function getPropertyActions($entity, $property);
+    public function getPropertyActions($entity, $propertyName, $value);
 
     /**
      * @param object $entity

@@ -61,10 +61,10 @@ class RegistryFixture extends Fixture {
 
     public function givenIAddedAnAction_ForTheProperty_Of($action, $property, $class) {
         $this->propertyActions[$class][$property][] = $action;
-        $this->representers[$class]->setPropertyAction($property, function ($entity, Property $propertyObject) use ($property, $class) {
-            return array_map(function ($action) use ($entity, $propertyObject) {
-                return new ActionLink($action, ['id' => $entity->id, 'object' => $propertyObject->get($entity)->id]);
-            }, $this->propertyActions[$class][$property]);
+        $this->representers[$class]->setPropertyAction($property, function ($entity, $propertyName, $value) use ($property, $class) {
+            return array_map(function ($action) use ($entity, $value) {
+                return new ActionLink($action, ['id' => $entity->id, 'object' => $value->id]);
+            }, $this->propertyActions[$class][$propertyName]);
         });
     }
 
