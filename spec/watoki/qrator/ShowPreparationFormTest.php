@@ -69,8 +69,9 @@ class ShowPreparationFormTest extends Specification {
             public $two;
         ');
         $this->registry->givenIRegisteredAnActionRepresenterFor('PreFillingAction');
-        $this->registry->givenIHaveSetFor_ThePrefiller('PreFillingAction', function ($action) {
-            $action->one = "FortyTwo";
+        $this->registry->givenIHaveSetFor_ThePrefiller('PreFillingAction', function ($fields) {
+            /** @var \watoki\qrator\form\Field[] $fields */
+            $fields['one']->setValue("FortyTwo");
         });
 
         $this->whenIPrepare('PreFillingAction');

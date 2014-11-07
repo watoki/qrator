@@ -14,15 +14,9 @@ interface ActionRepresenter extends Representer {
 
     /**
      * @param object $object
-     * @return array|\watoki\qrator\form\Field[]
+     * @return array|\watoki\qrator\form\Field[] Indexed by name
      */
     public function getFields($object);
-
-    /**
-     * @param \watoki\qrator\representer\Property $property
-     * @return \watoki\qrator\form\Field
-     */
-    public function getField(Property $property);
 
     /**
      * @param \watoki\collections\Map|null $args
@@ -44,9 +38,9 @@ interface ActionRepresenter extends Representer {
     public function getFollowUpAction($result);
 
     /**
-     * @param object $object
+     * @param array|\watoki\qrator\form\Field[] $fields
      * @return void
      */
-    public function preFill($object);
+    public function preFill($fields);
 
 } 

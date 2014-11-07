@@ -63,7 +63,7 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
             }
 
             $field = $this->getField($property);
-            $fields[] = $field;
+            $fields[$property->name()] = $field;
 
             if (is_object($object) && $property->canGet()) {
                 $field->setValue($property->get($object));
@@ -80,7 +80,7 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
      * @param \watoki\qrator\representer\Property $property
      * @return \watoki\qrator\form\Field
      */
-    public function getField(Property $property) {
+    protected function getField(Property $property) {
         return $this->getFieldForType($property->name(), $property->type());
     }
 
@@ -118,10 +118,10 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
     }
 
     /**
-     * @param object $object
+     * @param array|\watoki\qrator\form\Field[] $fields
      * @return void
      */
-    public function preFill($object) {
+    public function preFill($fields) {
     }
 
     /**

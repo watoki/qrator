@@ -147,8 +147,12 @@ class GenericActionRepresenter extends BasicActionRepresenter {
             : null;
     }
 
-    public function preFill($object) {
-        call_user_func($this->preFiller, $object);
+    /**
+     * @param array|\watoki\qrator\form\Field[] $fields
+     * @return void
+     */
+    public function preFill($fields) {
+        call_user_func($this->preFiller, $fields);
     }
 
     /**

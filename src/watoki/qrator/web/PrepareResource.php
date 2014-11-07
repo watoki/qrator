@@ -46,26 +46,25 @@ class PrepareResource extends ActionResource {
             ['name' => 'action', 'value' => $representer->getClass()],
         ];
 
-        if (is_object($action)) {
-            $representer->preFill($action);
-        }
+        $fields = $representer->getFields($action);
+        $representer->preFill($fields);
 
         $form = [
             'title' => $representer->getName(),
             'action' => 'execute',
             'parameter' => $parameters,
-            'field' => $this->assembleFields($action, $representer)
+            'field' => $this->assembleFields($fields)
         ];
         return $form;
     }
 
-    private function assembleFields($action, ActionRepresenter $representer) {
+    private function assembleFields($fields) {
         return array_map(function (Field $field) {
             return [
                 'label' => ($field instanceof HiddenField) ? null : ucfirst($field->getLabel()),
                 'control' => $field->render(),
                 'isRequired' => $field->isRequired()
             ];
-        }, $representer->getFields($action));
+        }, array_values($fields));
     }
 }
