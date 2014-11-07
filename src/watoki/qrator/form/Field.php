@@ -78,14 +78,14 @@ abstract class Field {
     /**
      * @return string Will be added to the head on the PrepareResource page
      */
-    public function requireHead() {
+    public function addToHead() {
         return '';
     }
 
     /**
      * @return string Will be added to the foot on the PrepareResource page
      */
-    public function requireFoot() {
+    public function addToFoot() {
         return '';
     }
 
