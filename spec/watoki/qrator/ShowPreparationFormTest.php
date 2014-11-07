@@ -1,6 +1,7 @@
 <?php
 namespace spec\watoki\qrator;
 
+use watoki\qrator\form\fields\HiddenField;
 use watoki\qrator\web\PrepareResource;
 use watoki\scrut\Specification;
 
@@ -77,7 +78,7 @@ class ShowPreparationFormTest extends Specification {
         $this->thenField_ShouldBeHaveNoValue(2);
     }
 
-    function testHideIdField() {
+    function testAlsoShowIdField() {
         $this->resource->givenTheActionArgument_Is('id', '42');
         $this->class->givenTheClass_WithTheBody('ActionWithId', '
             public $id;
@@ -87,7 +88,21 @@ class ShowPreparationFormTest extends Specification {
         $this->whenIPrepare('ActionWithId');
 
         $this->thenThereShouldBe_Fields(2);
-        $this->thenField_ShouldBeHiddenWithTheName_AndValue(1, 'args[id]', '42');
+        $this->thenField_ShouldHaveTheLabel(1, 'Id');
+        $this->thenField_ShouldBeHaveTheName(1, 'args[id]');
+        $this->thenField_ShouldBeHaveTheValue(1, '42');
+    }
+
+    function testHideLabelOfHiddenFields() {
+        $this->class->givenTheClass_WithTheBody('ActionWithHiddenField', '
+            public $foo;
+        ');
+        $this->givenISetTheField_Of_To('foo', 'ActionWithHiddenField', new HiddenField('foo'));
+
+        $this->whenIPrepare('ActionWithHiddenField');
+
+        $this->thenThereShouldBe_Fields(1);
+        $this->thenField_ShouldBeInvisible(1);
     }
 
     function testMakeFieldsRequired() {
@@ -119,6 +134,11 @@ class ShowPreparationFormTest extends Specification {
     }
 
     ###############################################################################################
+
+    private function givenISetTheField_Of_To($name, $class, $field) {
+        $this->registry->givenIRegisteredAnActionRepresenterFor($class);
+        $this->registry->representers[$class]->setField($name, $field);
+    }
 
     private function whenIPrepare($action) {
         $this->resource->whenIDo_With(function (PrepareResource $resource) use ($action) {
@@ -158,12 +178,6 @@ class ShowPreparationFormTest extends Specification {
         $this->registry->representers[$representedClass]->setField($field, new $class);
     }
 
-    private function thenField_ShouldBeHiddenWithTheName_AndValue($int, $name, $value) {
-        $this->assertContains('type="hidden"', $this->getRenderedField($int));
-        $this->thenField_ShouldBeHaveTheName($int, $name);
-        $this->thenField_ShouldBeHaveTheValue($int, $value);
-    }
-
     private function thenField_ShouldBeHaveTheName($int, $string) {
         $this->assertContains('name="' . $string . '"', $this->getRenderedField($int));
     }
@@ -191,6 +205,11 @@ class ShowPreparationFormTest extends Specification {
     private function getRenderedField($int) {
         $int--;
         return $this->resource->get("form/field/$int/control");
+    }
+
+    private function thenField_ShouldBeInvisible($pos) {
+        $pos--;
+        $this->resource->then_ShouldBe("form/field/$pos/label", null);
     }
 
 }

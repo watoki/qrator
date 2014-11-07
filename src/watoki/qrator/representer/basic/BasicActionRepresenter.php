@@ -85,9 +85,7 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
     }
 
     protected function getFieldForType($name, $type) {
-        if ($name == 'id') {
-            return new HiddenField('id');
-        } else if ($type instanceof ArrayType) {
+        if ($type instanceof ArrayType) {
             return new ArrayField($name, $this->getFieldForType($name, $type->getItemType()));
         } else if ($type instanceof IdentifierType) {
             return new SelectEntityField($name, $type->getTarget(), $this->registry);
