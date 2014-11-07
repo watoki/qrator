@@ -54,6 +54,7 @@ class ShowPreparationFormTest extends Specification {
             public function setRequired($to = true) {}
             public function isRequired() {}
             public function getName() {}
+            public function getValue() {}
         ');
         $this->registry->givenIRegisteredAnActionRepresenterFor('PrepareAction');
         $this->givenISetTheFieldFor_To_For('one', 'MySpecialField', 'PrepareAction');
@@ -67,7 +68,10 @@ class ShowPreparationFormTest extends Specification {
         $this->class->givenTheClass_WithTheBody('PreFillingAction', '
             public $one;
             public $two;
+            public $three;
         ');
+        $this->resource->givenTheActionArgument_Is('two', 'SeventyThree');
+
         $this->registry->givenIRegisteredAnActionRepresenterFor('PreFillingAction');
         $this->registry->givenIHaveSetFor_ThePrefiller('PreFillingAction', function ($fields) {
             /** @var \watoki\qrator\form\Field[] $fields */
@@ -76,7 +80,19 @@ class ShowPreparationFormTest extends Specification {
 
         $this->whenIPrepare('PreFillingAction');
         $this->thenField_ShouldBeHaveTheValue(1, 'FortyTwo');
-        $this->thenField_ShouldBeHaveNoValue(2);
+        $this->thenField_ShouldBeHaveTheValue(2, 'SeventyThree');
+        $this->thenField_ShouldBeHaveNoValue(3);
+    }
+
+    function testPreFillFormWithoutActionInstance() {
+        $this->class->givenTheClass_WithTheBody('PreFillingActionWithoutInstance', '
+            public $two;
+            function __construct($one) {}
+        ');
+        $this->resource->givenTheActionArgument_Is('one', 'FortyTwo');
+
+        $this->whenIPrepare('PreFillingActionWithoutInstance');
+        $this->thenField_ShouldBeHaveTheValue(1, 'FortyTwo');
     }
 
     function testAlsoShowIdField() {

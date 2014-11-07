@@ -31,22 +31,22 @@ class PrepareResource extends ActionResource {
                 return $this->redirectTo('execute', $args, ['action' => $action]);
             }
         } catch (InjectionException $e) {
-            $object = $action;
         }
 
         return [
-            'form' => $this->assembleForm($object)
+            'form' => $this->assembleForm($action, $args)
         ];
     }
 
-    private function assembleForm($action) {
+    private function assembleForm($action, Map $args) {
         $representer = $this->registry->getActionRepresenter($action);
 
         $parameters = [
             ['name' => 'action', 'value' => $representer->getClass()],
         ];
 
-        $fields = $representer->getFields($action);
+        $fields = $representer->getFields();
+        $this->fill($fields, $args);
         $representer->preFill($fields);
 
         $form = [
@@ -56,6 +56,18 @@ class PrepareResource extends ActionResource {
             'field' => $this->assembleFields($fields)
         ];
         return $form;
+    }
+
+    /**
+     * @param Field[] $fields
+     * @param Map $args
+     */
+    private function fill($fields, Map $args) {
+        foreach ($args as $key => $value) {
+            if (array_key_exists($key, $fields)) {
+                $fields[$key]->setValue($value);
+            }
+        }
     }
 
     private function assembleFields($fields) {

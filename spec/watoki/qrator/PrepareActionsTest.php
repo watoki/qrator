@@ -87,6 +87,7 @@ class PrepareActionsTest extends Specification {
             public function setRequired($to = true) {}
             public function isRequired() {}
             public function getName() {}
+            public function getValue() {}
         ');
 
         $this->dispatcher->givenIAddedTheClass_AsHandlerFor('inflateArgs\MyHandler', 'inflateArgs\InflatableAction');

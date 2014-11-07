@@ -13,10 +13,10 @@ interface ActionRepresenter extends Representer {
     public function execute($object);
 
     /**
-     * @param object $object
+     * @param object|null $object
      * @return array|\watoki\qrator\form\Field[] Indexed by name
      */
-    public function getFields($object);
+    public function getFields($object = null);
 
     /**
      * @param \watoki\collections\Map|null $args

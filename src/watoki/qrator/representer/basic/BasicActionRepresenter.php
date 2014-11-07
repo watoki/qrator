@@ -55,7 +55,7 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
      * @param object $object
      * @return array|\watoki\qrator\form\Field[]
      */
-    public function getFields($object) {
+    public function getFields($object = null) {
         $fields = [];
         foreach ($this->getProperties($object) as $property) {
             if (!$property->canSet()) {
@@ -65,7 +65,7 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
             $field = $this->getField($property);
             $fields[$property->name()] = $field;
 
-            if (is_object($object) && $property->canGet()) {
+            if ($object && $property->canGet()) {
                 $field->setValue($property->get($object));
             }
 
