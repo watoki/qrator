@@ -19,6 +19,15 @@ class SelectEntityFieldTest extends Specification {
         }, 'ListEntity');
     }
 
+    function testNoListActionGiven() {
+        $this->class->givenTheClass('EntityClass');
+        $this->registry->givenIRegisteredAnEntityRepresenterFor('EntityClass');
+        $this->givenASelectEntityField_WithTheEntity('test', 'EntityClass');
+
+        $this->field->whenITryToRenderTheField();
+        $this->field->try->thenTheException_ShouldBeThrown('Cannot select [EntityClass]: list action not set.');
+    }
+
     function testEmptyEntityList() {
         $this->class->givenTheClass('EntityClass');
         $this->registry->givenIRegisteredAnEntityRepresenterFor('EntityClass');

@@ -34,6 +34,10 @@ class SelectEntityField extends SelectField {
         $representer = $this->registry->getEntityRepresenter($this->entityClass);
         $listActionLink = $representer->getListAction();
 
+        if (!$listActionLink) {
+            throw new \Exception("Cannot select [{$this->entityClass}]: list action not set.");
+        }
+
         $actionRepresenter = $this->registry->getActionRepresenter($listActionLink->getClass());
 
         $options = [];
