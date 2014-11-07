@@ -24,6 +24,11 @@ interface Field {
     public function setValue($value);
 
     /**
+     * @return mixed
+     */
+    public function getValue();
+
+    /**
      * @param string $value
      * @return mixed
      */
