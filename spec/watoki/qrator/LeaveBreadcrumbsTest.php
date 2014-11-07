@@ -64,9 +64,9 @@ class LeaveBreadcrumbsTest extends Specification {
     function testPopAction() {
         $this->givenTheStoredBreadcrumbs([
             ['one', 'first', []],
-            ['SomeAction', 'test\SomeAction', []],
-            ['SomeAction', 'test\SomeAction', ['foo' => 'bar']],
-            ['two', '?action=second']
+            ['two', 'test\SomeAction', []],
+            ['three', 'test\SomeAction', ['foo' => 'bar']],
+            ['four', '?action=second']
         ]);
         $this->whenIExecuteTheAction('test\SomeAction');
         $this->thenTheBreadcrumbs_ShouldBeStored([

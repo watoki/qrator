@@ -25,6 +25,7 @@ class RepresenterRegistry {
                 ->setHandler(function () {
                     return new RootEntity();
                 })
+                ->setName('Home')
         );
 
         $this->register((new GenericEntityRepresenter(RootEntity::class))
