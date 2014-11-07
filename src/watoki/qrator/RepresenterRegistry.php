@@ -32,19 +32,11 @@ class RepresenterRegistry {
 
     /**
      * @param Representer $representer
+     * @return \watoki\qrator\Representer
      */
     public function register(Representer $representer) {
         $this->representers[$representer->getClass()] = $representer;
-    }
-
-    /**
-     * @param string $handler
-     * @param array|string[] $methods
-     */
-    public function registerMethods($handler, $methods) {
-        foreach ($methods as $method) {
-            $this->register(new MethodActionRepresenter($handler, $method, $this->factory, $this));
-        }
+        return $representer;
     }
 
     /**
