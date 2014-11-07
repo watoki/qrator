@@ -1,11 +1,8 @@
 <?php
 namespace watoki\qrator\representer;
 
-use watoki\collections\Map;
 use watoki\factory\Factory;
-use watoki\factory\providers\CallbackProvider;
 use watoki\qrator\representer\generic\GenericActionRepresenter;
-use watoki\qrator\representer\property\PublicProperty;
 use watoki\qrator\RepresenterRegistry;
 
 class MethodActionRepresenter extends GenericActionRepresenter {
@@ -34,7 +31,7 @@ class MethodActionRepresenter extends GenericActionRepresenter {
         foreach ($this->method->getParameters() as $parameter) {
             $args[] = $properties[$parameter->getName()]->get($object);
         }
-        return $this->method->invokeArgs($handler, $args);
+        return call_user_func_array([$handler, $this->method->getName()], $args);
     }
 
     public static function asClass($class, $method) {

@@ -65,6 +65,22 @@ class DeriveActionsFromMethodsTest extends Specification {
         $this->then_ShouldHaveTheType('two', ClassType::class);
     }
 
+    function testAbstractMethodWithImplementationProvidedByFactory() {
+        $this->class->givenTheAbstractClass_WithTheBody('inherited\AbstractClass', '
+            abstract function someMethod();
+        ');
+        $this->class->givenTheClass_Extending_WithTheBody('inherited\Implementation', 'AbstractClass', '
+            function someMethod() {
+                return "found me";
+            }
+        ');
+        $this->class->givenISetAnInstanceOf_AsSingletonFor('inherited\Implementation', 'inherited\AbstractClass');
+
+        $this->whenIConstructAnActionFromTheMethod_Of('someMethod', 'inherited\AbstractClass');
+        $this->whenIExecuteTheActionWith([]);
+        $this->thenItShouldReturn('found me');
+    }
+
     #################################################################################
 
     /** @var \watoki\qrator\ActionRepresenter */
