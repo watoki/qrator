@@ -154,10 +154,12 @@ class ExecuteResource extends ActionResource {
     }
 
     private function assembleResult($result) {
-        if (is_array($result)) {
-            return array_map(function ($entity) {
-                return $this->assembleEntity($entity, true);
-            }, $result);
+        if ($this->isArray($result)) {
+            $entities = [];
+            foreach ($result as $entity) {
+                $entities[] = $this->assembleEntity($entity, true);
+            }
+            return $entities;
         } else if (is_object($result)) {
             return [$this->assembleEntity($result)];
         } else {
@@ -211,7 +213,7 @@ class ExecuteResource extends ActionResource {
                     $this->assemblePropertyActions($entityRepresenter->getPropertyActions($name), $value, $entity)
                 ),
             ];
-        } else if (is_array($value)) {
+        } else if ($this->isArray($value)) {
             array_walk($value, function (&$item) use ($entity, $name) {
                 $item = $this->assembleValue($entity, $name, $item);
             });
@@ -314,5 +316,9 @@ class ExecuteResource extends ActionResource {
             }, $crumbs),
             'current' => $last[0]
         ];
+    }
+
+    private function isArray($var) {
+        return is_array($var) || $var instanceof \ArrayAccess;
     }
 }

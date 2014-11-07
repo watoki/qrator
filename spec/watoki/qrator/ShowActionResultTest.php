@@ -1,9 +1,9 @@
 <?php
 namespace spec\watoki\qrator;
 
+use watoki\collections\Liste;
 use watoki\curir\cookie\CookieStore;
 use watoki\curir\cookie\SerializerRepository;
-use watoki\curir\error\HttpError;
 use watoki\factory\exception\InjectionException;
 use watoki\qrator\web\ExecuteResource;
 use watoki\scrut\Specification;
@@ -122,8 +122,18 @@ class ShowActionResultTest extends Specification {
         $this->whenIShowTheResultsOf('MyAction');
         $this->thenThereShouldBe_Entities(3);
         $this->thenEntity_ShouldHave_Properties(1, 3);
+        $this->thenEntity_ShouldHave_Actions(1, 2);
 
         $this->thenThe_ShouldNotBeShown('list');
+    }
+
+    function testDisplayCollectionObject() {
+        $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
+            return new Liste([new \StdClass, new \StdClass]);
+        }, 'MyAction');
+
+        $this->whenIShowTheResultsOf('MyAction');
+        $this->thenThereShouldBe_Entities(2);
     }
 
     function testThrowExceptions() {
@@ -335,6 +345,11 @@ class ShowActionResultTest extends Specification {
     private function thenEntity_ShouldHave_Properties($pos, $count) {
         $pos--;
         $this->resource->thenThereShouldBe_Of($count, "entity/$pos/properties/item");
+    }
+
+    private function thenEntity_ShouldHave_Actions($pos, $count) {
+        $pos--;
+        $this->resource->thenThereShouldBe_Of($count, "entity/$pos/actions/item");
     }
 
     private function thenProperty_ShouldHave_Value($pos, $count) {
