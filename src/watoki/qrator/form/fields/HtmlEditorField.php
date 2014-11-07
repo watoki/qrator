@@ -32,8 +32,8 @@ class HtmlEditorField extends TemplatedField {
             <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
 
             <!-- include summernote css/js-->
-            <link href="assets/summernote.css" rel="stylesheet">
-            <script src="assets/summernote.min.js"></script>';
+            <link href="assets/vendor/summernote.css" rel="stylesheet">
+            <script src="assets/vendor/summernote.min.js"></script>';
     }
 
     public function addToFoot() {
