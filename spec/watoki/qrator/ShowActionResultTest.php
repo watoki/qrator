@@ -220,6 +220,25 @@ class ShowActionResultTest extends Specification {
         $this->thenProperty_ShouldHaveValue_WithTheCaption(1, 1, '2001-01-01 00:00');
     }
 
+    function testShowCollectionObjectProperty() {
+        $this->class->givenTheClass_WithTheBody('collectionObject\SomeEntity', '
+            function getArray() { return new \watoki\collections\Liste([
+                new \StdClass,
+                new \StdClass,
+            ]); }
+        ');
+        $this->class->givenTheClass_WithTheBody('collectionObject\MyHandler', '
+            function myAction() {
+                return new SomeEntity();
+            }
+        ');
+        $this->dispatcher->givenIAddedTheClass_AsHandlerFor('collectionObject\MyHandler', 'MyAction');
+
+        $this->whenIShowTheResultsOf('MyAction');
+        $this->thenThereShouldBe_Properties(1);
+        $this->thenProperty_ShouldHave_Value(1, 2);
+    }
+
     function testShowActionsForProperties() {
         $this->class->givenTheClass_WithTheBody('properties\SomeEntity', '
             function __construct($one) { $this->one = $one; }

@@ -4,8 +4,6 @@ namespace watoki\qrator\web;
 use watoki\collections\Map;
 use watoki\curir\cookie\Cookie;
 use watoki\curir\cookie\CookieStore;
-use watoki\curir\delivery\WebResponse;
-use watoki\curir\error\HttpError;
 use watoki\curir\protocol\Url;
 use watoki\curir\Responder;
 use watoki\dom\Element;
@@ -41,7 +39,7 @@ class ExecuteResource extends ActionResource {
      * @return array
      */
     public function doGet($action, Map $args = null, $prepared = false) {
-        $args = $args ? : new Map();
+        $args = $args ?: new Map();
 
         $crumbs = $this->readBreadcrumbs();
         $result = $this->doAction($action, $args, $prepared);
@@ -202,7 +200,13 @@ class ExecuteResource extends ActionResource {
     }
 
     private function assembleValue($entity, $name, $value) {
-        if (is_object($value)) {
+        if ($this->isArray($value)) {
+            $values = [];
+            foreach ($value as $item) {
+                $values[] = $this->assembleValue($entity, $name, $item);
+            }
+            return $values;
+        } else if (is_object($value)) {
             $entityRepresenter = $this->registry->getEntityRepresenter($entity);
             $propertyRepresenter = $this->registry->getEntityRepresenter($value);
 
@@ -213,11 +217,6 @@ class ExecuteResource extends ActionResource {
                     $this->assemblePropertyActions($entityRepresenter->getPropertyActions($name), $value, $entity)
                 ),
             ];
-        } else if ($this->isArray($value)) {
-            array_walk($value, function (&$item) use ($entity, $name) {
-                $item = $this->assembleValue($entity, $name, $item);
-            });
-            return $value;
         }
         return [
             'caption' => $value,
