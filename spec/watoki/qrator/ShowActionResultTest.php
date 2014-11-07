@@ -198,6 +198,7 @@ class ShowActionResultTest extends Specification {
         $this->thenProperty_ShouldHaveTheName(1, 'array');
         $this->thenProperty_ShouldHave_Value(1, 2);
         $this->thenProperty_ShouldHaveValue_WithTheCaption(1, 1, '2001-01-01 00:00');
+        $this->thenProperty_ShouldHaveValue_WithTheCaption(1, 2, '2002-02-02 00:00');
     }
 
     function testShowCollectionObjectProperty() {
@@ -272,6 +273,38 @@ class ShowActionResultTest extends Specification {
         $this->thenProperty_ShouldHaveAction_WithTheLinkTarget(1, 2, 'execute?action=propertyActions%5CPropertyAnother&args[id]=someID&args[object]=otherID');
     }
 
+    function testPropertyActionsOfArrayProperty() {
+        $this->class->givenTheClass_WithTheBody('arrayPropertyActions\SomeEntity', '
+            public $id = "someID";
+            function __construct($other) { $this->other = $other; }
+        ');
+        $this->class->givenTheClass_WithTheBody('arrayPropertyActions\OtherEntity', '
+            public $id = "otherID";
+            function __construct($id) { $this->id = $id; }
+        ');
+        $this->class->givenTheClass_WithTheBody('arrayPropertyActions\MyHandler', '
+            function myAction() {
+                return new SomeEntity([
+                    new OtherEntity(42),
+                    new OtherEntity(73)
+                ]);
+            }
+        ');
+        $this->dispatcher->givenIAddedTheClass_AsHandlerFor('arrayPropertyActions\MyHandler', 'MyAction');
+
+        $this->class->givenTheClass('arrayPropertyActions\PropertyAction');
+        $this->class->givenTheClass('arrayPropertyActions\PropertyAnother');
+        $this->registry->givenIRegisteredAnEntityRepresenterFor('arrayPropertyActions\SomeEntity');
+
+        $this->registry->givenIAddedAnAction_ForTheProperty_Of('arrayPropertyActions\PropertyAction', 'other', 'arrayPropertyActions\SomeEntity');
+        $this->registry->givenIAddedAnAction_ForTheProperty_Of('arrayPropertyActions\PropertyAnother', 'other', 'arrayPropertyActions\SomeEntity');
+
+        $this->whenIShowTheResultsOf('MyAction');
+        $this->thenThereShouldBe_Properties(2);
+        $this->thenValue_OfProperty_ShouldHaveAction_WithTheLinkTarget(1, 1, 1, 'execute?action=arrayPropertyActions%5CPropertyAction&args[id]=someID&args[object]=42');
+        $this->thenValue_OfProperty_ShouldHaveAction_WithTheLinkTarget(2, 1, 1, 'execute?action=arrayPropertyActions%5CPropertyAction&args[id]=someID&args[object]=73');
+    }
+
     function testEdgeCaseDoNotRedirectOnInjectionExceptionDuringExecution() {
         $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
             throw new InjectionException('Something went wrong');
@@ -331,6 +364,13 @@ class ShowActionResultTest extends Specification {
         $this->thenProperty_ShouldHaveTheName($int, $name);
         $int--;
         $this->resource->then_ShouldBe("entity/0/properties/item/$int/value/caption", $value);
+    }
+
+    private function thenValue_OfProperty_ShouldHaveAction_WithTheLinkTarget($valuePos, $propertyPos, $actionPos, $target) {
+        $propertyPos--;
+        $valuePos--;
+        $actionPos--;
+        $this->resource->then_ShouldBe("entity/0/properties/item/$propertyPos/value/$valuePos/actions/$actionPos/link/href", $target);
     }
 
     private function thenProperty_ShouldHaveTheName($int, $name) {
