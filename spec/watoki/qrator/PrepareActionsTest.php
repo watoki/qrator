@@ -79,15 +79,9 @@ class PrepareActionsTest extends Specification {
                 return new \StdClass();
             }
         ');
-        $this->class->givenTheClass_Implementing_WithTheBody('inflateArgs\MySpecialField', '\watoki\qrator\form\Field', '
-            public function getLabel() {}
+        $this->class->givenTheClass_Extending_WithTheBody('inflateArgs\MySpecialField', '\watoki\qrator\form\Field', '
             public function render() {}
-            public function setValue($value) {}
             public function inflate($value) { return new \DateTime($value); }
-            public function setRequired($to = true) {}
-            public function isRequired() {}
-            public function getName() {}
-            public function getValue() {}
         ');
 
         $this->dispatcher->givenIAddedTheClass_AsHandlerFor('inflateArgs\MyHandler', 'inflateArgs\InflatableAction');
@@ -124,7 +118,7 @@ class PrepareActionsTest extends Specification {
     }
 
     private function givenISetTheField_Of_ToBeAnInstanceOf($field, $class, $fieldClass) {
-        $this->registry->representers[$class]->setField($field, new $fieldClass);
+        $this->registry->representers[$class]->setField($field, new $fieldClass($field));
     }
 
 } 

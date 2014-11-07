@@ -46,15 +46,9 @@ class ShowPreparationFormTest extends Specification {
     }
 
     function testGetFormDefinitionFromRepresenter() {
-        $this->class->givenTheClass_Implementing_WithTheBody('MySpecialField', '\watoki\qrator\form\Field', '
+        $this->class->givenTheClass_Extending_WithTheBody('MySpecialField', '\watoki\qrator\form\Field', '
             public function getLabel() { return "Some Label"; }
             public function render() { return "Hello World"; }
-            public function setValue($value) {}
-            public function inflate($value) { return $value; }
-            public function setRequired($to = true) {}
-            public function isRequired() {}
-            public function getName() {}
-            public function getValue() {}
         ');
         $this->registry->givenIRegisteredAnActionRepresenterFor('PrepareAction');
         $this->givenISetTheFieldFor_To_For('one', 'MySpecialField', 'PrepareAction');
@@ -192,7 +186,7 @@ class ShowPreparationFormTest extends Specification {
     }
 
     private function givenISetTheFieldFor_To_For($field, $class, $representedClass) {
-        $this->registry->representers[$representedClass]->setField($field, new $class);
+        $this->registry->representers[$representedClass]->setField($field, new $class($field));
     }
 
     private function thenField_ShouldBeHaveTheName($int, $string) {

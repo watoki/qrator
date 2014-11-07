@@ -20,19 +20,9 @@ class SelectField extends TemplatedField {
     }
 
     protected function getModel() {
-        return [
-            'name' => "args[{$this->name}]",
-            'required' => $this->isRequired(),
+        return array_merge(parent::getModel(), [
             'options' => $this->getOptions(),
             'selected' => $this->getValue()
-        ];
-    }
-
-    /**
-     * @param string $value
-     * @return mixed
-     */
-    public function inflate($value) {
-        return $value;
+        ]);
     }
 }

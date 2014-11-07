@@ -1,48 +1,78 @@
 <?php
 namespace watoki\qrator\form;
 
-interface Field {
+abstract class Field {
+
+    /** @var string */
+    private $name;
+
+    /** @var mixed */
+    private $value;
+
+    /** @var bool */
+    private $required = false;
+
+    /**
+     * @param string $name
+     */
+    public function __construct($name) {
+        $this->name = $name;
+    }
 
     /**
      * @return string
      */
-    public function getName();
-
-    /**
-     * @return string
-     */
-    public function getLabel();
-
-    /**
-     * @return string
-     */
-    public function render();
-
-    /**
-     * @param mixed $value
-     */
-    public function setValue($value);
-
-    /**
-     * @return mixed
-     */
-    public function getValue();
+    abstract public function render();
 
     /**
      * @param string $value
      * @return mixed
      */
-    public function inflate($value);
+    public function inflate($value) {
+        return $value;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName() {
+        return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLabel() {
+        return ucfirst($this->getName());
+    }
+
+    /**
+     * @param mixed $value
+     */
+    public function setValue($value) {
+        $this->value = $value;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getValue() {
+        return $this->value;
+    }
 
     /**
      * @param bool $to
      * @return void
      */
-    public function setRequired($to = true);
+    public function setRequired($to = true) {
+        $this->required = $to;
+    }
 
     /**
      * @return bool
      */
-    public function isRequired();
+    public function isRequired() {
+        return $this->required;
+    }
 
 }

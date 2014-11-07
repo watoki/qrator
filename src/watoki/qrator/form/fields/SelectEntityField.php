@@ -1,7 +1,6 @@
 <?php
 namespace watoki\qrator\form\fields;
 
-use watoki\collections\Map;
 use watoki\qrator\RepresenterRegistry;
 
 class SelectEntityField extends SelectField {
