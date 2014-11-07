@@ -73,7 +73,7 @@ class RegistryFixture extends Fixture {
     }
 
     public function givenIHaveSet_AsTheListActionFor($action, $entity) {
-        $this->representers[$entity]->setListAction(new $action);
+        $this->representers[$entity]->setListAction(new ActionLink($action));
     }
 
 } 

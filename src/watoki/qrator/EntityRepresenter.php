@@ -25,12 +25,12 @@ interface EntityRepresenter extends Representer {
 
     /**
      * @param object $entity
-     * @return object|null
+     * @return \watoki\qrator\representer\ActionLink|null
      */
     public function getReadAction($entity);
 
     /**
-     * @return object|null
+     * @return \watoki\qrator\representer\ActionLink|null
      */
     public function getListAction();
 

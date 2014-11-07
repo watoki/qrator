@@ -1,9 +1,7 @@
 <?php
 namespace watoki\qrator\representer\generic;
 
-use watoki\qrator\representer\ActionGenerator;
 use watoki\qrator\representer\basic\BasicEntityRepresenter;
-use watoki\qrator\representer\PropertyActionGenerator;
 
 class GenericEntityRepresenter extends BasicEntityRepresenter {
 
@@ -16,7 +14,7 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
     /** @var null|callable */
     private $renderer;
 
-    /** @var callable|null */
+    /** @var \watoki\qrator\representer\ActionLink|null */
     private $listAction;
 
     /** @var callable|null */
@@ -136,7 +134,7 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
     }
 
     /**
-     * @param null|object $listAction
+     * @param null|\watoki\qrator\representer\ActionLink $listAction
      * @return $this
      */
     public function setListAction($listAction) {
