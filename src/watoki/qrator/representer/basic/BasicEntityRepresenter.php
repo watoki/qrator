@@ -16,7 +16,7 @@ abstract class BasicEntityRepresenter extends BasicRepresenter implements Entity
 
     /**
      * @param object $entity
-     * @return object[]
+     * @return \watoki\qrator\representer\ActionLink[]
      */
     public function getActions($entity) {
         return [];
@@ -25,7 +25,7 @@ abstract class BasicEntityRepresenter extends BasicRepresenter implements Entity
     /**
      * @param object $entity
      * @param \watoki\qrator\representer\Property $property
-     * @return object[]
+     * @return \watoki\qrator\representer\ActionLink[]
      */
     public function getPropertyActions($entity, $property) {
         return [];

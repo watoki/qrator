@@ -1,6 +1,7 @@
 <?php
 namespace spec\watoki\qrator\fixtures;
 
+use watoki\qrator\representer\ActionLink;
 use watoki\qrator\representer\generic\GenericActionRepresenter;
 use watoki\qrator\representer\generic\GenericEntityRepresenter;
 use watoki\qrator\representer\Property;
@@ -49,10 +50,7 @@ class RegistryFixture extends Fixture {
         $this->actions[$class][] = $action;
         $this->representers[$class]->setActions(function ($entity) use ($class) {
             return array_map(function ($action) use ($entity) {
-                $object = new $action;
-                if (isset($entity->id))
-                    $object->id = $entity->id;
-                return $object;
+                return new ActionLink($action, isset($entity->id) ? ['id' => $entity->id] : null);
             }, $this->actions[$class]);
         });
     }
@@ -65,10 +63,7 @@ class RegistryFixture extends Fixture {
         $this->propertyActions[$class][$property][] = $action;
         $this->representers[$class]->setPropertyAction($property, function ($entity, Property $propertyObject) use ($property, $class) {
             return array_map(function ($action) use ($entity, $propertyObject) {
-                $object = new $action;
-                $object->id = $entity->id;
-                $object->object = $propertyObject->get($entity)->id;
-                return $object;
+                return new ActionLink($action, ['id' => $entity->id, 'object' => $propertyObject->get($entity)->id]);
             }, $this->propertyActions[$class][$property]);
         });
     }

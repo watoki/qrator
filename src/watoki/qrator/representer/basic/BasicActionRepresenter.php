@@ -113,7 +113,7 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
 
     /**
      * @param object $result
-     * @return null|object
+     * @return null|\watoki\qrator\representer\ActionLink
      */
     public function getFollowUpAction($result) {
         return null;

@@ -9,7 +9,7 @@ use watoki\curir\Responder;
 use watoki\dom\Element;
 use watoki\factory\exception\InjectionException;
 use watoki\factory\Factory;
-use watoki\qrator\ActionRepresenter;
+use watoki\qrator\representer\ActionLink;
 use watoki\qrator\representer\Property;
 use watoki\qrator\RepresenterRegistry;
 use watoki\tempan\model\ListModel;
@@ -52,11 +52,9 @@ class ExecuteResource extends ActionResource {
         $followUpAction = $representer->getFollowUpAction($result);
 
         if ($followUpAction) {
-            $followUpRepresenter = $this->registry->getActionRepresenter($followUpAction);
-
             $url = Url::fromString('execute');
-            $url->getParameters()->set('action', $followUpRepresenter->getClass());
-            $url->getParameters()->set('args', $this->getArguments($followUpRepresenter, $followUpAction));
+            $url->getParameters()->set('action', $followUpAction->getClass());
+            $url->getParameters()->set('args', $followUpAction->getArguments());
 
             $model = [
                 'entity' => null,
@@ -235,36 +233,29 @@ class ExecuteResource extends ActionResource {
         ];
     }
 
+    /**
+     * @param $actions
+     * @return array|\watoki\qrator\representer\ActionLink[]
+     */
     private function assembleActions($actions) {
         return array_map(function ($action) {
             return $this->assembleAction($action);
         }, $actions);
     }
 
-    private function assembleAction($action) {
+    private function assembleAction(ActionLink $action) {
         $target = Url::fromString('execute');
 
-        $representer = $this->registry->getActionRepresenter($action);
+        $target->getParameters()->set('action', $action->getClass());
+        $target->getParameters()->set('args', $action->getArguments());
 
-        $target->getParameters()->set('action', $representer->getClass());
-        $target->getParameters()->set('args', $this->getArguments($representer, $action));
-
-
-        $representer = $this->registry->getActionRepresenter($action);
+        $representer = $this->registry->getActionRepresenter($action->getClass());
         return [
             'name' => $representer->getName(),
             'link' => [
                 'href' => $target->toString()
             ]
         ];
-    }
-
-    private function getArguments(ActionRepresenter $representer, $action) {
-        return $representer->getProperties($action)->map(function (Property $property) use ($action) {
-            return $property->get($action);
-        })->filter(function ($value) {
-            return !!$value;
-        });
     }
 
     private function storeLastAction($action, Map $args) {

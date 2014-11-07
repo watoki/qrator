@@ -80,7 +80,7 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
 
     /**
      * @param object $entity
-     * @return array|object[]
+     * @return array|\watoki\qrator\representer\ActionLink[]
      */
     public function getActions($entity) {
         return call_user_func($this->actionsGenerator, $entity);
@@ -99,7 +99,7 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
     /**
      * @param object $entity
      * @param \watoki\qrator\representer\Property $property
-     * @return array|object[]
+     * @return array|\watoki\qrator\representer\ActionLink[]
      */
     public function getPropertyActions($entity, $property) {
         if (!isset($this->propertyActionGenerators[$property->name()])) {

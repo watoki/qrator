@@ -39,7 +39,7 @@ interface ActionRepresenter extends Representer {
 
     /**
      * @param object $result
-     * @return null|object
+     * @return null|\watoki\qrator\representer\ActionLink
      */
     public function getFollowUpAction($result);
 

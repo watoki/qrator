@@ -4,6 +4,7 @@ namespace spec\watoki\qrator;
 use watoki\curir\cookie\Cookie;
 use watoki\curir\cookie\CookieStore;
 use watoki\curir\cookie\SerializerRepository;
+use watoki\qrator\representer\ActionLink;
 use watoki\qrator\web\ExecuteResource;
 use watoki\scrut\Specification;
 
@@ -105,7 +106,7 @@ class ExecuteActionsTest extends Specification {
         $this->class->givenTheClass('ActionWithFollowUp');
         $this->class->givenTheClass('FollowUpAction');
 
-        $this->givenISet_ToFollowAfter('return new FollowUpAction();', 'ActionWithFollowUp');
+        $this->givenISet_ToFollowAfter('FollowUpAction', 'ActionWithFollowUp');
 
         $this->dispatcher->givenISetAnEmptyHandlerFor('ActionWithFollowUp');
 
@@ -116,10 +117,10 @@ class ExecuteActionsTest extends Specification {
 
     function testFollowUpActionGeneratorGetResultOfFollowedAction() {
         $this->class->givenTheClass_WithTheBody('FollowUpActionWithProperty',
-            'function __construct($result) { $this->foo = $result; }');
+            'public $foo;');
         $this->class->givenTheClass('FollowUpAction');
 
-        $this->givenISet_ToFollowAfter('return new FollowUpActionWithProperty($result);', 'ActionWithFollowUp');
+        $this->givenISet_ToFollowAfter('FollowUpActionWithProperty', 'ActionWithFollowUp');
 
         $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
             return "baz";
@@ -147,10 +148,10 @@ class ExecuteActionsTest extends Specification {
         ]), ExecuteResource::LAST_ACTION_COOKIE);
     }
 
-    private function givenISet_ToFollowAfter($generator, $followed) {
+    private function givenISet_ToFollowAfter($action, $followed) {
         $this->registry->givenIRegisteredAnActionRepresenterFor($followed);
-        $this->registry->representers[$followed]->setFollowUpAction(function ($result) use ($generator) {
-            return eval($generator);
+        $this->registry->representers[$followed]->setFollowUpAction(function ($result) use ($action) {
+            return new ActionLink($action, ['foo' => $result]);
         });
     }
 

@@ -138,7 +138,8 @@ class GenericActionRepresenter extends BasicActionRepresenter {
     }
 
     /**
-     * @return null|object
+     * @param object $result
+     * @return null|\watoki\qrator\representer\ActionLink
      */
     public function getFollowUpAction($result) {
         return $this->followUpActionGenerator
