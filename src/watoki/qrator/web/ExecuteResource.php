@@ -63,7 +63,7 @@ class ExecuteResource extends ActionResource {
                 'alert' => "Action executed successfully. Please stand by.",
                 'redirect' => ['content' => '1; URL=' . $url->toString()]
             ];
-        } else if (!$result && $this->cookies->hasKey(ExecuteResource::LAST_ACTION_COOKIE)) {
+        } else if (is_null($result) && $this->cookies->hasKey(ExecuteResource::LAST_ACTION_COOKIE)) {
             $model = [
                 'entity' => null,
                 'alert' => "Action executed successfully. You are now redirected to your last action.",
@@ -85,8 +85,13 @@ class ExecuteResource extends ActionResource {
                     }]
                 ];
             } else {
+                if ($result) {
+                    $resultString = "Result: " . var_export($result, true);
+                } else {
+                    $resultString = 'Empty result.';
+                }
                 $model = [
-                    'alert' => "Action executed successfully. Result: " . var_export($result, true)
+                    'alert' => "Action executed successfully. " . $resultString
                 ];
             }
         }

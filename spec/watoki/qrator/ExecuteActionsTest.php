@@ -61,6 +61,19 @@ class ExecuteActionsTest extends Specification {
         $this->thenIShouldBeRedirectedTo_After_Seconds('execute?action=MyAction&args[one]=eins&args[two]=zwei', 1);
     }
 
+    function testDoNotRedirectIfResultIsEmptyArray() {
+        $this->givenTheLastActionWas_WithArguments('MyAction', [
+            'one' => 'eins',
+            'two' => 'zwei'
+        ]);
+        $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
+            return [];
+        }, 'MyAction');
+
+        $this->whenIExecuteTheAction('MyAction');
+        $this->thenAnAlertShouldSay('Action executed successfully. Empty result.');
+    }
+
     function testActionWithConstructorArguments() {
         $this->class->givenTheClass_WithTheBody('test\ConstructorAction', '
             function __construct($one, $two) {
