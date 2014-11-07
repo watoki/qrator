@@ -3,16 +3,11 @@ namespace watoki\qrator\web;
 
 use watoki\collections\Map;
 use watoki\factory\exception\InjectionException;
-use watoki\qrator\ActionRepresenter;
 use watoki\qrator\form\Field;
 use watoki\qrator\form\fields\HiddenField;
 use watoki\qrator\Representer;
 
 class PrepareResource extends ActionResource {
-
-    protected function redirectToPrepare($action, Map $args) {
-        throw new \LogicException('Cannot redirect. Already at prepare.');
-    }
 
     /**
      * @param string $action
