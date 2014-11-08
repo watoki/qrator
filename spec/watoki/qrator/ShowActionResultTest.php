@@ -71,7 +71,7 @@ class ShowActionResultTest extends Specification {
 
         $this->whenIShowTheResultsOf('MyAction');
         $this->thenThereShouldBe_Actions(3);
-        $this->thenAction_ShouldRequireConfirming(1, 'Execute Action One?');
+        $this->thenAction_ShouldRequireConfirming(1, 'Really Action One?');
         $this->thenAction_ShouldRequireConfirming(2, 'Really?');
         $this->thenAction_ShouldNotRequireConfirmation(3);
     }

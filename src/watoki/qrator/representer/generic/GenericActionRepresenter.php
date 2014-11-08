@@ -178,7 +178,7 @@ class GenericActionRepresenter extends BasicActionRepresenter {
      */
     public function setRequireConfirmation($message = true) {
         if ($message === true) {
-            $message = 'Execute ' . $this->getName() . '?';
+            $message = 'Really ' . $this->getName() . '?';
         }
         $this->confirmation = $message;
         return $this;
