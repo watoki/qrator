@@ -116,14 +116,14 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
     }
 
     /**
-     * @param object $entity
+     * @param object $object
      * @return string
      */
-    public function render($entity) {
+    public function render($object) {
         if ($this->renderer) {
-            return call_user_func($this->renderer, $entity);
+            return call_user_func($this->renderer, $object);
         }
-        return parent::render($entity);
+        return parent::render($object);
     }
 
     /**

@@ -41,8 +41,10 @@
                 <div property="actions">
                     <ul>
                         <li property="item">
-                            <a class="action" property="link" href="prepare.html"><span
-                                    property="name">Some Action</span></a>
+                            <a class="action" property="link" href="prepare.html" onclick="return true;"><span property="name">Some Action</span></a>
+                        </li>
+                        <li property="item">
+                            <a class="action" property="link" href="prepare.html" onclick="return confirm('Sure?');"><span property="name">Delete this!</span></a>
                         </li>
                     </ul>
                 </div>
@@ -57,7 +59,7 @@
                             <div property="value">
                                 <span property="caption">Value</span>
                                 <span property="actions">
-                                    <a class="action" property="link" href="prepare.html"><span property="name">Some Action</span></a>
+                                    <a class="action" property="link" href="prepare.html" onclick="return true;"><span property="caption">Some Action</span></a>
                                 </span>
                             </div>
                         </li>
@@ -103,7 +105,7 @@
                 <td property="property">That</td>
                 <td>
                 <span property="action">
-                    <a class="action" property="link" href="prepare.html"><span property="name">Some Action</span></a>
+                    <a class="action" property="link" href="prepare.html" onclick="return true"><span property="caption">Some Action</span></a>
                 </span>
                 </td>
             </tr>

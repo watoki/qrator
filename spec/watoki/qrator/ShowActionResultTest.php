@@ -56,6 +56,26 @@ class ShowActionResultTest extends Specification {
         $this->thenAction_ShouldLinkTo(3, 'execute?action=AnotherOne');
     }
 
+    function testActionsWithConfirmation() {
+        $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
+            return new \DateTime();
+        }, 'MyAction');
+
+        $this->registry->givenIRegisteredAnEntityRepresenterFor('DateTime');
+        $this->registry->givenIAddedTheAction_ToTheRepresenterOf('ActionOne', 'DateTime');
+        $this->registry->givenIAddedTheAction_ToTheRepresenterOf('ActionTwo', 'DateTime');
+        $this->registry->givenIAddedTheAction_ToTheRepresenterOf('ActionThree', 'DateTime');
+
+        $this->givenISet_ToRequireConfirmation('ActionOne');
+        $this->givenISet_ToRequireConfirmationWith('ActionTwo', 'Really?');
+
+        $this->whenIShowTheResultsOf('MyAction');
+        $this->thenThereShouldBe_Actions(3);
+        $this->thenAction_ShouldRequireConfirming(1, 'Execute Action One?');
+        $this->thenAction_ShouldRequireConfirming(2, 'Really?');
+        $this->thenAction_ShouldNotRequireConfirmation(3);
+    }
+
     function testDisplayDynamicProperties() {
         $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
             $object = new \StdClass();
@@ -432,6 +452,26 @@ class ShowActionResultTest extends Specification {
 
     private function thenThe_ShouldNotBeShown($element) {
         $this->resource->then_ShouldExist("$element/class");
+    }
+
+    private function thenAction_ShouldRequireConfirming($int, $message) {
+        $int--;
+        $this->resource->then_ShouldBe("entity/0/actions/item/$int/link/onclick", "return confirm('$message');");
+    }
+
+    private function thenAction_ShouldNotRequireConfirmation($int) {
+        $int--;
+        $this->resource->then_ShouldBe("entity/0/actions/item/$int/link/onclick", "return true;");
+    }
+
+    private function givenISet_ToRequireConfirmation($class) {
+        $this->registry->givenIRegisteredAnActionRepresenterFor($class);
+        $this->registry->representers[$class]->setRequireConfirmation();
+    }
+
+    private function givenISet_ToRequireConfirmationWith($class, $message) {
+        $this->registry->givenIRegisteredAnActionRepresenterFor($class);
+        $this->registry->representers[$class]->setRequireConfirmation($message);
     }
 
 } 

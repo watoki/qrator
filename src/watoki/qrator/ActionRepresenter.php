@@ -7,6 +7,11 @@ use watoki\qrator\representer\Property;
 interface ActionRepresenter extends Representer {
 
     /**
+     * @return string HTML representation of the action
+     */
+    public function render();
+
+    /**
      * @param object $object of the action to be executed
      * @return mixed
      */
@@ -42,5 +47,10 @@ interface ActionRepresenter extends Representer {
      * @return void
      */
     public function preFill($fields);
+
+    /**
+     * @return string|null
+     */
+    public function requiresConfirmation();
 
 } 

@@ -29,6 +29,9 @@ class GenericActionRepresenter extends BasicActionRepresenter {
     /** @var string */
     private $name;
 
+    /** @var string|null */
+    private $confirmation;
+
     /**
      * @param string $class
      * @param Factory $factory <-
@@ -159,6 +162,25 @@ class GenericActionRepresenter extends BasicActionRepresenter {
      */
     public function setPreFiller($preFiller) {
         $this->preFiller = $preFiller;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function requiresConfirmation() {
+        return $this->confirmation;
+    }
+
+    /**
+     * @param null|string|bool $message If true, default message is used
+     * @return $this
+     */
+    public function setRequireConfirmation($message = true) {
+        if ($message === true) {
+            $message = 'Execute ' . $this->getName() . '?';
+        }
+        $this->confirmation = $message;
         return $this;
     }
 }

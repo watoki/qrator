@@ -31,6 +31,13 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
     }
 
     /**
+     * @return string
+     */
+    public function render() {
+        return $this->getName();
+    }
+
+    /**
      * @param Map $args
      * @internal param $action
      * @return object
