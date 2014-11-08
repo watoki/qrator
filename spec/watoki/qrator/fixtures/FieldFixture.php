@@ -45,4 +45,8 @@ class FieldFixture extends Fixture {
         $this->spec->assertContains($string, $this->rendered);
     }
 
+    public function thenTheOutputShouldNotContain($string) {
+        $this->spec->assertNotContains($string, $this->rendered);
+    }
+
 } 

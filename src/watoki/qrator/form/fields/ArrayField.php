@@ -44,8 +44,10 @@ class ArrayField extends TemplatedField {
 
     private function wrapInnerField() {
         $rendered = $this->innerField->render();
-        $find = "[" . $this->innerField->getName() . "]";
-        return str_replace($find, "[{$this->getName()}][]", $rendered);
+        $rendered = preg_replace('#<label.+</label>#', '', $rendered);
+        $rendered = str_replace('id="' . $this->innerField->getName() . '"', '', $rendered);
+        $rendered = str_replace("[" . $this->innerField->getName() . "]", "[{$this->getName()}][]", $rendered);
+        return $rendered;
     }
 
 }

@@ -17,6 +17,14 @@ class ArrayFieldTest extends Specification {
         $this->field->thenTheOutputShouldContain('args[tests][]');
     }
 
+    function testStripLabelsAndIds() {
+        $this->givenAndArrayField_OfStringFields('tests', 'test');
+
+        $this->field->whenIRenderTheField();
+        $this->field->thenTheOutputShouldNotContain('<label for="test"');
+        $this->field->thenTheOutputShouldNotContain('id="test"');
+    }
+
     /**
      * @param $outerName
      * @param $innerName
