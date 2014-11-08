@@ -251,7 +251,7 @@ class ExecuteResource extends ActionResource {
 
         $representer = $this->registry->getActionRepresenter($action->getClass());
         return [
-            'name' => $representer->render(),
+            'caption' => $representer->render(),
             'link' => [
                 'href' => $target->toString(),
                 'onclick' => $representer->requiresConfirmation()

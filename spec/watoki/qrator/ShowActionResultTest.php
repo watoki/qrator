@@ -50,9 +50,9 @@ class ShowActionResultTest extends Specification {
         $this->whenIShowTheResultsOf('MyAction');
         $this->thenThereShouldBe_Actions(5);
 
-        $this->thenAction_ShouldHaveTheName(1, 'Action One');
+        $this->thenAction_ShouldHaveTheCaption(1, 'Action One');
         $this->thenAction_ShouldLinkTo(1, 'execute?action=ActionOne');
-        $this->thenAction_ShouldHaveTheName(3, 'Another One');
+        $this->thenAction_ShouldHaveTheCaption(3, 'Another One');
         $this->thenAction_ShouldLinkTo(3, 'execute?action=AnotherOne');
     }
 
@@ -263,9 +263,9 @@ class ShowActionResultTest extends Specification {
         $this->whenIShowTheResultsOf('MyAction');
         $this->thenThereShouldBe_Properties(2);
         $this->thenProperty_ShouldHave_Actions(1, 2);
-        $this->thenProperty_ShouldHaveAction_WithTheName(1, 1, 'Some Action');
+        $this->thenProperty_ShouldHaveAction_WithTheCaption(1, 1, 'Some Action');
         $this->thenProperty_ShouldHaveAction_WithTheLinkTarget(1, 1, 'execute?action=SomeAction&args[id]=property');
-        $this->thenProperty_ShouldHaveAction_WithTheName(1, 2, 'Some Another');
+        $this->thenProperty_ShouldHaveAction_WithTheCaption(1, 2, 'Some Another');
     }
 
     function testPropertyActions() {
@@ -292,9 +292,9 @@ class ShowActionResultTest extends Specification {
 
         $this->whenIShowTheResultsOf('MyAction');
         $this->thenThereShouldBe_Properties(2);
-        $this->thenProperty_ShouldHaveAction_WithTheName(1, 1, 'Property Action');
+        $this->thenProperty_ShouldHaveAction_WithTheCaption(1, 1, 'Property Action');
         $this->thenProperty_ShouldHaveAction_WithTheLinkTarget(1, 1, 'execute?action=propertyActions%5CPropertyAction&args[id]=someID&args[object]=otherID');
-        $this->thenProperty_ShouldHaveAction_WithTheName(1, 2, 'Property Another');
+        $this->thenProperty_ShouldHaveAction_WithTheCaption(1, 2, 'Property Another');
         $this->thenProperty_ShouldHaveAction_WithTheLinkTarget(1, 2, 'execute?action=propertyActions%5CPropertyAnother&args[id]=someID&args[object]=otherID');
     }
 
@@ -375,9 +375,9 @@ class ShowActionResultTest extends Specification {
         $this->resource->then_ShouldBe('entity/0/actions/isEmpty', true);
     }
 
-    private function thenAction_ShouldHaveTheName($int, $string) {
+    private function thenAction_ShouldHaveTheCaption($int, $string) {
         $int--;
-        $this->resource->then_ShouldBe("entity/0/actions/item/$int/name", $string);
+        $this->resource->then_ShouldBe("entity/0/actions/item/$int/caption", $string);
     }
 
     private function thenAction_ShouldLinkTo($int, $string) {
@@ -434,10 +434,10 @@ class ShowActionResultTest extends Specification {
         $this->resource->thenThereShouldBe_Of($count, "entity/0/properties/item/$propertyPos/value/actions");
     }
 
-    private function thenProperty_ShouldHaveAction_WithTheName($propertyPos, $actionPos, $name) {
+    private function thenProperty_ShouldHaveAction_WithTheCaption($propertyPos, $actionPos, $name) {
         $propertyPos--;
         $actionPos--;
-        $this->resource->then_ShouldBe("entity/0/properties/item/$propertyPos/value/actions/$actionPos/name", $name);
+        $this->resource->then_ShouldBe("entity/0/properties/item/$propertyPos/value/actions/$actionPos/caption", $name);
     }
 
     private function thenProperty_ShouldHaveAction_WithTheLinkTarget($propertyPos, $actionPos, $target) {
