@@ -134,6 +134,13 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
     }
 
     /**
+     * @return string|null
+     */
+    public function requiresConfirmation() {
+        return false;
+    }
+
+    /**
      * @param callable|object|string $handler
      * @param object $object
      * @return mixed
