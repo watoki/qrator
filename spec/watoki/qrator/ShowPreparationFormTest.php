@@ -87,7 +87,7 @@ class ShowPreparationFormTest extends Specification {
         $this->thenField_ShouldBeHaveTheValue(1, 'FortyTwo');
     }
 
-    function testAlsoShowIdField() {
+    function testHideIdFieldByDefault() {
         $this->resource->givenTheActionArgument_Is('id', '42');
         $this->class->givenTheClass_WithTheBody('ActionWithId', '
             public $id;
@@ -97,7 +97,7 @@ class ShowPreparationFormTest extends Specification {
         $this->whenIPrepare('ActionWithId');
 
         $this->thenThereShouldBe_Fields(2);
-        $this->thenField_ShouldHaveTheLabel(1, 'Id');
+        $this->thenField_ShouldBeAHiddenField(1);
         $this->thenField_ShouldBeHaveTheName(1, 'args[id]');
         $this->thenField_ShouldBeHaveTheValue(1, '42');
     }
@@ -180,6 +180,10 @@ class ShowPreparationFormTest extends Specification {
 
     private function givenISetTheFieldFor_To_For($field, $class, $representedClass) {
         $this->registry->representers[$representedClass]->setField($field, new $class($field));
+    }
+
+    private function thenField_ShouldBeAHiddenField($int) {
+        $this->assertContains('type="hidden"', $this->getRenderedField($int));
     }
 
     private function thenField_ShouldBeHaveTheName($int, $string) {
