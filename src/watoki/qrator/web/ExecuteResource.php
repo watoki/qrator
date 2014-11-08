@@ -221,7 +221,7 @@ class ExecuteResource extends ActionResource {
             return [
                 'caption' => $propertyRepresenter->render($value),
                 'actions' => array_merge(
-                    $this->assembleActions($propertyRepresenter->getActions($entity)),
+                    $this->assembleActions($propertyRepresenter->getActions($value)),
                     $this->assembleActions($entityRepresenter->getPropertyActions($entity, $property->name(), $value))
                 ),
             ];

@@ -222,24 +222,29 @@ class ShowActionResultTest extends Specification {
     }
 
     function testShowActionsForProperties() {
+        $this->class->givenTheClass_WithTheBody('properties\OtherEntity', '
+            public $id = "property";
+        ');
         $this->class->givenTheClass_WithTheBody('properties\SomeEntity', '
+            public $id = "entity";
             function __construct($one) { $this->one = $one; }
         ');
         $this->class->givenTheClass_WithTheBody('properties\MyHandler', '
             function myAction() {
-                return new SomeEntity(new \DateTime());
+                return new SomeEntity(new OtherEntity());
             }
         ');
         $this->dispatcher->givenIAddedTheClass_AsHandlerFor('properties\MyHandler', 'MyAction');
 
-        $this->registry->givenIRegisteredAnEntityRepresenterFor(\DateTime::class);
-        $this->registry->givenIAddedTheAction_ToTheRepresenterOf('SomeAction', \DateTime::class);
-        $this->registry->givenIAddedTheAction_ToTheRepresenterOf('SomeAnother', \DateTime::class);
+        $this->registry->givenIRegisteredAnEntityRepresenterFor('properties\OtherEntity');
+        $this->registry->givenIAddedTheAction_ToTheRepresenterOf('SomeAction', 'properties\OtherEntity');
+        $this->registry->givenIAddedTheAction_ToTheRepresenterOf('SomeAnother', 'properties\OtherEntity');
 
         $this->whenIShowTheResultsOf('MyAction');
-        $this->thenThereShouldBe_Properties(1);
+        $this->thenThereShouldBe_Properties(2);
         $this->thenProperty_ShouldHave_Actions(1, 2);
         $this->thenProperty_ShouldHaveAction_WithTheName(1, 1, 'Some Action');
+        $this->thenProperty_ShouldHaveAction_WithTheLinkTarget(1, 1, 'execute?action=SomeAction&args[id]=property');
         $this->thenProperty_ShouldHaveAction_WithTheName(1, 2, 'Some Another');
     }
 
