@@ -1,2 +1,2 @@
 <label for="<?= $id ?>"><?= $label ?><?= $required ? '*' : '' ?></label>
-<textarea id="<?= $id ?>" name="<?= $name ?>" class="htmlEditor"><?= $value ?></textarea>
+<textarea id="<?= $id ?>" name="<?= $name ?>"<?= $required ? ' required' : '' ?> class="htmlEditor"><?= $value ?></textarea>
