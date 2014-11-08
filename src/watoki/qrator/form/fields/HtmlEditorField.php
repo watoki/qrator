@@ -5,24 +5,6 @@ use watoki\qrator\form\TemplatedField;
 
 class HtmlEditorField extends TemplatedField {
 
-    /**
-     * @param string $value
-     * @return mixed
-     */
-    public function inflate($value) {
-        return $value;
-    }
-
-    /**
-     * @return array
-     */
-    protected function getModel() {
-        return [
-            'name' => 'args[' . $this->getName() . ']',
-            'value' => $this->getValue(),
-        ];
-    }
-
     public function addToHead() {
         return '
             <!-- include libries(jQuery, bootstrap, fontawesome) -->

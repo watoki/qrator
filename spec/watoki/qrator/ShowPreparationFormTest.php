@@ -47,14 +47,12 @@ class ShowPreparationFormTest extends Specification {
 
     function testGetFormDefinitionFromRepresenter() {
         $this->class->givenTheClass_Extending_WithTheBody('MySpecialField', '\watoki\qrator\form\Field', '
-            public function getLabel() { return "Some Label"; }
             public function render() { return "Hello World"; }
         ');
         $this->registry->givenIRegisteredAnActionRepresenterFor('PrepareAction');
         $this->givenISetTheFieldFor_To_For('one', 'MySpecialField', 'PrepareAction');
 
         $this->whenIPrepare('PrepareAction');
-        $this->thenField_ShouldHaveTheLabel(1, 'Some Label');
         $this->thenField_ShouldBeRenderedAs(1, 'Hello World');
     }
 
@@ -158,12 +156,12 @@ class ShowPreparationFormTest extends Specification {
 
     private function thenField_ShouldHaveTheLabel($int, $string) {
         $int--;
-        $this->resource->then_ShouldBe("form/field/$int/label", $string);
+        $this->resource->then_ShouldContain("form/field/$int", $string);
     }
 
     private function thenField_ShouldBeRenderedAs($int, $string) {
         $int--;
-        $this->resource->then_ShouldBe("form/field/$int/control", $string);
+        $this->resource->then_ShouldBe("form/field/$int", $string);
     }
 
     private function thenTheFormTitleShouldBe($string) {
@@ -198,24 +196,20 @@ class ShowPreparationFormTest extends Specification {
 
     private function thenField_ShouldBeRequired($int) {
         $this->assertContains('required', $this->getRenderedField($int));
-        $int--;
-        $this->resource->then_ShouldBe("form/field/$int/isRequired", true);
     }
 
     private function thenField_ShouldNotBeRequired($int) {
         $this->assertNotContains('required', $this->getRenderedField($int));
-        $int--;
-        $this->resource->then_ShouldBe("form/field/$int/isRequired", false);
     }
 
     private function getRenderedField($int) {
         $int--;
-        return $this->resource->get("form/field/$int/control");
+        return $this->resource->get("form/field/$int");
     }
 
     private function thenField_ShouldBeInvisible($pos) {
         $pos--;
-        $this->resource->then_ShouldBe("form/field/$pos/label", null);
+        $this->resource->then_ShouldContain("form/field/$pos", 'type="hidden"');
     }
 
 }

@@ -16,7 +16,8 @@ class SelectFieldTest extends Specification {
 
         $this->field->whenIRenderTheField();
         $this->field->thenTheOutputShouldBe('
-            <select class="form-control" name="args[test]">
+            <label for="test">Test</label>
+            <select id="test" class="form-control" name="args[test]">
                     <option value="one">Uno</option>
                     <option value="two">Dos</option>
             </select>');
@@ -31,7 +32,8 @@ class SelectFieldTest extends Specification {
 
         $this->field->whenIRenderTheField();
         $this->field->thenTheOutputShouldBe('
-            <select class="form-control" name="args[test]">
+            <label for="test">Test</label>
+            <select id="test" class="form-control" name="args[test]">
                     <option value="one">Uno</option>
                     <option selected value="two">Dos</option>
             </select>');

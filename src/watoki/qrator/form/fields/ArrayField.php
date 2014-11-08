@@ -37,10 +37,9 @@ class ArrayField extends TemplatedField {
      * @return array
      */
     protected function getModel() {
-        return [
+        return array_merge(parent::getModel(), [
             'inner' => $this->wrapInnerField(),
-            'id' => uniqid()
-        ];
+        ]);
     }
 
     private function wrapInnerField() {

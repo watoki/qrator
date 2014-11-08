@@ -36,7 +36,8 @@ class SelectEntityFieldTest extends Specification {
 
         $this->field->whenIRenderTheField();
         $this->field->thenTheOutputShouldBe(
-            '<select class="form-control" name="args[test]">
+            '<label for="test">Test</label>
+            <select id="test" class="form-control" name="args[test]">
             </select>');
     }
 
@@ -61,7 +62,8 @@ class SelectEntityFieldTest extends Specification {
 
         $this->field->whenIRenderTheField();
         $this->field->thenTheOutputShouldBe(
-            '<select class="form-control" name="args[test]">
+            '<label for="test">Test</label>
+            <select id="test" class="form-control" name="args[test]">
                 <option value="bart">Named Entity [name:Bart|id:bart]</option>
                 <option value="lisa">Named Entity [name:Lisa|id:lisa]</option>
             </select>');

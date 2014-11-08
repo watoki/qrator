@@ -6,7 +6,6 @@ use watoki\dom\Element;
 use watoki\dom\Text;
 use watoki\factory\exception\InjectionException;
 use watoki\qrator\form\Field;
-use watoki\qrator\form\fields\HiddenField;
 use watoki\qrator\Representer;
 
 class PrepareResource extends ActionResource {
@@ -86,11 +85,7 @@ class PrepareResource extends ActionResource {
 
     private function assembleFields($fields) {
         return array_map(function (Field $field) {
-            return [
-                'label' => ($field instanceof HiddenField) ? null : ucfirst($field->getLabel()),
-                'control' => $field->render(),
-                'isRequired' => $field->isRequired()
-            ];
+            return $field->render();
         }, array_values($fields));
     }
 }
