@@ -1,10 +1,10 @@
 <?php
 namespace watoki\qrator;
 
+use watoki\factory\Factory;
 use watoki\qrator\Representer;
 use watoki\qrator\representer\generic\GenericActionRepresenter;
 use watoki\qrator\representer\generic\GenericEntityRepresenter;
-use watoki\factory\Factory;
 use watoki\qrator\representer\MethodActionRepresenter;
 
 class RepresenterRegistry {
@@ -20,8 +20,9 @@ class RepresenterRegistry {
      */
     public function __construct(Factory $factory) {
         $this->factory = $factory;
+        $factory->setSingleton(get_class($this), $this);
 
-        $this->register((new GenericActionRepresenter(RootAction::class, $factory, $this))
+        $this->register((new GenericActionRepresenter(RootAction::class, $factory))
                 ->setHandler(function () {
                     return new RootEntity();
                 })
@@ -51,6 +52,15 @@ class RepresenterRegistry {
     }
 
     /**
+     * @param string $class Full name of the class
+     * @param string $method Name of the method
+     * @return MethodActionRepresenter
+     */
+    public function registerActionMethod($class, $method) {
+        return $this->register(new MethodActionRepresenter($class, $method, $this->factory));
+    }
+
+    /**
      * @param string|object|null $class
      * @throws \Exception
      * @return EntityRepresenter
@@ -68,7 +78,7 @@ class RepresenterRegistry {
      */
     public function getActionRepresenter($class) {
         return $this->getRepresenter($class, ActionRepresenter::class, function ($class) {
-            return new GenericActionRepresenter($class, $this->factory, $this);
+            return new GenericActionRepresenter($class, $this->factory);
         });
     }
 

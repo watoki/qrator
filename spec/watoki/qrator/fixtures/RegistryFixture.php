@@ -32,7 +32,7 @@ class RegistryFixture extends Fixture {
         if (array_key_exists($class, $this->representers)) {
             return;
         }
-        $this->representers[$class] = new GenericActionRepresenter($class, $this->spec->factory, $this->registry);
+        $this->representers[$class] = new GenericActionRepresenter($class, $this->spec->factory);
         $this->registry->register($this->representers[$class]);
     }
 

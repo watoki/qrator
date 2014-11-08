@@ -5,7 +5,6 @@ use watoki\collections\Map;
 use watoki\factory\Factory;
 use watoki\qrator\ActionRepresenter;
 use watoki\qrator\form\fields\ArrayField;
-use watoki\qrator\form\fields\HiddenField;
 use watoki\qrator\form\fields\SelectEntityField;
 use watoki\qrator\form\fields\StringField;
 use watoki\qrator\representer\Property;
@@ -24,11 +23,10 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
 
     /**
      * @param Factory $factory <-
-     * @param RepresenterRegistry $registry <-
      */
-    function __construct(Factory $factory, RepresenterRegistry $registry) {
+    function __construct(Factory $factory) {
         $this->factory = $factory;
-        $this->registry = $registry;
+        $this->registry = $factory->getInstance(RepresenterRegistry::class);
     }
 
     /**

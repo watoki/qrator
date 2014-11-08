@@ -3,7 +3,6 @@ namespace watoki\qrator\representer;
 
 use watoki\factory\Factory;
 use watoki\qrator\representer\generic\GenericActionRepresenter;
-use watoki\qrator\RepresenterRegistry;
 
 class MethodActionRepresenter extends GenericActionRepresenter {
 
@@ -14,12 +13,11 @@ class MethodActionRepresenter extends GenericActionRepresenter {
      * @param string $className
      * @param string $methodName
      * @param Factory $factory <-
-     * @param RepresenterRegistry $registry <-
      */
-    public function __construct($className, $methodName, Factory $factory, RepresenterRegistry $registry) {
-        parent::__construct(self::asClass($className, $methodName), $factory, $registry);
+    public function __construct($className, $methodName, Factory $factory) {
+        parent::__construct(self::asClass($className, $methodName), $factory);
 
-        $this->method = new \ReflectionMethod($className, $methodName);
+        $this->method =  new \ReflectionMethod($className, $methodName);
         $this->createClassDefinition();
 
         $this->setName(ucfirst(preg_replace('/([a-z])([A-Z])/', '$1 $2', $this->method->getShortName())));

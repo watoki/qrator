@@ -57,7 +57,7 @@ class MapPropertyTypesToFieldsTest extends Specification {
     private $fields;
 
     private function whenIGetTheFieldsOf($actionClass) {
-        $representer = new GenericActionRepresenter($actionClass, $this->factory, new RepresenterRegistry($this->factory));
+        $representer = new GenericActionRepresenter($actionClass, $this->factory);
         $this->fields = $representer->getFields($representer->create());
     }
 

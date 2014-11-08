@@ -5,7 +5,6 @@ use watoki\factory\Factory;
 use watoki\qrator\form\Field;
 use watoki\qrator\representer\basic\BasicActionRepresenter;
 use watoki\qrator\representer\Property;
-use watoki\qrator\RepresenterRegistry;
 
 class GenericActionRepresenter extends BasicActionRepresenter {
 
@@ -33,10 +32,9 @@ class GenericActionRepresenter extends BasicActionRepresenter {
     /**
      * @param string $class
      * @param Factory $factory <-
-     * @param RepresenterRegistry $registry <-
      */
-    public function __construct($class, Factory $factory, RepresenterRegistry $registry) {
-        parent::__construct($factory, $registry);
+    public function __construct($class, Factory $factory) {
+        parent::__construct($factory);
 
         $this->class = $class;
         $this->handler = function () use ($class) {

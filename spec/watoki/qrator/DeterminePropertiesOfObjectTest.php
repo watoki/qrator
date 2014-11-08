@@ -213,7 +213,7 @@ class DeterminePropertiesOfObjectTest extends Specification {
     }
 
     private function whenIDetermineThePropertiesOf($class) {
-        $representer = new GenericActionRepresenter($class, $this->factory, new RepresenterRegistry($this->factory));
+        $representer = new GenericActionRepresenter($class, $this->factory);
         $this->object = $representer->create(new Map($this->args));
         $this->properties = $representer->getProperties($this->object);
         return true;
