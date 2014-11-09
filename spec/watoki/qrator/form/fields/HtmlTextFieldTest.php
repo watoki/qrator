@@ -22,7 +22,9 @@ class HtmlTextFieldTest extends Specification {
         $this->field->thenItShouldAdd_ToTheFoot(["
             <script>
                 $(document).ready(function() {
-                    $('.html-text-field').summernote();
+                    $('.html-text-field').summernote({
+                      format:'Y-m-d H:i'
+                    });
                 });
             </script>"]);
     }

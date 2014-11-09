@@ -25,4 +25,10 @@ class DateTimeFieldTest extends Specification {
             </script>"]);
     }
 
+    function testInflate() {
+        $this->field->givenTheField(new DateTimeField('test'));
+        $this->field->whenIInflate('2001-01-01');
+        $this->field->thenItShouldReturn(new \DateTime('2001-01-01'));
+    }
+
 } 

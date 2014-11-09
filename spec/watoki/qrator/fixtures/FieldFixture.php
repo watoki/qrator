@@ -16,6 +16,9 @@ class FieldFixture extends Fixture {
     /** @var \watoki\qrator\form\Field */
     private $field;
 
+    /** @var mixed|null */
+    private $returned;
+
     public function givenTheField(Field $field) {
         $this->field = $field;
     }
@@ -29,6 +32,10 @@ class FieldFixture extends Fixture {
         $this->try->tryTo(function () {
             $this->whenIRenderTheField();
         });
+    }
+
+    public function whenIInflate($string) {
+        $this->returned = $this->field->inflate($string);
     }
 
     public function thenTheOutputShouldBe($expected) {
@@ -55,6 +62,10 @@ class FieldFixture extends Fixture {
 
     public function thenItShouldAdd_ToTheFoot($values) {
         $this->spec->assertEquals($values, $this->field->addToFoot());
+    }
+
+    public function thenItShouldReturn($value) {
+        $this->spec->assertEquals($value, $this->returned);
     }
 
 } 

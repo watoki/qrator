@@ -151,7 +151,7 @@ class DeterminePropertiesOfObjectTest extends Specification {
             function __construct($one, \DateTime $two) {}
         ');
         $this->givenTheActionArgument_Is('one', 'uno');
-        $this->givenTheActionArgument_Is('two', new \DateTime());
+        $this->givenTheActionArgument_Is('two', 'now');
 
         $this->whenIDetermineThePropertiesOf('constructorTypes\SomeClass');
         $this->thenThereShouldBe_Properties(2);

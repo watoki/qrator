@@ -46,13 +46,20 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
      */
     public function create(Map $args = null) {
         $args = $args ?: new Map();
-        $action = $this->factory->getInstance($this->getClass(), $args->toArray());
+
+        $inflated = [];
+        foreach ($this->getProperties() as $property) {
+            if ($args->has($property->name())) {
+                $value = $args->get($property->name());
+                $inflated[$property->name()] = $this->getField($property)->inflate($value);
+            }
+        }
+
+        $action = $this->factory->getInstance($this->getClass(), $inflated);
 
         foreach ($this->getProperties($action) as $property) {
             if ($property->canSet() && $args->has($property->name())) {
-                $value = $args->get($property->name());
-                $inflated = $this->getField($property)->inflate($value);
-                $property->set($action, $inflated);
+                $property->set($action, $inflated[$property->name()]);
             }
         }
 

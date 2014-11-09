@@ -3,6 +3,10 @@ namespace watoki\qrator\form\fields;
 
 class DateTimeField extends StringField {
 
+    public function inflate($value) {
+        return new \DateTime($value);
+    }
+
     protected function getClass() {
         return parent::getClass() . ' date-time-field';
     }

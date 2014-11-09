@@ -21,7 +21,9 @@ class HtmlTextField extends TextField {
         return ["
             <script>
                 $(document).ready(function() {
-                    $('.html-text-field').summernote();
+                    $('.html-text-field').summernote({
+                      format:'Y-m-d H:i'
+                    });
                 });
             </script>"];
     }

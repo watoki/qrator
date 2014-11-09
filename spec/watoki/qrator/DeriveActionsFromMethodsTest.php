@@ -38,7 +38,7 @@ class DeriveActionsFromMethodsTest extends Specification {
 
     function testInvokeMethodWithArgumentsOfAction() {
         $this->whenIConstructAnActionFromTheMethod_Of('someMethod', 'construct\SomeClass');
-        $this->whenIExecuteTheActionWith(['one' => 'uno', 'two' => new \DateTime('2001-02-03')]);
+        $this->whenIExecuteTheActionWith(['one' => 'uno', 'two' => '2001-02-03']);
         $this->thenItShouldReturn('uno 2001-02-03');
     }
 
