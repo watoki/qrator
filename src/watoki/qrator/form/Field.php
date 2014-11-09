@@ -43,7 +43,7 @@ abstract class Field {
      * @return string
      */
     public function getLabel() {
-        return ucfirst($this->getName());
+        return ucfirst(preg_replace('/([a-z])([A-Z])/', '$1 $2', $this->getName()));
     }
 
     /**

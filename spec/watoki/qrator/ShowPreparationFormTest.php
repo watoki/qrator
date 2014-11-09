@@ -45,6 +45,16 @@ class ShowPreparationFormTest extends Specification {
         $this->thenField_ShouldHaveNoValue(2);
     }
 
+    function testUnCamelCaseLabels() {
+        $this->class->givenTheClass_WithTheBody('camelCase\Action', '
+            public $someProperty;
+        ');
+        $this->whenIPrepare('camelCase\Action');
+
+        $this->thenThereShouldBe_Fields(1);
+        $this->thenField_ShouldHaveTheLabel(1, 'Some Property');
+    }
+
     function testGetFormDefinitionFromRepresenter() {
         $this->class->givenTheClass_Extending_WithTheBody('MySpecialField', '\watoki\qrator\form\Field', '
             public function render() { return "Hello World"; }
