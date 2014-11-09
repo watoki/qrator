@@ -76,17 +76,17 @@ abstract class Field {
     }
 
     /**
-     * @return string Will be added to the head on the PrepareResource page
+     * @return array Will be added to the head on the PrepareResource page
      */
     public function addToHead() {
-        return '';
+        return [];
     }
 
     /**
-     * @return string Will be added to the foot on the PrepareResource page
+     * @return array Will be added to the foot on the PrepareResource page
      */
     public function addToFoot() {
-        return '';
+        return [];
     }
 
 }

@@ -1,4 +1,4 @@
-<label for="<?= $id ?>"><?= $label ?><?= $required ? '*' : '' ?></label>
+<?= $label ?>
 <select id="<?= $id ?>" class="form-control" name="<?= $name ?>"<?= $required ? ' required' : '' ?>>
     <? foreach ($options as $value => $content) { ?>
         <option<?= $value == $selected ? ' selected' : '' ?> value="<?= $value ?>"><?= $content ?></option>

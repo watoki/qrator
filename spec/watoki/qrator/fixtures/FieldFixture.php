@@ -49,4 +49,12 @@ class FieldFixture extends Fixture {
         $this->spec->assertNotContains($string, $this->rendered);
     }
 
+    public function thenItShouldAdd_ToTheHead($keys) {
+        $this->spec->assertEquals($keys, array_keys($this->field->addToHead()));
+    }
+
+    public function thenItShouldAdd_ToTheFoot($values) {
+        $this->spec->assertEquals($values, $this->field->addToFoot());
+    }
+
 } 

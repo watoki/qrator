@@ -25,6 +25,18 @@ class ArrayFieldTest extends Specification {
         $this->field->thenTheOutputShouldNotContain('id="test"');
     }
 
+    function testRender() {
+        $this->givenAndArrayField_OfStringFields('tests', 'test');
+        $this->field->whenIRenderTheField();
+        $this->field->thenTheOutputShouldBe('
+            <label for="tests">Tests</label>
+            <div id="tests"></div>
+            <button class="btn btn-default" type="button" onclick="document.getElementById(\'tests\').appendChild(document.getElementById(\'tests-inner\').lastChild.cloneNode(true)); return false;">Add</button>
+            <div id="tests-inner" style="display: none"><div>
+                <input  class="form-control" type="text" name="args[tests][]"/>
+            </div></div>');
+    }
+
     /**
      * @param $outerName
      * @param $innerName

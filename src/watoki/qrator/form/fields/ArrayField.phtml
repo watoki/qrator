@@ -1,4 +1,4 @@
-<label><?= $label ?></label>
-<div id="<?= $id ?>-container"></div>
-<button class="btn btn-default" type="button" onclick="document.getElementById('<?= $id ?>-container').appendChild(document.getElementById('<?= $id ?>-inner').lastChild.cloneNode(true)); return false;">Add</button>
+<?= $label ?>
+<div id="<?= $id ?>"></div>
+<button class="btn btn-default" type="button" onclick="document.getElementById('<?= $id ?>').appendChild(document.getElementById('<?= $id ?>-inner').lastChild.cloneNode(true)); return false;">Add</button>
 <div id="<?= $id ?>-inner" style="display: none"><div><?= $inner ?></div></div>

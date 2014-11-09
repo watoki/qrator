@@ -55,8 +55,8 @@ class PrepareResource extends ActionResource {
         $fields = $representer->getFields();
 
         foreach ($fields as $field) {
-            $this->head[] = $field->addToHead();
-            $this->foot[] = $field->addToFoot();
+            $this->head = array_merge($this->head, $field->addToHead());
+            $this->foot = array_merge($this->foot, $field->addToFoot());
         }
 
         $this->fill($fields, $args);

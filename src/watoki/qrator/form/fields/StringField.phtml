@@ -1,2 +1,2 @@
-<label for="<?= $id ?>"><?= $label ?><?= $required ? '*' : '' ?></label>
-<input id="<?= $id ?>" class="form-control" type="text" name="<?= $name ?>"<? if ($value) { ?> value="<?= $value ?>"<? } ?><?= $required ? ' required' : '' ?>/>
+<?= $label ?>
+<input id="<?= $id ?>" class="<?= $class ?>" type="text" name="<?= $name ?>"<? if ($value) { ?> value="<?= $value ?>"<? } ?><?= $required ? ' required' : '' ?>/>
