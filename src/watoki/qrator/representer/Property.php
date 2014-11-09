@@ -3,6 +3,7 @@ namespace watoki\qrator\representer;
 
 use watoki\factory\ClassResolver;
 use watoki\qrator\representer\property\types\ArrayType;
+use watoki\qrator\representer\property\types\BooleanType;
 use watoki\qrator\representer\property\types\ClassType;
 use watoki\qrator\representer\property\types\FloatType;
 use watoki\qrator\representer\property\types\IdentifierType;
@@ -85,6 +86,9 @@ abstract class Property {
                 return new FloatType();
             case 'string':
                 return new StringType();
+            case 'bool':
+            case 'boolean':
+                return new BooleanType();
         }
 
         $resolver = new ClassResolver($class);

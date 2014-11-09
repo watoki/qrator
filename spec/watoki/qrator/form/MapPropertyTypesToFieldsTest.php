@@ -2,6 +2,7 @@
 namespace spec\watoki\qrator\form;
 
 use watoki\qrator\form\fields\ArrayField;
+use watoki\qrator\form\fields\CheckboxField;
 use watoki\qrator\form\fields\DateTimeField;
 use watoki\qrator\form\fields\SelectEntityField;
 use watoki\qrator\form\fields\StringField;
@@ -67,6 +68,15 @@ class MapPropertyTypesToFieldsTest extends Specification {
         ');
         $this->whenIGetTheFieldsOf('mapDateTime\Action');
         $this->then_ShouldBeA('date', DateTimeField::class);
+    }
+
+    function testBoolean() {
+        $this->class->givenTheClass_WithTheBody('mapBoolean\Action', '
+            /** @var bool */
+            public $boolean;
+        ');
+        $this->whenIGetTheFieldsOf('mapBoolean\Action');
+        $this->then_ShouldBeA('boolean', CheckboxField::class);
     }
 
     ##################################################################################################

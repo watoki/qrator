@@ -22,6 +22,7 @@ abstract class TemplatedField extends Field {
     protected function getModel() {
         return [
             'label' => '<label for="' . $this->getName() . '">' . $this->getLabel() . ($this->isRequired() ? '*' : '') . '</label>' . "\n",
+            'labelText' => $this->getLabel(),
             'name' => 'args[' . $this->getName() . ']',
             'value' => $this->getValue(),
             'required' => $this->isRequired(),
