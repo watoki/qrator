@@ -9,8 +9,11 @@ use watoki\scrut\Specification;
  */
 class CheckboxFieldTest extends Specification {
 
-    function testRender() {
+    protected function background() {
         $this->field->givenTheField(new CheckboxField('test'));
+    }
+
+    function testUnchecked() {
         $this->field->whenIRenderTheField();
         $this->field->thenTheOutputShouldBe('
         <div class="checkbox">
@@ -18,6 +21,22 @@ class CheckboxFieldTest extends Specification {
                 <input name="args[test]" type="checkbox" value="on">
                 Test</label>
         </div>');
+    }
+
+    function testChecked() {
+        $this->field->givenTheValueIs(true);
+        $this->field->whenIRenderTheField();
+        $this->field->thenTheOutputShouldBe('
+        <div class="checkbox">
+            <label>
+                <input name="args[test]" type="checkbox" checked value="on">
+                Test</label>
+        </div>');
+    }
+
+    function testInflate() {
+        $this->field->whenIInflate('anything');
+        $this->field->thenItShouldReturn(true);
     }
 
 } 
