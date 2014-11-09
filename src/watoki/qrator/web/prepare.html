@@ -10,7 +10,10 @@
     <script>
         window.onbeforeunload = function () {
             return "If you close this page you will loose unsaved changes.";
-        }
+        };
+        document.onsubmit = function () {
+            window.onbeforeunload = function () {};
+        };
     </script>
 </head>
 <body>
