@@ -54,6 +54,15 @@ class MultiProperty extends Property {
         return null;
     }
 
+    public function defaultValue() {
+        foreach ($this->properties as $property) {
+            if ($property->defaultValue()) {
+                return $property->defaultValue();
+            }
+        }
+        return null;
+    }
+
     public function add(Property $property) {
         $this->properties[] = $property;
     }

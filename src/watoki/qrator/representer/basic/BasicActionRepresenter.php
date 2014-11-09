@@ -82,7 +82,7 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
             $field = $this->getField($property);
             $fields[$property->name()] = $field;
 
-            if ($object && $property->canGet()) {
+            if ($object && $property->canGet() && $property->get($object) !== null) {
                 $field->setValue($property->get($object));
             } else if ($property->defaultValue()) {
                 $field->setValue($property->defaultValue());

@@ -145,6 +145,7 @@ class ShowPreparationFormTest extends Specification {
     function testFillFormWithDefaultValues() {
         $this->class->givenTheClass_WithTheBody('defaultValue\SomeAction', '
             public $three = "tres";
+            public $two;
             function __construct($one, $two = "dos") {}
         ');
         $this->whenIPrepare('defaultValue\SomeAction');
