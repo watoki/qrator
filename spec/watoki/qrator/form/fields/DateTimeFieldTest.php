@@ -21,7 +21,9 @@ class DateTimeFieldTest extends Specification {
         $this->field->thenItShouldAdd_ToTheHead(['jquery', 'jquery.datetimepicker']);
         $this->field->thenItShouldAdd_ToTheFoot(["
             <script>
-                $('.date-time-field').datetimepicker();
+                $('.date-time-field').datetimepicker({
+                  format:'Y-m-d H:i'
+                });
             </script>"]);
     }
 

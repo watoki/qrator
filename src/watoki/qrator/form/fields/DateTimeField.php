@@ -23,7 +23,9 @@ class DateTimeField extends StringField {
     public function addToFoot() {
         return ["
             <script>
-                $('.date-time-field').datetimepicker();
+                $('.date-time-field').datetimepicker({
+                  format:'Y-m-d H:i'
+                });
             </script>"];
     }
 
