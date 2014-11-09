@@ -12,7 +12,6 @@ use watoki\qrator\representer\property\types\IntegerType;
 use watoki\qrator\representer\property\types\MultiType;
 use watoki\qrator\representer\property\types\NullableType;
 use watoki\qrator\representer\property\types\StringType;
-use watoki\qrator\RepresenterRegistry;
 use watoki\scrut\Specification;
 
 /**

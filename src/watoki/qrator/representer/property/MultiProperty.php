@@ -38,7 +38,7 @@ class MultiProperty extends Property {
 
     public function get($object) {
         foreach ($this->properties as $property) {
-            if ($property->canGet()) {
+            if ($property->canGet() && $property->get($object) !== null) {
                 return $property->get($object);
             }
         }
