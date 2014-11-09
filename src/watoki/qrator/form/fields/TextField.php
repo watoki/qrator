@@ -1,13 +1,10 @@
 <?php
 namespace watoki\qrator\form\fields;
 
-use watoki\qrator\form\TemplatedField;
-
-class TextField extends TemplatedField {
+class TextField extends StringField {
 
     protected function getModel() {
         return array_merge(parent::getModel(), [
-            'class' => 'form-control',
             'rows' => '5'
         ]);
     }

@@ -7,8 +7,15 @@ class StringField extends TemplatedField {
 
     protected function getModel() {
         return array_merge(parent::getModel(), [
-            'class' => 'form-control'
+            'class' => $this->getClass()
         ]);
+    }
+
+    /**
+     * @return string
+     */
+    protected function getClass() {
+        return 'form-control';
     }
 
 

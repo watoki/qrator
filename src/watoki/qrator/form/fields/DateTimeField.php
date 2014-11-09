@@ -3,10 +3,8 @@ namespace watoki\qrator\form\fields;
 
 class DateTimeField extends StringField {
 
-    protected function getModel() {
-        return array_merge(parent::getModel(), [
-            'class' => 'date-time-field'
-        ]);
+    protected function getClass() {
+        return parent::getClass() . ' date-time-field';
     }
 
     public function addToHead() {

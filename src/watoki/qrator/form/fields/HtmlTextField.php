@@ -3,10 +3,8 @@ namespace watoki\qrator\form\fields;
 
 class HtmlTextField extends TextField {
 
-    protected function getModel() {
-        return array_merge(parent::getModel(), [
-            'class' => 'html-text-field'
-        ]);
+    protected function getClass() {
+        return parent::getClass() . ' html-text-field';
     }
 
     public function addToHead() {

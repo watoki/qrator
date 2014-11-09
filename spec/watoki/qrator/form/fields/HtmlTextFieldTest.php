@@ -12,10 +12,12 @@ class HtmlTextFieldTest extends Specification {
     function testRenderWithWysiwygEditor() {
         $this->field->givenTheField(new HtmlTextField('test'));
         $this->field->givenTheValueIs('Some text');
+
         $this->field->whenIRenderTheField();
         $this->field->thenTheOutputShouldBe('
             <label for="test">Test</label>
-            <textarea id="test" name="args[test]" class="html-text-field" rows="5">Some text</textarea>');
+            <textarea id="test" name="args[test]" class="form-control html-text-field" rows="5">Some text</textarea>');
+
         $this->field->thenItShouldAdd_ToTheHead(['jquery', 'bootstrap', 'font-awesome', 'summernote']);
         $this->field->thenItShouldAdd_ToTheFoot(["
             <script>
