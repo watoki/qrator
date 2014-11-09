@@ -36,6 +36,10 @@ class ConstructorProperty extends Property {
     public function set($object, $value) {
     }
 
+    public function defaultValue() {
+        return $this->parameter->isDefaultValueAvailable() ? $this->parameter->getDefaultValue() : null;
+    }
+
     public function type() {
         if ($this->parameter->getClass()) {
             return new ClassType($this->parameter->getClass()->getName());

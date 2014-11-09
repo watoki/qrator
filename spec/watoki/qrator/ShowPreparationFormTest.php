@@ -40,9 +40,9 @@ class ShowPreparationFormTest extends Specification {
         $this->thenThereShouldBe_Fields(2);
         $this->thenField_ShouldHaveTheLabel(1, 'One');
         $this->thenField_ShouldBeHaveTheName(1, 'args[one]');
-        $this->thenField_ShouldBeHaveTheValue(1, 'uno');
+        $this->thenField_ShouldTheValue(1, 'uno');
         $this->thenField_ShouldBeHaveTheName(2, 'args[two]');
-        $this->thenField_ShouldBeHaveNoValue(2);
+        $this->thenField_ShouldHaveNoValue(2);
     }
 
     function testGetFormDefinitionFromRepresenter() {
@@ -71,9 +71,9 @@ class ShowPreparationFormTest extends Specification {
         });
 
         $this->whenIPrepare('PreFillingAction');
-        $this->thenField_ShouldBeHaveTheValue(1, 'FortyTwo');
-        $this->thenField_ShouldBeHaveTheValue(2, 'SeventyThree');
-        $this->thenField_ShouldBeHaveNoValue(3);
+        $this->thenField_ShouldTheValue(1, 'FortyTwo');
+        $this->thenField_ShouldTheValue(2, 'SeventyThree');
+        $this->thenField_ShouldHaveNoValue(3);
     }
 
     function testPreFillFormWithoutActionInstance() {
@@ -84,7 +84,7 @@ class ShowPreparationFormTest extends Specification {
         $this->resource->givenTheActionArgument_Is('one', 'FortyTwo');
 
         $this->whenIPrepare('PreFillingActionWithoutInstance');
-        $this->thenField_ShouldBeHaveTheValue(1, 'FortyTwo');
+        $this->thenField_ShouldTheValue(1, 'FortyTwo');
     }
 
     function testHideIdFieldByDefault() {
@@ -99,7 +99,7 @@ class ShowPreparationFormTest extends Specification {
         $this->thenThereShouldBe_Fields(2);
         $this->thenField_ShouldBeAHiddenField(1);
         $this->thenField_ShouldBeHaveTheName(1, 'args[id]');
-        $this->thenField_ShouldBeHaveTheValue(1, '42');
+        $this->thenField_ShouldTheValue(1, '42');
     }
 
     function testHideLabelOfHiddenFields() {
@@ -140,6 +140,19 @@ class ShowPreparationFormTest extends Specification {
         ');
         $this->whenIPrepare('preparation\IncompleteConstructor');
         $this->thenThereShouldBe_Fields(4);
+    }
+
+    function testFillFormWithDefaultValues() {
+        $this->class->givenTheClass_WithTheBody('defaultValue\SomeAction', '
+            public $three = "tres";
+            function __construct($one, $two = "dos") {}
+        ');
+        $this->whenIPrepare('defaultValue\SomeAction');
+        $this->thenThereShouldBe_Fields(3);
+
+        $this->thenField_ShouldHaveNoValue(1);
+        $this->thenField_ShouldTheValue(2, 'dos');
+        $this->thenField_ShouldTheValue(3, 'tres');
     }
 
     ###############################################################################################
@@ -190,11 +203,11 @@ class ShowPreparationFormTest extends Specification {
         $this->assertContains('name="' . $string . '"', $this->getRenderedField($int));
     }
 
-    private function thenField_ShouldBeHaveTheValue($int, $string) {
+    private function thenField_ShouldTheValue($int, $string) {
         $this->assertContains('value="' . $string . '"', $this->getRenderedField($int));
     }
 
-    private function thenField_ShouldBeHaveNoValue($int) {
+    private function thenField_ShouldHaveNoValue($int) {
         $this->assertNotContains('value=', $this->getRenderedField($int));
     }
 

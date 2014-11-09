@@ -29,6 +29,12 @@ class PublicProperty extends Property {
         return true;
     }
 
+    public function defaultValue() {
+        return $this->property->isDefault()
+            ? $this->property->getDeclaringClass()->getDefaultProperties()[$this->property->getName()]
+            : null;
+    }
+
     public function type() {
         return $this->findType('/@var\s+(\S+).*/', $this->property->getDocComment(),
             $this->property->getDeclaringClass());

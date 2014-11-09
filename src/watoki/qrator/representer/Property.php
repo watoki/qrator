@@ -40,6 +40,10 @@ abstract class Property {
 
     abstract public function set($object, $value);
 
+    public function defaultValue() {
+        return null;
+    }
+
     protected function findType($pattern, $docComment, \ReflectionClass $class) {
         $matches = array();
         $found = preg_match($pattern, $docComment, $matches);

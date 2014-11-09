@@ -84,6 +84,8 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
 
             if ($object && $property->canGet()) {
                 $field->setValue($property->get($object));
+            } else if ($property->defaultValue()) {
+                $field->setValue($property->defaultValue());
             }
 
             if ($property->isRequired()) {
