@@ -1,5 +1,5 @@
 <?php
-namespace spec\watoki\qrator\form;
+namespace spec\watoki\qrator\form\fields;
 
 use watoki\qrator\form\fields\SelectField;
 use watoki\scrut\Specification;
@@ -8,6 +8,7 @@ use watoki\scrut\Specification;
  * @property \spec\watoki\qrator\fixtures\FieldFixture field <-
  */
 class SelectFieldTest extends Specification {
+
     function testShowOptions() {
         $this->givenTheSelectField_WithTheOptions('test', [
             'one' => 'Uno',

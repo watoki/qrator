@@ -2,6 +2,7 @@
 namespace spec\watoki\qrator\form;
 
 use watoki\qrator\form\fields\ArrayField;
+use watoki\qrator\form\fields\DateTimeField;
 use watoki\qrator\form\fields\SelectEntityField;
 use watoki\qrator\form\fields\StringField;
 use watoki\qrator\representer\generic\GenericActionRepresenter;
@@ -12,6 +13,14 @@ use watoki\scrut\Specification;
  * @property \spec\watoki\qrator\fixtures\ClassFixture class <-
  */
 class MapPropertyTypesToFieldsTest extends Specification {
+
+    function testUnknown() {
+        $this->class->givenTheClass_WithTheBody('mapUnknown\Action', '
+            public $unknown;
+        ');
+        $this->whenIGetTheFieldsOf('mapUnknown\Action');
+        $this->then_ShouldBeA('unknown', StringField::class);
+    }
 
     function testString() {
         $this->class->givenTheClass_WithTheBody('mapString\Action', '
@@ -49,6 +58,15 @@ class MapPropertyTypesToFieldsTest extends Specification {
         ');
         $this->whenIGetTheFieldsOf('mapMulti\Action');
         $this->then_ShouldBeA('multi', SelectEntityField::class);
+    }
+    
+    function testDateTime() {
+        $this->class->givenTheClass_WithTheBody('mapDateTime\Action', '
+            /** @var \DateTime */
+            public $date;
+        ');
+        $this->whenIGetTheFieldsOf('mapDateTime\Action');
+        $this->then_ShouldBeA('date', DateTimeField::class);
     }
 
     ##################################################################################################

@@ -1,5 +1,5 @@
 <?php
-namespace spec\watoki\qrator\form;
+namespace spec\watoki\qrator\form\fields;
 
 use watoki\qrator\form\fields\HiddenField;
 use watoki\scrut\Specification;

@@ -5,11 +5,13 @@ use watoki\collections\Map;
 use watoki\factory\Factory;
 use watoki\qrator\ActionRepresenter;
 use watoki\qrator\form\fields\ArrayField;
+use watoki\qrator\form\fields\DateTimeField;
 use watoki\qrator\form\fields\HiddenField;
 use watoki\qrator\form\fields\SelectEntityField;
 use watoki\qrator\form\fields\StringField;
 use watoki\qrator\representer\Property;
 use watoki\qrator\representer\property\types\ArrayType;
+use watoki\qrator\representer\property\types\ClassType;
 use watoki\qrator\representer\property\types\IdentifierType;
 use watoki\qrator\representer\property\types\MultiType;
 use watoki\qrator\RepresenterRegistry;
@@ -43,7 +45,7 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
      * @return object
      */
     public function create(Map $args = null) {
-        $args = $args ? : new Map();
+        $args = $args ?: new Map();
         $action = $this->factory->getInstance($this->getClass(), $args->toArray());
 
         foreach ($this->getProperties($action) as $property) {
@@ -93,6 +95,12 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
         return $this->getFieldForType($property->name(), $property->type());
     }
 
+    /**
+     * @param $name
+     * @param $type
+     * @return \watoki\qrator\form\Field
+     * @throws \Exception
+     */
     protected function getFieldForType($name, $type) {
         if ($type instanceof ArrayType) {
             return new ArrayField($name, $this->getFieldForType($name, $type->getItemType()));
@@ -100,8 +108,25 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
             return new SelectEntityField($name, $type->getTarget(), $this->registry);
         } else if ($type instanceof MultiType) {
             return $this->getFieldForType($name, $type->getTypes()[0]);
+        } else if ($type instanceof ClassType) {
+            return $this->getFieldForClass($name, $type->getClass());
         } else {
             return new StringField($name);
+        }
+    }
+
+    /**
+     * @param $name
+     * @param $class
+     * @throws \Exception
+     * @return \watoki\qrator\form\Field
+     */
+    protected function getFieldForClass($name, $class) {
+        switch ($class) {
+            case \DateTime::class:
+                return new DateTimeField($name);
+            default:
+                throw new \Exception("Class [$class] cannot be mapped to a field.");
         }
     }
 
