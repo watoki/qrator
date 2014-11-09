@@ -13,13 +13,20 @@ class AccessorProperty extends Property {
     private $setter;
 
     public function __construct(\ReflectionMethod $method, $required = false, $type = null) {
-        parent::__construct(lcfirst(substr($method->getName(), 3)), $required, $type);
+        $start = substr($method->getName(), 1, 2) == 'et' ? 3 : 2;
+        parent::__construct(lcfirst(substr($method->getName(), $start)), $required, $type);
 
-        if (substr($method->getName(), 0, 3) == 'get') {
-            $this->getter = $method;
-        } else {
+        if (substr($method->getName(), 0, 3) == 'set') {
             $this->setter = $method;
+        } else {
+            $this->getter = $method;
         }
+    }
+
+    public static function isAccessor(\ReflectionMethod $method) {
+        return substr($method->getName(), 0, 3) == 'set' && $method->getNumberOfParameters() == 1
+        || substr($method->getName(), 0, 3) == 'get' && empty($method->getParameters())
+        || substr($method->getName(), 0, 2) == 'is' && empty($method->getParameters());
     }
 
     public function get($object) {

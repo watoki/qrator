@@ -50,13 +50,10 @@ class PropertyReader {
             }
         }
 
-        $accessors = array_filter($reflection->getMethods(\ReflectionMethod::IS_PUBLIC), function (\ReflectionMethod $method) {
-            return substr($method->getName(), 0, 3) == 'set' && $method->getNumberOfParameters() == 1
-            || substr($method->getName(), 0, 3) == 'get' && empty($method->getParameters());
-        });
-
-        foreach ($accessors as $method) {
-            $add(new AccessorProperty($method));
+        foreach ($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+            if (AccessorProperty::isAccessor($method)) {
+                $add(new AccessorProperty($method));
+            }
         }
 
         return $properties;

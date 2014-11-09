@@ -35,6 +35,7 @@ class DeterminePropertiesOfObjectTest extends Specification {
     function testFindAccessorProperties() {
         $this->class->givenTheClass_WithTheBody('accessors\SomeClass', '
             function getGetter() { return "seven"; }
+            function isBoolean() { return true; }
             function setSetter($a) { }
             function getBoth() {}
             function setBoth($a) {}
@@ -43,11 +44,14 @@ class DeterminePropertiesOfObjectTest extends Specification {
         ');
 
         $this->whenIDetermineThePropertiesOf('accessors\SomeClass');
-        $this->thenThereShouldBe_Properties(3);
+        $this->thenThereShouldBe_Properties(4);
         $this->then_ShouldBeGettable('getter');
         $this->then_ShouldNotBeSettable('getter');
         $this->then_ShouldBeSettable('setter');
         $this->then_ShouldNotBeGettable('setter');
+        $this->then_ShouldBeGettable('boolean');
+        $this->thenTheValueOf_ShouldBe('getter', 'seven');
+        $this->thenTheValueOf_ShouldBe('boolean', true);
     }
 
     function testPublicTrumpAccessor() {
