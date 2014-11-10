@@ -1,6 +1,7 @@
 <?php
 namespace watoki\qrator\representer\generic;
 
+use watoki\collections\Set;
 use watoki\qrator\representer\basic\BasicEntityRepresenter;
 
 class GenericEntityRepresenter extends BasicEntityRepresenter {
@@ -28,6 +29,9 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
 
     /** @var string|null */
     private $name;
+
+    /** @var array|null */
+    private $condensedProperties;
 
     /**
      * @param string $class
@@ -175,5 +179,25 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
     public function setName($name) {
         $this->name = $name;
         return $this;
+    }
+
+    /**
+     * @param array|null $names of the properties to be selected. Null for default.
+     * @return $this
+     */
+    public function setCondensedProperties($names) {
+        $this->condensedProperties = $names;
+        return $this;
+    }
+
+    /**
+     * @param null|object $object
+     * @return \watoki\collections\Map|\watoki\qrator\representer\Property[]
+     */
+    public function getCondensedProperties($object) {
+        if (!$this->condensedProperties) {
+            return parent::getCondensedProperties($object);
+        }
+        return $this->getProperties($object)->select(new Set($this->condensedProperties));
     }
 }
