@@ -105,18 +105,14 @@ a.action {
     white-space: nowrap;
 }
 
-.panel-heading h1,
+.panel-heading h2,
 .panel-heading [property=actions],
 .panel-heading [property=actions] * {
     display: inline;
 }
 
-.panel-heading h1 {
+.panel-heading h2 {
     margin-right: 1ex;
-}
-
-.panel-heading [property=actions] {
-    line-height: 2em;
 }
 
 /* http://getbootstrap.com/css/#tables-responsive */
