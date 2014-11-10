@@ -23,15 +23,18 @@ class RepresenterRegistry {
         $factory->setSingleton(get_class($this), $this);
 
         $this->register((new GenericActionRepresenter(RootAction::class, $factory))
-                ->setHandler(function () {
-                    return new RootEntity();
-                })
-                ->setName('Home')
-        );
+            ->setHandler(function () {
+                return new RootEntity();
+            })
+            ->setName('Home'));
 
         $this->register((new GenericEntityRepresenter(RootEntity::class))
-                ->setName('Qrator')
-        );
+            ->setName('Qrator'));
+
+        $this->register((new GenericEntityRepresenter(\DateTime::class))
+            ->setStringifier(function (\DateTime $d) {
+                return $d->format('Y-m-d H:i:s');
+            }));
     }
 
     /**
