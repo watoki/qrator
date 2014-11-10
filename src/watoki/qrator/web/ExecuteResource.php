@@ -215,8 +215,8 @@ class ExecuteResource extends ActionResource {
     }
 
     private function assembleValueWithActions($entity, Property $property, $value) {
+        $entityRepresenter = $this->registry->getEntityRepresenter($entity);
         if (is_object($value)) {
-            $entityRepresenter = $this->registry->getEntityRepresenter($entity);
             $propertyRepresenter = $this->registry->getEntityRepresenter($value);
 
             return [
@@ -229,9 +229,16 @@ class ExecuteResource extends ActionResource {
         }
 
         return [
-            'caption' => print_r($value, true),
+            'caption' => $this->toString($value),
             'actions' => null,
         ];
+    }
+
+    private function toString($value) {
+        if (is_bool($value)) {
+            return $value ? 'Yes' : 'No';
+        }
+        return print_r($value, true);
     }
 
     /**

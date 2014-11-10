@@ -112,6 +112,24 @@ class ShowActionResultTest extends Specification {
         $this->thenProperty_ShouldHaveTheName_AndValue(3, 'two', 'dos');
     }
 
+    function testPropertyWithBooleanValues() {
+        $this->class->givenTheClass_WithTheBody('booleanValue\MyClass', '
+            public $true = true;
+            public $false = false;
+        ');
+        $this->class->givenTheClass_WithTheBody('booleanValue\MyHandler', '
+            function myAction() {
+                return new MyClass();
+            }
+        ');
+        $this->dispatcher->givenIAddedTheClass_AsHandlerFor('booleanValue\MyHandler', 'MyAction');
+
+        $this->whenIShowTheResultsOf('MyAction');
+        $this->thenThereShouldBe_Properties(2);
+        $this->thenProperty_ShouldHaveTheName_AndValue(1, 'true', 'Yes');
+        $this->thenProperty_ShouldHaveTheName_AndValue(2, 'false', 'No');
+    }
+
     function testRenderObjectProperties() {
         $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
             $object = new \StdClass;
