@@ -195,6 +195,7 @@ class ExecuteResource extends ActionResource {
     private function assembleProperty($entity, Property $property) {
         return [
             'name' => $property->name(),
+            'label' => ucfirst(preg_replace('/([a-z])([A-Z])/', '$1 $2', $property->name())),
             'value' => $this->assembleValue($entity, $property)
         ];
     }

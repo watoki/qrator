@@ -87,6 +87,7 @@ class ShowActionResultTest extends Specification {
         $this->whenIShowTheResultsOf('MyAction');
         $this->thenThereShouldBe_Properties(2);
         $this->thenProperty_ShouldHaveTheName_AndValue(1, 'propertyOne', 'valueOne');
+        $this->thenProperty_ShouldHaveTheLabel(1, 'Property One');
     }
 
     function testReadPropertiesFromGetters() {
@@ -401,6 +402,11 @@ class ShowActionResultTest extends Specification {
     private function thenProperty_ShouldHaveTheName($int, $name) {
         $int--;
         $this->resource->then_ShouldBe("entity/0/properties/item/$int/name", $name);
+    }
+
+    private function thenProperty_ShouldHaveTheLabel($int, $name) {
+        $int--;
+        $this->resource->then_ShouldBe("entity/0/properties/item/$int/label", $name);
     }
 
     private function thenThereShouldBe_Entities($int) {
