@@ -75,7 +75,7 @@ class RepresenterRegistry {
         $representer = new GenericEntityRepresenter($class);
         $this->register($representer);
 
-        $callback = function () {
+        $defaultCallback = function () {
             return true;
         };
 
@@ -83,10 +83,10 @@ class RepresenterRegistry {
         foreach ($methodActions as $class => $methods) {
             if ($methods instanceof ActionRepresenter) {
                 $this->register($methods);
-                $actions[$methods->getClass()] = $callback;
+                $actions[$methods->getClass()] = $defaultCallback;
             } else {
                 foreach ($methods as $i => $method) {
-
+                    $callback = $defaultCallback;
                     if (is_callable($method)) {
                         $callback = $method;
                         $method = $i;
