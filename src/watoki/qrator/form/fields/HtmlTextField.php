@@ -3,10 +3,6 @@ namespace watoki\qrator\form\fields;
 
 class HtmlTextField extends TextField {
 
-    protected function getClass() {
-        return parent::getClass() . ' html-text-field';
-    }
-
     public function addToHead() {
         return [
             'jquery' => self::ASSET_JQUERY,
@@ -18,12 +14,20 @@ class HtmlTextField extends TextField {
     }
 
     public function addToFoot() {
+        $id = $this->getName();
         return ["
             <script>
                 $(document).ready(function() {
-                    $('.html-text-field').summernote({
-                      format:'Y-m-d H:i'
+                    $('#$id').summernote({
+                      onkeyup: function() {
+                        $('#$id').val($('#$id').code());
+                      }
                     });
+                    $('#$id').css('display', 'block');
+                    $('#$id').css('visibility', 'hidden');
+                    $('#$id').css('height', '1px');
+                    $('#$id').css('padding', '0');
+                    $('#$id').css('margin', '0');
                 });
             </script>"];
     }
