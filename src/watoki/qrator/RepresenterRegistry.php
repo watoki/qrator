@@ -2,7 +2,9 @@
 namespace watoki\qrator;
 
 use watoki\factory\Factory;
+use watoki\factory\Injector;
 use watoki\qrator\Representer;
+use watoki\qrator\representer\ActionLink;
 use watoki\qrator\representer\generic\GenericActionRepresenter;
 use watoki\qrator\representer\generic\GenericEntityRepresenter;
 use watoki\qrator\representer\MethodActionRepresenter;
@@ -61,6 +63,69 @@ class RepresenterRegistry {
      */
     public function registerActionMethod($class, $method) {
         return $this->register(new MethodActionRepresenter($class, $method, $this->factory));
+    }
+
+    /**
+     * @param $class
+     * @param array $methodActions Of method names, indexed by their classes
+     * @throws \Exception
+     * @return GenericEntityRepresenter
+     */
+    public function registerEntityMethodActions($class, $methodActions) {
+        $representer = new GenericEntityRepresenter($class);
+        $this->register($representer);
+
+        $callback = function () {
+            return true;
+        };
+
+        $actions = [];
+        foreach ($methodActions as $class => $methods) {
+            if ($methods instanceof ActionRepresenter) {
+                $this->register($methods);
+                $actions[$methods->getClass()] = $callback;
+            } else {
+                foreach ($methods as $i => $method) {
+
+                    if (is_callable($method)) {
+                        $callback = $method;
+                        $method = $i;
+                    }
+
+                    $actionRepresenter = $this->registerActionMethod($class, $method);
+                    $actions[$actionRepresenter->getClass()] = $callback;
+
+                    try {
+                        $method = new \ReflectionMethod($class, '__' . $method);
+                        if (!$method->isStatic()) {
+                            throw new \Exception("Method [$class::__$method] must be static");
+                        }
+                        $injector = new Injector($this->factory);
+                        $method->invokeArgs(null, $injector->injectMethodArguments($method, [$actionRepresenter]));
+                    } catch (\ReflectionException $e) {
+                    }
+                }
+            }
+        }
+
+        $representer->setActions(function ($entity) use ($actions) {
+            $activeActions = [];
+            foreach ($actions as $class => $callback) {
+                if ($callback($entity)) {
+                    if (isset($entity->id)) {
+                        $args = ['id' => $entity->id];
+                    } else if (method_exists($entity, 'getId')) {
+                        $args = ['id' => $entity->getId()];
+                    } else {
+                        $args = [];
+                    }
+                    $activeActions[] = new ActionLink($class, $args);
+                }
+            }
+            return $activeActions;
+        });
+
+        return $representer;
     }
 
     /**
