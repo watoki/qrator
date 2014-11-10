@@ -16,15 +16,22 @@ class HtmlTextFieldTest extends Specification {
         $this->field->whenIRenderTheField();
         $this->field->thenTheOutputShouldBe('
             <label for="test">Test</label>
-            <textarea id="test" name="args[test]" class="form-control html-text-field" rows="5">Some text</textarea>');
+            <textarea id="test" name="args[test]" class="form-control" rows="5">Some text</textarea>');
 
         $this->field->thenItShouldAdd_ToTheHead(['jquery', 'bootstrap', 'font-awesome', 'summernote']);
         $this->field->thenItShouldAdd_ToTheFoot(["
             <script>
                 $(document).ready(function() {
-                    $('.html-text-field').summernote({
-                      format:'Y-m-d H:i'
+                    $('#test').summernote({
+                      onkeyup: function() {
+                        $('#test').val($('#test').code());
+                      }
                     });
+                    $('#test').css('display', 'block');
+                    $('#test').css('visibility', 'hidden');
+                    $('#test').css('height', '1px');
+                    $('#test').css('padding', '0');
+                    $('#test').css('margin', '0');
                 });
             </script>"]);
     }
