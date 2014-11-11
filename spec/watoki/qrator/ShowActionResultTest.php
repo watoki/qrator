@@ -211,7 +211,7 @@ class ShowActionResultTest extends Specification {
         }, 'MyAction');
 
         $this->whenIShowTheResultsOf('MyAction');
-        $this->thenAnAlertShouldSay("Action executed successfully. Empty result.");
+        $this->thenAnAlertShouldSay("Empty result.");
     }
 
     function testShowArrayProperty() {

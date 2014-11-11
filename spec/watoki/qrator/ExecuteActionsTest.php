@@ -57,8 +57,7 @@ class ExecuteActionsTest extends Specification {
         $this->dispatcher->givenISetAnEmptyHandlerFor('MyAction');
 
         $this->whenIExecuteTheAction('MyAction');
-        $this->thenAnAlertShouldSay("Action executed successfully. You are now redirected to your last action.");
-        $this->thenIShouldBeRedirectedTo_After_Seconds('execute?action=MyAction&args[one]=eins&args[two]=zwei', 1);
+        $this->thenIShouldBeRedirectedTo('execute?action=MyAction&args[one]=eins&args[two]=zwei');
     }
 
     function testDoNotRedirectIfResultIsEmptyArray() {
@@ -71,7 +70,7 @@ class ExecuteActionsTest extends Specification {
         }, 'MyAction');
 
         $this->whenIExecuteTheAction('MyAction');
-        $this->thenAnAlertShouldSay('Action executed successfully. Empty result.');
+        $this->thenAnAlertShouldSay('Empty result.');
     }
 
     function testActionWithConstructorArguments() {
@@ -111,8 +110,7 @@ class ExecuteActionsTest extends Specification {
         $this->dispatcher->givenISetAnEmptyHandlerFor('ActionWithFollowUp');
 
         $this->whenIExecuteTheAction('ActionWithFollowUp');
-        $this->thenAnAlertShouldSay("Action executed successfully. Please stand by.");
-        $this->thenIShouldBeRedirectedTo('FollowUpAction');
+        $this->thenIShouldBeRedirectedTo('execute?action=FollowUpAction');
     }
 
     function testFollowUpActionGeneratorGetResultOfFollowedAction() {
@@ -120,15 +118,14 @@ class ExecuteActionsTest extends Specification {
             'public $foo;');
         $this->class->givenTheClass('FollowUpAction');
 
-        $this->givenISet_ToFollowAfter('FollowUpActionWithProperty', 'ActionWithFollowUp');
+        $this->givenISet_ToFollowAfter_With('FollowUpActionWithProperty', 'ActionWithFollowUp', '["foo" => $result]');
 
         $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
             return "baz";
         }, 'ActionWithFollowUp');
 
         $this->whenIExecuteTheAction('ActionWithFollowUp');
-        $this->thenAnAlertShouldSay("Action executed successfully. Please stand by.");
-        $this->thenIShouldBeRedirectedTo('FollowUpActionWithProperty&args[foo]=baz');
+        $this->thenIShouldBeRedirectedTo('execute?action=FollowUpActionWithProperty&args[foo]=baz');
     }
 
     ####################################################################################################
@@ -149,9 +146,14 @@ class ExecuteActionsTest extends Specification {
     }
 
     private function givenISet_ToFollowAfter($action, $followed) {
+        $this->givenISet_ToFollowAfter_With($action, $followed, "[]");
+    }
+
+    private function givenISet_ToFollowAfter_With($action, $followed, $arguments) {
         $this->registry->givenIRegisteredAnActionRepresenterFor($followed);
-        $this->registry->representers[$followed]->setFollowUpAction(function ($result) use ($action) {
-            return new ActionLink($action, ['foo' => $result]);
+        /** @noinspection PhpUnusedParameterInspection */
+        $this->registry->representers[$followed]->setFollowUpAction(function ($result) use ($action, $arguments) {
+            return new ActionLink($action, eval('return ' . $arguments . ';'));
         });
     }
 
@@ -173,12 +175,8 @@ class ExecuteActionsTest extends Specification {
         $this->resource->then_ShouldBe('alert', $string);
     }
 
-    private function thenIShouldBeRedirectedTo_After_Seconds($string, $seconds) {
-        $this->resource->then_ShouldBe('redirect/content', "$seconds; URL=$string");
-    }
-
     private function thenIShouldBeRedirectedTo($string) {
-        $this->resource->then_ShouldContain('redirect/content', $string);
+        $this->resource->thenIShouldBeRedirectedTo($string);
     }
 
 } 

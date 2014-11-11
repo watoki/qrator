@@ -6,6 +6,7 @@ use watoki\curir\cookie\Cookie;
 use watoki\curir\cookie\CookieStore;
 use watoki\curir\protocol\Url;
 use watoki\curir\Responder;
+use watoki\curir\responder\Redirecter;
 use watoki\dom\Element;
 use watoki\factory\exception\InjectionException;
 use watoki\factory\Factory;
@@ -59,45 +60,26 @@ class ExecuteResource extends ActionResource {
 
         $followUpAction = $representer->getFollowUpAction($result);
         if ($followUpAction) {
-            $url = Url::fromString('execute');
-            $url->getParameters()->set('action', $followUpAction->getClass());
-            $url->getParameters()->set('args', $followUpAction->getArguments());
-
-            $model = [
-                'entity' => null,
-                'alert' => "Action executed successfully. Please stand by.",
-                'redirect' => ['content' => '1; URL=' . $url->toString()]
-            ];
+            return new Redirecter($this->urlOfAction($followUpAction));
         } else if (is_null($result) && $this->cookies->hasKey(ExecuteResource::LAST_ACTION_COOKIE)) {
-            $model = [
-                'entity' => null,
-                'alert' => "Action executed successfully. You are now redirected to your last action.",
-                'redirect' => ['content' => '1; URL=' . $this->urlOfLastAction()->toString()]
-            ];
+            return new Redirecter($this->urlOfLastAction());
         } else {
             $this->storeLastAction($action, $args);
             $crumbs = $this->updateBreadcrumb($crumbs, $object, $args);
 
             $entityModel = $this->assembleResult($result);
-            $noShow = count($entityModel) > 1 ? 'list' : 'table';
-
             if ($entityModel) {
+                $noShow = count($entityModel) > 1 ? 'list' : 'table';
                 $model = [
                     'entity' => $entityModel,
                     'properties' => $entityModel[0]['properties'],
                     $noShow => ['class' => function (Element $e) {
                         return $e->getAttribute('class')->getValue() . ' no-show';
                     }],
-                    'title' => $representer->toString($object),
                 ];
             } else {
-                if ($result) {
-                    $resultString = "Result: " . var_export($result, true);
-                } else {
-                    $resultString = 'Empty result.';
-                }
                 $model = [
-                    'alert' => "Action executed successfully. " . $resultString
+                    'alert' => $result ? "Result: " . var_export($result, true) : 'Empty result.'
                 ];
             }
         }
@@ -107,8 +89,7 @@ class ExecuteResource extends ActionResource {
             'entity' => null,
             'properties' => null,
             'alert' => null,
-            'redirect' => null,
-            'title' => $action
+            'title' => $representer->toString($object),
         ], $model);
     }
 
@@ -313,5 +294,12 @@ class ExecuteResource extends ActionResource {
 
     private function isArray($var) {
         return is_array($var) || $var instanceof \ArrayAccess;
+    }
+
+    private function urlOfAction(ActionLink $followUpAction) {
+        $url = Url::fromString('execute');
+        $url->getParameters()->set('action', $followUpAction->getClass());
+        $url->getParameters()->set('args', $followUpAction->getArguments());
+        return $url;
     }
 }
