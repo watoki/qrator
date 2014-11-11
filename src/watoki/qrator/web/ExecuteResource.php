@@ -42,15 +42,22 @@ class ExecuteResource extends ActionResource {
         $args = $args ?: new Map();
 
         $crumbs = $this->readBreadcrumbs();
-        $result = $this->doAction($action, $args, $prepared);
-
-        if ($result instanceof Responder) {
-            return $result;
-        }
 
         $representer = $this->registry->getActionRepresenter($action);
-        $followUpAction = $representer->getFollowUpAction($result);
 
+        try {
+            $object = $representer->create($args);
+        } catch (InjectionException $e) {
+            return $this->redirectToPrepare($action, $args);
+        }
+
+        if (!$prepared && $representer->hasMissingProperties($object)) {
+            return $this->redirectToPrepare($action, $args);
+        }
+
+        $result = $representer->execute($object);
+
+        $followUpAction = $representer->getFollowUpAction($result);
         if ($followUpAction) {
             $url = Url::fromString('execute');
             $url->getParameters()->set('action', $followUpAction->getClass());
@@ -69,10 +76,10 @@ class ExecuteResource extends ActionResource {
             ];
         } else {
             $this->storeLastAction($action, $args);
-            $crumbs = $this->updateBreadcrumb($crumbs, $action, $args);
+            $crumbs = $this->updateBreadcrumb($crumbs, $object, $args);
 
             $entityModel = $this->assembleResult($result);
-            $noShow = count($entityModel) > 1 ? 'list' : 'table';;
+            $noShow = count($entityModel) > 1 ? 'list' : 'table';
 
             if ($entityModel) {
                 $model = [
@@ -80,7 +87,8 @@ class ExecuteResource extends ActionResource {
                     'properties' => $entityModel[0]['properties'],
                     $noShow => ['class' => function (Element $e) {
                         return $e->getAttribute('class')->getValue() . ' no-show';
-                    }]
+                    }],
+                    'title' => $representer->toString($object),
                 ];
             } else {
                 if ($result) {
@@ -99,7 +107,8 @@ class ExecuteResource extends ActionResource {
             'entity' => null,
             'properties' => null,
             'alert' => null,
-            'redirect' => null
+            'redirect' => null,
+            'title' => $action
         ], $model);
     }
 
@@ -120,29 +129,6 @@ class ExecuteResource extends ActionResource {
      */
     public function doPost($action, Map $args = null) {
         return $this->doGet($action, $args, true);
-    }
-
-    /**
-     * @param $action
-     * @param Map $args
-     * @param $prepared
-     * @throws \watoki\curir\error\HttpError
-     * @return \watoki\curir\responder\Redirecter
-     */
-    private function doAction($action, Map $args, $prepared) {
-        $representer = $this->registry->getActionRepresenter($action);
-
-        try {
-            $object = $representer->create($args);
-        } catch (InjectionException $e) {
-            return $this->redirectToPrepare($action, $args);
-        }
-
-        if (!$prepared && $representer->hasMissingProperties($object)) {
-            return $this->redirectToPrepare($action, $args);
-        }
-
-        return $representer->execute($object);
     }
 
     private function redirectToPrepare($action, Map $args) {
@@ -276,13 +262,13 @@ class ExecuteResource extends ActionResource {
         ]), self::LAST_ACTION_COOKIE);
     }
 
-    private function updateBreadcrumb($crumbs, $action, Map $args) {
+    private function updateBreadcrumb($crumbs, $object, Map $args) {
         if ($crumbs) {
             $newCrumbs = [];
             foreach ($crumbs as $crumb) {
                 /** @noinspection PhpUnusedLocalVariableInspection */
                 list($label, $crumbAction, $crumbArgs) = $crumb;
-                if ($action == $crumbAction && $args->toArray() == $crumbArgs) {
+                if (get_class($object) == $crumbAction && $args->toArray() == $crumbArgs) {
                     break;
                 }
                 $newCrumbs[] = $crumb;
@@ -290,11 +276,10 @@ class ExecuteResource extends ActionResource {
             $crumbs = $newCrumbs;
         }
 
-        $representer = $this->registry->getActionRepresenter($action);
-        $object = $representer->create($args);
+        $representer = $this->registry->getActionRepresenter($object);
         $caption = $representer->toString($object);
 
-        $crumbs[] = [$caption, $action, $args->toArray()];
+        $crumbs[] = [$caption, $representer->getClass(), $args->toArray()];
 
         $this->cookies->create(new Cookie($crumbs), self::BREADCRUMB_COOKIE);
 

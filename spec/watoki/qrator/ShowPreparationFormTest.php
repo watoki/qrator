@@ -34,7 +34,7 @@ class ShowPreparationFormTest extends Specification {
 
         $this->whenIPrepare('PrepareAction');
 
-        $this->thenTheFormTitleShouldBe('Prepare Action');
+        $this->thenTheTitleShouldBe('Prepare Action');
         $this->thenThereShouldBeAHiddenField_WithValue('action', 'PrepareAction');
 
         $this->thenThereShouldBe_Fields(2);
@@ -188,8 +188,8 @@ class ShowPreparationFormTest extends Specification {
         $this->resource->then_ShouldBe("form/field/$int", $string);
     }
 
-    private function thenTheFormTitleShouldBe($string) {
-        $this->resource->then_ShouldBe('form/title', $string);
+    private function thenTheTitleShouldBe($string) {
+        $this->resource->then_ShouldBe('title', $string);
     }
 
     private function thenThereShouldBeAHiddenField_WithValue($name, $value) {

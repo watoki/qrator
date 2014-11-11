@@ -29,6 +29,7 @@ class ShowActionResultTest extends Specification {
         }, 'MyAction');
 
         $this->whenIShowTheResultsOf('MyAction');
+        $this->thenTheTitleShouldbe('My Action');
         $this->thenTheNameShouldBe('std Class');
         $this->thenThereShouldBeNoProperties();
         $this->thenThereShouldBeNoActions();
@@ -496,6 +497,10 @@ class ShowActionResultTest extends Specification {
     private function givenISet_ToRequireConfirmationWith($class, $message) {
         $this->registry->givenIRegisteredAnActionRepresenterFor($class);
         $this->registry->representers[$class]->setRequireConfirmation($message);
+    }
+
+    private function thenTheTitleShouldbe($string) {
+        $this->assertEquals($string, $this->resource->get('title'));
     }
 
 } 

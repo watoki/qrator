@@ -36,6 +36,7 @@ class PrepareResource extends ActionResource {
         }
 
         return [
+            'title' => $representer->getName(),
             'form' => $this->assembleForm($action, $args),
             'head' => function (Element $element) {
                     $element->getChildren()->append(new Text(implode("\n", array_unique($this->head))));
@@ -63,7 +64,6 @@ class PrepareResource extends ActionResource {
         $representer->preFill($fields);
 
         $form = [
-            'title' => $representer->getName(),
             'action' => 'execute',
             'parameter' => $parameters,
             'field' => $this->assembleFields($fields)
