@@ -4,4 +4,7 @@ Administration interface using the Command Object pattern.
 
 Browse the [executable documentation][dox].
 
+Sample project [here][sample].
+
 [dox]: http://dox.rtens.org/projects/watoki-qrator
+[sample]: http://github.com/rtens/qrator-demo
