@@ -97,6 +97,7 @@ a.action {
     background-color: #3071A9;
     border-color: #285E8E;
 
+    display: inline-block;
     border-radius: 2pt;
     padding: 2pt 4pt;
     margin: 1pt;
