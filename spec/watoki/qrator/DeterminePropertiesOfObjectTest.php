@@ -178,13 +178,10 @@ class DeterminePropertiesOfObjectTest extends Specification {
 
             /** @return double */
             function getMerged() {}
-
-            /** @var \DateTime-ID */
-            public $identifier;
         ');
 
         $this->whenIDetermineThePropertiesOf('ComplexTypes\SomeClass');
-        $this->thenThereShouldBe_Properties(5);
+        $this->thenThereShouldBe_Properties(4);
 
         $this->then_ShouldHaveTheType('int', NullableType::class);
         $this->thenTheInnerTypeOf_ShouldBe('int', IntegerType::class);
@@ -197,9 +194,35 @@ class DeterminePropertiesOfObjectTest extends Specification {
 
         $this->then_ShouldHaveTheType('merged', MultiType::class);
         $this->thenTheTypesOf_ShouldBe('merged', [StringType::class, FloatType::class]);
+    }
 
-        $this->then_ShouldHaveTheType('identifier', IdentifierType::class);
-        $this->thenTheTargetOf_ShouldBe('identifier', \DateTime::class);
+    function testIdentifierType() {
+        $this->class->givenTheClass('IdentifierType\SomeEntity');
+        $this->class->givenTheClass('IdentifierType\SomeEntityId');
+        $this->class->givenTheClass_WithTheBody('IdentifierType\elsewhere\SomeEntityId', '
+            const TARGET = \IdentifierType\SomeEntity::class;
+        ');
+        $this->class->givenTheClass_WithTheBody('IdentifierType\SomeClass', '
+            /** @var SomeEntity-ID */
+            public $suffixed;
+
+            /** @var SomeEntity-Id */
+            public $caseInsensitiveSuffix;
+
+            /** @var \IdentifierType\SomeEntityId */
+            public $targetConst;
+
+            /** @var SomeEntityId */
+            public $sameNameSpace;
+        ');
+
+        $this->whenIDetermineThePropertiesOf('IdentifierType\SomeClass');
+        $this->thenThereShouldBe_Properties(4);
+
+        $this->then_ShouldHaveBeAndIdentifierFor('suffixed', 'IdentifierType\SomeEntity');
+        $this->then_ShouldHaveBeAndIdentifierFor('caseInsensitiveSuffix', 'IdentifierType\SomeEntity');
+        $this->then_ShouldHaveBeAndIdentifierFor('targetConst', 'IdentifierType\SomeEntity');
+        $this->then_ShouldHaveBeAndIdentifierFor('sameNameSpace', 'IdentifierType\SomeEntity');
     }
 
     ##################################################################################################
@@ -306,6 +329,11 @@ class DeterminePropertiesOfObjectTest extends Specification {
             $this->fail("Not a IdentifierType: $name");
         }
         $this->assertEquals($class, $type->getTarget());
+    }
+
+    private function then_ShouldHaveBeAndIdentifierFor($property, $target) {
+        $this->then_ShouldHaveTheType($property, IdentifierType::class);
+        $this->thenTheTargetOf_ShouldBe($property, $target);
     }
 
 } 

@@ -14,9 +14,9 @@ use watoki\qrator\representer\property\types\StringType;
 
 abstract class Property {
 
-    const ID_SUFFIX = '-ID';
-
     private $name;
+
+    const TARGET_CONSTANT = 'TARGET';
 
     public function __construct($name) {
         $this->name = $name;
@@ -97,13 +97,25 @@ abstract class Property {
 
         $resolver = new ClassResolver($class);
 
-        if (substr($type, -strlen(self::ID_SUFFIX)) == self::ID_SUFFIX) {
-            $type = substr($type, 0, -strlen(self::ID_SUFFIX));
-            $resolved = $resolver->resolve($type);
+        if (strtolower(substr($type, -3)) == '-id') {
+            $resolved = $resolver->resolve(substr($type, 0, -3));
             if ($resolved) {
                 return new IdentifierType($resolved);
+            } else {
+                return null;
             }
-            return null;
+        }
+
+        if (strtolower(substr($type, -2)) == 'id') {
+            $resolved = $resolver->resolve($type);
+            if ($resolved) {
+                $class = new \ReflectionClass($resolved);
+                if ($class->hasConstant(self::TARGET_CONSTANT)) {
+                    return new IdentifierType($class->getConstant(self::TARGET_CONSTANT));
+                } else if (class_exists(substr($class->getName(), 0, -2))) {
+                    return new IdentifierType(substr($class->getName(), 0, -2));
+                }
+            }
         }
 
         $resolved = $resolver->resolve($type);
