@@ -97,10 +97,9 @@ a.action {
     background-color: #3071A9;
     border-color: #285E8E;
 
-    display: inline-block;
     border-radius: 2pt;
     padding: 2pt 4pt;
-    margin: 2pt 0;
+    margin: 1pt;
 
     white-space: nowrap;
 }
@@ -108,7 +107,7 @@ a.action {
 .panel-heading h2,
 .panel-heading [property=actions],
 .panel-heading [property=actions] * {
-    display: inline;
+    display: inline-block;
 }
 
 .panel-heading h2 {
