@@ -20,6 +20,10 @@ abstract class BasicRepresenter implements Representer {
      * @return string
      */
     public function toString($object) {
+        if (method_exists($object, '__toString')) {
+            return (string)$object;
+        }
+
         $propertyString = '';
         $properties = $this->getProperties($object);
         if (!$properties->isEmpty()) {
