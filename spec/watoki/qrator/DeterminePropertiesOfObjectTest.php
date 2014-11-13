@@ -214,15 +214,18 @@ class DeterminePropertiesOfObjectTest extends Specification {
 
             /** @var SomeEntityId */
             public $sameNameSpace;
+
+            function __construct(SomeEntityId $inConstructor = null) {}
         ');
 
         $this->whenIDetermineThePropertiesOf('IdentifierType\SomeClass');
-        $this->thenThereShouldBe_Properties(4);
+        $this->thenThereShouldBe_Properties(5);
 
         $this->then_ShouldHaveBeAndIdentifierFor('suffixed', 'IdentifierType\SomeEntity');
         $this->then_ShouldHaveBeAndIdentifierFor('caseInsensitiveSuffix', 'IdentifierType\SomeEntity');
         $this->then_ShouldHaveBeAndIdentifierFor('targetConst', 'IdentifierType\SomeEntity');
         $this->then_ShouldHaveBeAndIdentifierFor('sameNameSpace', 'IdentifierType\SomeEntity');
+        $this->then_ShouldHaveBeAndIdentifierFor('inConstructor', 'IdentifierType\SomeEntity');
     }
 
     ##################################################################################################

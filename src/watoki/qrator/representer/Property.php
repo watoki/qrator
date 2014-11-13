@@ -106,6 +106,17 @@ abstract class Property {
             }
         }
 
+        return $this->resolveClassType($type, $class);
+    }
+
+    /**
+     * @param string $type
+     * @param \ReflectionClass $class
+     * @return null|ClassType|IdentifierType
+     */
+    protected function resolveClassType($type, \ReflectionClass $class) {
+        $resolver = new ClassResolver($class);
+
         if (strtolower(substr($type, -2)) == 'id') {
             $resolved = $resolver->resolve($type);
             if ($resolved) {

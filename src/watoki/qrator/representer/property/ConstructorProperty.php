@@ -41,10 +41,13 @@ class ConstructorProperty extends Property {
     }
 
     public function type() {
+        $class = $this->constructor->getDeclaringClass();
+
         if ($this->parameter->getClass()) {
-            return new ClassType($this->parameter->getClass()->getName());
+            return $this->resolveClassType($this->parameter->getClass()->getName(), $class);
         }
+
         $pattern = '/@param\s+(\S+)\s+\$' . $this->parameter->getName() . '/';
-        return $this->findType($pattern, $this->constructor->getDocComment(), $this->constructor->getDeclaringClass());
+        return $this->findType($pattern, $this->constructor->getDocComment(), $class);
     }
 }
