@@ -69,6 +69,39 @@ class SelectEntityFieldTest extends Specification {
             </select>');
     }
 
+    function testEntitiesWithIdentifierObjects() {
+        $this->class->givenTheClass_WithTheBody('SelectWithIdObject\EntityId', '
+            function __construct($id) { $this->id = $id; }
+            function __toString() { return $this->id; }'
+        );
+        $this->class->givenTheClass_WithTheBody('SelectWithIdObject\Entity', '
+            function __construct(EntityId $id) { $this->id = $id; }
+            function __toString() { return ucfirst((string)$this->id); }
+        ');
+        $this->registry->givenIRegisteredAnEntityRepresenterFor('SelectWithIdObject\Entity');
+        $this->registry->givenIHaveSet_AsTheListActionFor('ListEntity', 'SelectWithIdObject\Entity');
+
+        $this->givenASelectEntityField_WithTheEntity('test', 'SelectWithIdObject\Entity');
+
+        $this->class->givenTheClass_WithTheBody('SelectWithIdObject\Handler', '
+            function listEntity() {
+                return [
+                    new Entity(new EntityId("bart")),
+                    new Entity(new EntityId("lisa")),
+                ];
+            }
+        ');
+        $this->dispatcher->givenIAddedTheClass_AsHandlerFor('SelectWithIdObject\Handler', 'ListEntity');
+
+        $this->field->whenIRenderTheField();
+        $this->field->thenTheOutputShouldBe(
+            '<label for="test">Test</label>
+            <select id="test" class="form-control" name="args[test]">
+                <option value="bart">Bart</option>
+                <option value="lisa">Lisa</option>
+            </select>');
+    }
+
     ################################################################################################
 
     private function givenASelectEntityField_WithTheEntity($name, $entity) {

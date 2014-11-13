@@ -55,7 +55,7 @@ class SelectEntityField extends SelectField {
 
         $options = [];
         foreach ($actionRepresenter->execute($actionRepresenter->create($listActionLink->getArguments())) as $entity) {
-            $options[$representer->getProperties($entity)['id']->get($entity)] = $representer->toString($entity);
+            $options[(string)$representer->getProperties($entity)['id']->get($entity)] = $representer->toString($entity);
         }
         return $options;
     }
