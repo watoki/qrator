@@ -13,7 +13,7 @@ class PropertyReader {
     }
 
     /**
-     * @param object|null $object
+     * @param object|null $object If provided, dynamic (run-time) properties are read as well
      * @return \watoki\collections\Map|Property[] indexed by property name
      */
     public function readProperties($object = null) {
