@@ -19,8 +19,11 @@ Until then check out the [Demo project][demo].
 
 A couple of weeks ago a client asked me to find a general purspose adminstiration interface that could be used for several projects. But I couldn't find a single one that wouldn't just bypass my application and domain layers completely and talk directly to the storage system.
 
-So I started designing an admin interface that was compatible with Domain-Driven Design and hence could also manage entities in projects that implemented Command/Query Separation or Event Sourcing. Born was *qrator*.
+So I started designing an admin interface that was compatible with [Domain-Driven Design][ddd] and hence could also manage entities in projects that implemented [Command/Query Segregation][cqrs] or [Event Sourcing][eventsourcing]. Born was *qrator*.
 
+[ddd]: http://en.wikipedia.org/wiki/Domain-driven_design
+[cqrs]: http://martinfowler.com/bliki/CQRS.html
+[eventsourcing]: http://martinfowler.com/eaaDev/EventSourcing.html
 
 ## Concepts
 
@@ -36,7 +39,7 @@ Actions are *something you can do with an entity*. They are always attached to s
 
 Usually, an action either changes the state of an entity and returns nothing (i.e. Command) or returns one or several entities but changes no state (i.e. Query).
 
-Action have properties as well which are rendered as form fields for the user to fill out if neccessary.
+Actions can have properties as well which are rendered as form fields for the user to fill out if neccessary.
 
 ### Representer
 
