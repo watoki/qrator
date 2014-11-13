@@ -6,6 +6,7 @@ use watoki\qrator\representer\property\types\ArrayType;
 use watoki\qrator\representer\property\types\BooleanType;
 use watoki\qrator\representer\property\types\ClassType;
 use watoki\qrator\representer\property\types\FloatType;
+use watoki\qrator\representer\property\types\IdentifierObjectType;
 use watoki\qrator\representer\property\types\IdentifierType;
 use watoki\qrator\representer\property\types\IntegerType;
 use watoki\qrator\representer\property\types\MultiType;
@@ -122,9 +123,9 @@ abstract class Property {
             if ($resolved) {
                 $class = new \ReflectionClass($resolved);
                 if ($class->hasConstant(self::TARGET_CONSTANT)) {
-                    return new IdentifierType($class->getConstant(self::TARGET_CONSTANT));
+                    return new IdentifierObjectType($class->getConstant(self::TARGET_CONSTANT), $resolved);
                 } else if (class_exists(substr($class->getName(), 0, -2))) {
-                    return new IdentifierType(substr($class->getName(), 0, -2));
+                    return new IdentifierObjectType(substr($class->getName(), 0, -2), $resolved);
                 }
             }
         }

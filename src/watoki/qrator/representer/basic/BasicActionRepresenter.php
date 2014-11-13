@@ -14,6 +14,7 @@ use watoki\qrator\representer\Property;
 use watoki\qrator\representer\property\types\ArrayType;
 use watoki\qrator\representer\property\types\BooleanType;
 use watoki\qrator\representer\property\types\ClassType;
+use watoki\qrator\representer\property\types\IdentifierObjectType;
 use watoki\qrator\representer\property\types\IdentifierType;
 use watoki\qrator\representer\property\types\MultiType;
 use watoki\qrator\RepresenterRegistry;
@@ -118,7 +119,13 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
         } else if ($type instanceof ArrayType) {
             return new ArrayField($name, $this->getFieldForType($name, $type->getItemType()));
         } else if ($type instanceof IdentifierType) {
-            return new SelectEntityField($name, $type->getTarget(), $this->registry);
+            $field = new SelectEntityField($name, $type->getTarget(), $this->registry);
+            if ($type instanceof IdentifierObjectType) {
+                $field->setInflater(function ($value) use ($type) {
+                    return $type->inflate($value);
+                });
+            }
+            return $field;
         } else if ($type instanceof MultiType) {
             return $this->getFieldForType($name, $type->getTypes()[0]);
         } else if ($type instanceof ClassType) {

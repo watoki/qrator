@@ -7,6 +7,7 @@ use watoki\qrator\representer\Property;
 use watoki\qrator\representer\property\types\ArrayType;
 use watoki\qrator\representer\property\types\ClassType;
 use watoki\qrator\representer\property\types\FloatType;
+use watoki\qrator\representer\property\types\IdentifierObjectType;
 use watoki\qrator\representer\property\types\IdentifierType;
 use watoki\qrator\representer\property\types\IntegerType;
 use watoki\qrator\representer\property\types\MultiType;
@@ -198,7 +199,7 @@ class DeterminePropertiesOfObjectTest extends Specification {
 
     function testIdentifierType() {
         $this->class->givenTheClass('IdentifierType\SomeEntity');
-        $this->class->givenTheClass('IdentifierType\SomeEntityId');
+        $this->class->givenTheClass_WithTheBody('IdentifierType\SomeEntityId', 'function __toString() {}');
         $this->class->givenTheClass_WithTheBody('IdentifierType\elsewhere\SomeEntityId', '
             const TARGET = \IdentifierType\SomeEntity::class;
         ');
@@ -221,11 +222,11 @@ class DeterminePropertiesOfObjectTest extends Specification {
         $this->whenIDetermineThePropertiesOf('IdentifierType\SomeClass');
         $this->thenThereShouldBe_Properties(5);
 
-        $this->then_ShouldHaveBeAndIdentifierFor('suffixed', 'IdentifierType\SomeEntity');
-        $this->then_ShouldHaveBeAndIdentifierFor('caseInsensitiveSuffix', 'IdentifierType\SomeEntity');
-        $this->then_ShouldHaveBeAndIdentifierFor('targetConst', 'IdentifierType\SomeEntity');
-        $this->then_ShouldHaveBeAndIdentifierFor('sameNameSpace', 'IdentifierType\SomeEntity');
-        $this->then_ShouldHaveBeAndIdentifierFor('inConstructor', 'IdentifierType\SomeEntity');
+        $this->then_ShouldBeAndIdentifierFor('suffixed', 'IdentifierType\SomeEntity');
+        $this->then_ShouldBeAndIdentifierFor('caseInsensitiveSuffix', 'IdentifierType\SomeEntity');
+        $this->then_ShouldBeAndIdentifierObjectFor('targetConst', 'IdentifierType\SomeEntity');
+        $this->then_ShouldBeAndIdentifierObjectFor('sameNameSpace', 'IdentifierType\SomeEntity');
+        $this->then_ShouldBeAndIdentifierObjectFor('inConstructor', 'IdentifierType\SomeEntity');
     }
 
     ##################################################################################################
@@ -334,8 +335,13 @@ class DeterminePropertiesOfObjectTest extends Specification {
         $this->assertEquals($class, $type->getTarget());
     }
 
-    private function then_ShouldHaveBeAndIdentifierFor($property, $target) {
+    private function then_ShouldBeAndIdentifierFor($property, $target) {
         $this->then_ShouldHaveTheType($property, IdentifierType::class);
+        $this->thenTheTargetOf_ShouldBe($property, $target);
+    }
+
+    private function then_ShouldBeAndIdentifierObjectFor($property, $target) {
+        $this->then_ShouldHaveTheType($property, IdentifierObjectType::class);
         $this->thenTheTargetOf_ShouldBe($property, $target);
     }
 

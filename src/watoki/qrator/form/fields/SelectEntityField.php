@@ -11,6 +11,9 @@ class SelectEntityField extends SelectField {
     /** @var string */
     private $entityClass;
 
+    /** @var null|callable */
+    private $inflater;
+
     /**
      * @param string $name
      * @param string $entityClass
@@ -20,6 +23,17 @@ class SelectEntityField extends SelectField {
         parent::__construct($name);
         $this->registry = $registry;
         $this->entityClass = $entityClass;
+    }
+
+    public function setInflater($callback) {
+        $this->inflater = $callback;
+    }
+
+    public function inflate($value) {
+        if ($this->inflater) {
+            return call_user_func($this->inflater, $value);
+        }
+        return parent::inflate($value);
     }
 
     /**
