@@ -2,7 +2,7 @@
 
 Administration interface using the [Command Object][commandobject] pattern.
 
-For a detailled overview of *qrator*'s features and API, check out its [executable documentation][dox].
+For a detailed overview of *qrator*'s features and API, check out its [executable documentation][dox].
 
 [commandobject]: http://c2.com/cgi/wiki?CommandObject
 [dox]: http://dox.rtens.org/projects/watoki-qrator
@@ -18,7 +18,7 @@ Until then check out the [Demo project][demo].
 
 ## The Why
 
-A couple of weeks ago a client asked me to find a general purspose adminstiration interface that could be used for several projects. But I couldn't find a single one that wouldn't just bypass my application and domain layers completely and talk directly to the storage system.
+A couple of weeks ago a client asked me to find a general purpose administration interface that could be used for several projects. But I couldn't find a single one that wouldn't just bypass my application and domain layers completely and talk directly to the storage system.
 
 So I started designing an admin interface that was compatible with [Domain-Driven Design][ddd] and hence could also manage entities in projects that implemented [Command/Query Segregation][cqrs] or [Event Sourcing][eventsourcing]. Born was *qrator*.
 
@@ -32,7 +32,7 @@ These are the building blocks and their meanings in *qrator*.
 
 ### Entity
 
-An entity is any class that represents a part of your system whose state you would like to manage. Its properties are derived from the instance variables and accessor methods and displayed whenever one or several entities is the result of an action.
+An entity is any class that represents a part of your system whose state you would like to manage. Its properties are derived from the instance variables, getter and setter methods, and displayed whenever one or several entities is the result of an action.
 
 ### Action
 
@@ -40,11 +40,11 @@ Actions are *something you can do with an entity*. They are always attached to s
 
 Usually, an action either changes the state of an entity and returns nothing (i.e. Command) or returns one or several entities but changes no state (i.e. Query).
 
-Actions can have properties as well which are rendered as form fields for the user to fill out if neccessary.
+Actions can have properties as well which are rendered as form fields for the user to fill out if necessary.
 
 ### Representer
 
-Since Entities and Actions belong to the Domain layer and are thus independent of *qrator*, [EntityRepresenter]s and [ActionRepresenter]s bind them together. It knows what Actions belong to what Entities, how to instanciate and execute them, how to print them and so on.
+Since Entities and Actions belong to the Domain layer and are thus independent of *qrator*, [EntityRepresenter]s and [ActionRepresenter]s bind them together. It knows what Actions belong to what Entities, how to instantiate and execute them, how to print them and so on.
 
 ### Registry
 
