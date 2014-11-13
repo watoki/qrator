@@ -4,6 +4,8 @@ namespace watoki\qrator\web;
 use watoki\collections\Map;
 use watoki\curir\cookie\Cookie;
 use watoki\curir\cookie\CookieStore;
+use watoki\curir\delivery\WebResponse;
+use watoki\curir\error\HttpError;
 use watoki\curir\protocol\Url;
 use watoki\curir\Responder;
 use watoki\curir\responder\Redirecter;
@@ -37,6 +39,7 @@ class ExecuteResource extends ActionResource {
      * @param string $action
      * @param \watoki\collections\Map|null $args
      * @param bool $prepared
+     * @throws HttpError If error occurs during execution of the action
      * @return array
      */
     public function doGet($action, Map $args = null, $prepared = false) {
@@ -56,7 +59,11 @@ class ExecuteResource extends ActionResource {
             return $this->redirectToPrepare($action, $args);
         }
 
-        $result = $representer->execute($object);
+        try {
+            $result = $representer->execute($object);
+        } catch (\Exception $e) {
+            throw new HttpError(WebResponse::STATUS_SERVER_ERROR, $e->getMessage(), null, 0, $e);
+        }
 
         $followUpAction = $representer->getFollowUpAction($result);
         if ($followUpAction) {
