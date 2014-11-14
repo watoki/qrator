@@ -2,8 +2,8 @@
 namespace spec\watoki\qrator;
 
 use watoki\curir\cookie\Cookie;
+use watoki\curir\cookie\CookieSerializerRegistry;
 use watoki\curir\cookie\CookieStore;
-use watoki\curir\cookie\SerializerRepository;
 use watoki\qrator\representer\ActionLink;
 use watoki\qrator\web\ExecuteResource;
 use watoki\scrut\Specification;
@@ -135,7 +135,7 @@ class ExecuteActionsTest extends Specification {
 
     protected function setUp() {
         parent::setUp();
-        $this->cookies = new CookieStore(new SerializerRepository(), array());
+        $this->cookies = new CookieStore(new CookieSerializerRegistry(), array());
     }
 
     private function givenTheLastActionWas_WithArguments($action, $arguments) {
