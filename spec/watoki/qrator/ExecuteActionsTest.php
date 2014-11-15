@@ -129,16 +129,8 @@ class ExecuteActionsTest extends Specification {
 
     ####################################################################################################
 
-    /** @var CookieStore */
-    private $cookies;
-
-    protected function setUp() {
-        parent::setUp();
-        $this->cookies = new CookieStore(array());
-    }
-
     private function givenTheLastActionWas_WithArguments($action, $arguments) {
-        $this->cookies->create(new Cookie([
+        $this->resource->cookies->create(new Cookie([
             'action' => $action,
             'arguments' => $arguments
         ]), ExecuteResource::LAST_ACTION_COOKIE);
@@ -159,15 +151,14 @@ class ExecuteActionsTest extends Specification {
     private function whenIExecuteTheAction($action) {
         $this->resource->whenIDo_With(function (ExecuteResource $resource) use ($action) {
             return $resource->doGet($action, $this->resource->args);
-        }, new ExecuteResource($this->factory, $this->registry->registry, $this->cookies));
+        }, ExecuteResource::class);
     }
 
     private function then_WithArguments_ShouldBeStoredAsLastAction($action, $arguments) {
-        $cookie = $this->cookies->read(ExecuteResource::LAST_ACTION_COOKIE);
-        $this->assertEquals([
+        $this->resource->thenThePayloadOfCookie_ShouldBe(ExecuteResource::LAST_ACTION_COOKIE, [
             'action' => $action,
             'arguments' => $arguments
-        ], $cookie->payload);
+        ]);
     }
 
     private function thenAnAlertShouldSay($string) {

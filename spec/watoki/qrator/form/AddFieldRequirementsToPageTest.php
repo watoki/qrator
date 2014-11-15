@@ -50,7 +50,7 @@ class AddFieldRequirementsToPageTest extends Specification {
             $this->dom = $parser->getRoot();
 
             return $model;
-        }, new PrepareResource($this->factory, $this->registry->registry));
+        }, PrepareResource::class);
     }
 
     private function thenTheHeadShouldContains($string) {

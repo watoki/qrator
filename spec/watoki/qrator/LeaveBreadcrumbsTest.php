@@ -1,9 +1,7 @@
 <?php
 namespace spec\watoki\qrator;
 
-use watoki\collections\Map;
 use watoki\curir\cookie\Cookie;
-use watoki\curir\cookie\CookieStore;
 use watoki\qrator\web\ExecuteResource;
 use watoki\scrut\Specification;
 
@@ -76,25 +74,14 @@ class LeaveBreadcrumbsTest extends Specification {
 
     ################################################################################################
 
-    /** @var CookieStore */
-    private $cookies;
-
-    private $args;
-
-    protected function setUp() {
-        parent::setUp();
-        $this->cookies = new CookieStore([]);
-        $this->args = new Map();
-    }
-
     private function whenIExecuteTheAction($action) {
         $this->resource->whenIDo_With(function (ExecuteResource $resource) use ($action) {
             return $resource->doGet($action, $this->resource->args);
-        }, new ExecuteResource($this->factory, $this->dispatcher->registry->registry, $this->cookies));
+        }, ExecuteResource::class);
     }
 
     private function thenTheBreadcrumbs_ShouldBeStored($array) {
-        $this->assertEquals($array, $this->cookies->read(ExecuteResource::BREADCRUMB_COOKIE)->payload);
+        $this->resource->thenThePayloadOfCookie_ShouldBe(ExecuteResource::BREADCRUMB_COOKIE, $array);
     }
 
     private function thenThereShouldBeNoBreadcrumbs() {
@@ -102,7 +89,7 @@ class LeaveBreadcrumbsTest extends Specification {
     }
 
     private function givenTheStoredBreadcrumbs($array) {
-        $this->cookies->create(new Cookie($array), ExecuteResource::BREADCRUMB_COOKIE);
+        $this->resource->cookies->create(new Cookie($array), ExecuteResource::BREADCRUMB_COOKIE);
     }
 
     private function thenThereShouldBe_Breadcrumbs($int) {

@@ -2,6 +2,7 @@
 namespace spec\watoki\qrator\fixtures;
 
 use watoki\collections\Map;
+use watoki\curir\cookie\CookieStore;
 use watoki\curir\delivery\WebRequest;
 use watoki\curir\protocol\Url;
 use watoki\curir\responder\Redirecter;
@@ -19,17 +20,22 @@ class ResourceFixture extends Fixture {
     /** @var Map */
     public $args;
 
+    /** @var CookieStore */
+    public $cookies;
+
     public function setUp() {
         parent::setUp();
         $this->request = new WebRequest(Url::fromString('http://example.com'), new Path());
         $this->args = new Map();
+        $this->cookies = $this->spec->factory->setSingleton(CookieStore::class, new CookieStore(array()));
     }
 
     public function givenTheActionArgument_Is($key, $value) {
         $this->args->set($key, $value);
     }
 
-    public function whenIDo_With($callback, $resource) {
+    public function whenIDo_With($callback, $resourceClass) {
+        $resource = $this->spec->factory->getInstance($resourceClass);
         $this->returned = call_user_func($callback, $resource);
     }
 
@@ -95,6 +101,11 @@ class ResourceFixture extends Fixture {
 
     public function then_ShouldExist($modelPath) {
         $this->spec->assertNotNull($this->get($modelPath));
+    }
+
+    public function thenThePayloadOfCookie_ShouldBe($name, $payload) {
+        $cookie = $this->cookies->read($name);
+        $this->spec->assertEquals($payload, $cookie->payload);
     }
 
 }

@@ -30,14 +30,13 @@ class ListRootActionsTest extends Specification {
     private function whenIOpenTheIndexResource() {
         $this->resource->whenIDo_With(function (IndexResource $resource) {
             return $resource->doGet();
-        }, new IndexResource($this->factory, $this->registry->registry));
+        }, IndexResource::class);
     }
 
     private function whenIExecute($class) {
-        $cookies = $this->factory->getInstance(CookieStore::class, ['source' => []]);
         $this->resource->whenIDo_With(function (ExecuteResource $resource) use ($class) {
             return $resource->doGet($class);
-        }, new ExecuteResource($this->factory, $this->registry->registry, $cookies));
+        }, ExecuteResource::class);
     }
 
     private function thenItShouldShouldTheEntity($string) {

@@ -130,7 +130,7 @@ class DeriveActionsFromMethodsTest extends Specification {
     private function whenIShowThePerparationFormOfThisAction() {
         $this->resource->whenIDo_With(function (PrepareResource $resource) {
             return $resource->doGet($this->representer->getClass());
-        }, new PrepareResource($this->factory, $this->registry->registry));
+        }, PrepareResource::class);
     }
 
     private function thenTheActionShouldBe($string) {

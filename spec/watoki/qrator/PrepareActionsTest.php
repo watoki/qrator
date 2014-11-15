@@ -145,11 +145,9 @@ class PrepareActionsTest extends Specification {
     }
 
     private function whenIExecuteTheAction($action) {
-        $cookies = new CookieStore(array());
-
         $this->resource->whenIDo_With(function (ExecuteResource $resource) use ($action) {
             return $resource->doGet($action, $this->resource->args, $this->prepared);
-        }, new ExecuteResource($this->factory, $this->registry->registry, $cookies));
+        }, ExecuteResource::class);
     }
 
 } 
