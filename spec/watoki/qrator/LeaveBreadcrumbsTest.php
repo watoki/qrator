@@ -10,7 +10,7 @@ use watoki\scrut\Specification;
 
 /**
  * @property \spec\watoki\qrator\fixtures\ResourceFixture resource <-
- * @property \spec\watoki\qrator\fixtures\ClassFixture class <-
+ * @property \spec\watoki\reflect\fixtures\ClassFixture class <-
  * @property \spec\watoki\qrator\fixtures\DispatcherFixture dispatcher <-
  */
 class LeaveBreadcrumbsTest extends Specification {

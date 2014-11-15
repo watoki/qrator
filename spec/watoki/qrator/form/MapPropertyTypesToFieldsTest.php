@@ -11,7 +11,7 @@ use watoki\qrator\RepresenterRegistry;
 use watoki\scrut\Specification;
 
 /**
- * @property \spec\watoki\qrator\fixtures\ClassFixture class <-
+ * @property \spec\watoki\reflect\fixtures\ClassFixture class <-
  */
 class MapPropertyTypesToFieldsTest extends Specification {
 

@@ -11,7 +11,7 @@ use watoki\scrut\Specification;
 /**
  * Action requests are prepared, executed and then either the result is shown or the user is redirected to the last Action.
  *
- * @property \spec\watoki\qrator\fixtures\ClassFixture class <-
+ * @property \spec\watoki\reflect\fixtures\ClassFixture class <-
  * @property \spec\watoki\qrator\fixtures\DispatcherFixture dispatcher <-
  * @property \spec\watoki\qrator\fixtures\ResourceFixture resource <-
  * @property \spec\watoki\qrator\fixtures\RegistryFixture registry <-

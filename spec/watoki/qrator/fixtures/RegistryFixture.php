@@ -1,6 +1,7 @@
 <?php
 namespace spec\watoki\qrator\fixtures;
 
+use spec\watoki\reflect\fixtures\ClassFixture;
 use watoki\qrator\representer\ActionLink;
 use watoki\qrator\representer\generic\GenericActionRepresenter;
 use watoki\qrator\representer\generic\GenericEntityRepresenter;

@@ -8,7 +8,7 @@ use watoki\scrut\Specification;
 /**
  * The only reason a form is ever presented is to fill the missing properties of an Action during preparation.
  *
- * @property \spec\watoki\qrator\fixtures\ClassFixture class <-
+ * @property \spec\watoki\reflect\fixtures\ClassFixture class <-
  * @property \spec\watoki\qrator\fixtures\ResourceFixture resource <-
  * @property \spec\watoki\qrator\fixtures\RegistryFixture registry <-
  */

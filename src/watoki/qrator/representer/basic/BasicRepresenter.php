@@ -49,7 +49,7 @@ abstract class BasicRepresenter implements Representer {
      */
     public function getProperties($object = null) {
         $reader = new PropertyReader($this->getClass());
-        return $reader->readProperties($object);
+        return $reader->readInterface($object);
     }
 
 } 

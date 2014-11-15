@@ -7,7 +7,7 @@ use watoki\qrator\web\PrepareResource;
 use watoki\scrut\Specification;
 
 /**
- * @property \spec\watoki\qrator\fixtures\ClassFixture class <-
+ * @property \spec\watoki\reflect\fixtures\ClassFixture class <-
  * @property \spec\watoki\qrator\fixtures\RegistryFixture registry <-
  * @property \spec\watoki\qrator\fixtures\ResourceFixture resource <-
  */

@@ -7,7 +7,7 @@ use watoki\scrut\Specification;
  * An Action gets published over the ActionDispatcher and the result is passed back.
  *
  * @property \spec\watoki\qrator\fixtures\DispatcherFixture dispatcher <-
- * @property \spec\watoki\qrator\fixtures\ClassFixture class <-
+ * @property \spec\watoki\reflect\fixtures\ClassFixture class <-
  * @property \watoki\scrut\ExceptionFixture try <-
  * @property \spec\watoki\qrator\fixtures\RegistryFixture registry <-
  */

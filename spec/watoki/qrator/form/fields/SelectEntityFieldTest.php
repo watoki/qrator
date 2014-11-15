@@ -8,7 +8,7 @@ use watoki\scrut\Specification;
  * @property \spec\watoki\qrator\fixtures\FieldFixture field <-
  * @property \spec\watoki\qrator\fixtures\RegistryFixture registry <-
  * @property \spec\watoki\qrator\fixtures\DispatcherFixture dispatcher <-
- * @property \spec\watoki\qrator\fixtures\ClassFixture class <-
+ * @property \spec\watoki\reflect\fixtures\ClassFixture class <-
  */
 class SelectEntityFieldTest extends Specification {
 

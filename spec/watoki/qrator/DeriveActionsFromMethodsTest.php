@@ -13,7 +13,7 @@ use watoki\scrut\Specification;
  *
  * Then hanlder of those actions then destructs the objects onto the parameters.
  *
- * @property \spec\watoki\qrator\fixtures\ClassFixture class <-
+ * @property \spec\watoki\reflect\fixtures\ClassFixture class <-
  * @property \spec\watoki\qrator\fixtures\DispatcherFixture dispatcher <-
  * @property \spec\watoki\qrator\fixtures\RegistryFixture registry <-
  * @property \spec\watoki\qrator\fixtures\ResourceFixture resource <-

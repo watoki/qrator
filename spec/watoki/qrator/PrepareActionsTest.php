@@ -12,7 +12,7 @@ use watoki\scrut\Specification;
  * This is done by assigning request parameters to the properties of the Action. Missing properties are requested
  * from the user. Properties are determined with public instance variables and setter methods.
  *
- * @property \spec\watoki\qrator\fixtures\ClassFixture class <-
+ * @property \spec\watoki\reflect\fixtures\ClassFixture class <-
  * @property \spec\watoki\qrator\fixtures\DispatcherFixture dispatcher <-
  * @property \spec\watoki\qrator\fixtures\RegistryFixture registry <-
  * @property \spec\watoki\qrator\fixtures\ResourceFixture resource <-
