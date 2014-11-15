@@ -13,7 +13,7 @@ use watoki\dom\Element;
 use watoki\factory\exception\InjectionException;
 use watoki\factory\Factory;
 use watoki\qrator\representer\ActionLink;
-use watoki\qrator\representer\Property;
+use watoki\reflect\Property;
 use watoki\qrator\RepresenterRegistry;
 use watoki\tempan\model\ListModel;
 

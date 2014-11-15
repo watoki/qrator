@@ -49,7 +49,7 @@ abstract class BasicEntityRepresenter extends BasicRepresenter implements Entity
 
     /**
      * @param null|object $object
-     * @return Map|\watoki\qrator\representer\Property[]
+     * @return Map|\watoki\reflect\Property[]
      */
     public function getCondensedProperties($object) {
         $properties = $this->getProperties($object);

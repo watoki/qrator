@@ -3,8 +3,8 @@ namespace spec\watoki\qrator;
 
 use watoki\collections\Map;
 use watoki\qrator\representer\MethodActionRepresenter;
-use watoki\qrator\representer\property\types\ClassType;
-use watoki\qrator\representer\property\types\StringType;
+use watoki\reflect\type\ClassType;
+use watoki\reflect\type\StringType;
 use watoki\qrator\web\PrepareResource;
 use watoki\scrut\Specification;
 

@@ -4,7 +4,7 @@ namespace spec\watoki\qrator\fixtures;
 use watoki\qrator\representer\ActionLink;
 use watoki\qrator\representer\generic\GenericActionRepresenter;
 use watoki\qrator\representer\generic\GenericEntityRepresenter;
-use watoki\qrator\representer\Property;
+use watoki\reflect\Property;
 use watoki\qrator\RepresenterRegistry;
 use watoki\scrut\Fixture;
 

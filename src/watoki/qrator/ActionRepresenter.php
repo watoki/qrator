@@ -2,7 +2,7 @@
 namespace watoki\qrator;
 
 use watoki\collections\Map;
-use watoki\qrator\representer\Property;
+use watoki\reflect\Property;
 
 interface ActionRepresenter extends Representer {
 

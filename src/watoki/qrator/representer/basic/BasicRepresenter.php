@@ -2,8 +2,8 @@
 namespace watoki\qrator\representer\basic;
 
 use watoki\qrator\Representer;
-use watoki\qrator\representer\property\PropertyReader;
-use watoki\qrator\representer\Property;
+use watoki\reflect\PropertyReader;
+use watoki\reflect\Property;
 
 abstract class BasicRepresenter implements Representer {
 
@@ -45,7 +45,7 @@ abstract class BasicRepresenter implements Representer {
 
     /**
      * @param object|null $object
-     * @return \watoki\collections\Map|\watoki\qrator\representer\Property[] indexed by property name
+     * @return \watoki\collections\Map|\watoki\reflect\Property[] indexed by property name
      */
     public function getProperties($object = null) {
         $reader = new PropertyReader($this->getClass());

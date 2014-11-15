@@ -4,7 +4,7 @@ namespace watoki\qrator\representer\generic;
 use watoki\factory\Factory;
 use watoki\qrator\form\Field;
 use watoki\qrator\representer\basic\BasicActionRepresenter;
-use watoki\qrator\representer\Property;
+use watoki\reflect\Property;
 
 class GenericActionRepresenter extends BasicActionRepresenter {
 
@@ -109,7 +109,7 @@ class GenericActionRepresenter extends BasicActionRepresenter {
     }
 
     /**
-     * @param \watoki\qrator\representer\Property $property
+     * @param \watoki\reflect\Property $property
      * @return \watoki\qrator\form\Field
      */
     public function getField(Property $property) {

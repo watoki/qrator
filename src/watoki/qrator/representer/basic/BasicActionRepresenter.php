@@ -10,13 +10,13 @@ use watoki\qrator\form\fields\DateTimeField;
 use watoki\qrator\form\fields\HiddenField;
 use watoki\qrator\form\fields\SelectEntityField;
 use watoki\qrator\form\fields\StringField;
-use watoki\qrator\representer\Property;
-use watoki\qrator\representer\property\types\ArrayType;
-use watoki\qrator\representer\property\types\BooleanType;
-use watoki\qrator\representer\property\types\ClassType;
-use watoki\qrator\representer\property\types\IdentifierObjectType;
-use watoki\qrator\representer\property\types\IdentifierType;
-use watoki\qrator\representer\property\types\MultiType;
+use watoki\reflect\Property;
+use watoki\reflect\type\ArrayType;
+use watoki\reflect\type\BooleanType;
+use watoki\reflect\type\ClassType;
+use watoki\reflect\type\IdentifierObjectType;
+use watoki\reflect\type\IdentifierType;
+use watoki\reflect\type\MultiType;
 use watoki\qrator\RepresenterRegistry;
 
 abstract class BasicActionRepresenter extends BasicRepresenter implements ActionRepresenter {
@@ -97,7 +97,7 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
     }
 
     /**
-     * @param \watoki\qrator\representer\Property $property
+     * @param \watoki\reflect\Property $property
      * @return \watoki\qrator\form\Field
      */
     protected function getField(Property $property) {

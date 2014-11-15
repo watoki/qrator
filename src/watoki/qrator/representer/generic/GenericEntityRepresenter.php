@@ -192,7 +192,7 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
 
     /**
      * @param null|object $object
-     * @return \watoki\collections\Map|\watoki\qrator\representer\Property[]
+     * @return \watoki\collections\Map|\watoki\reflect\Property[]
      */
     public function getCondensedProperties($object) {
         if (!$this->condensedProperties) {
