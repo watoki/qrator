@@ -1,7 +1,6 @@
 <?php
 namespace spec\watoki\qrator;
 
-use watoki\curir\cookie\CookieSerializerRegistry;
 use watoki\curir\cookie\CookieStore;
 use watoki\qrator\web\ExecuteResource;
 use watoki\scrut\Specification;
@@ -146,7 +145,7 @@ class PrepareActionsTest extends Specification {
     }
 
     private function whenIExecuteTheAction($action) {
-        $cookies = new CookieStore(new CookieSerializerRegistry(), array());
+        $cookies = new CookieStore(array());
 
         $this->resource->whenIDo_With(function (ExecuteResource $resource) use ($action) {
             return $resource->doGet($action, $this->resource->args, $this->prepared);

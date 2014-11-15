@@ -3,7 +3,6 @@ namespace spec\watoki\qrator;
 
 use watoki\collections\Map;
 use watoki\curir\cookie\Cookie;
-use watoki\curir\cookie\CookieSerializerRegistry;
 use watoki\curir\cookie\CookieStore;
 use watoki\qrator\web\ExecuteResource;
 use watoki\scrut\Specification;
@@ -84,7 +83,7 @@ class LeaveBreadcrumbsTest extends Specification {
 
     protected function setUp() {
         parent::setUp();
-        $this->cookies = new CookieStore(new CookieSerializerRegistry(), []);
+        $this->cookies = new CookieStore([]);
         $this->args = new Map();
     }
 

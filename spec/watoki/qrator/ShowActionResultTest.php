@@ -2,7 +2,6 @@
 namespace spec\watoki\qrator;
 
 use watoki\collections\Liste;
-use watoki\curir\cookie\CookieSerializerRegistry;
 use watoki\curir\cookie\CookieStore;
 use watoki\factory\exception\InjectionException;
 use watoki\qrator\web\ExecuteResource;
@@ -362,7 +361,7 @@ class ShowActionResultTest extends Specification {
     ###########################################################################################
 
     private function whenIShowTheResultsOf($action) {
-        $cookies = new CookieStore(new CookieSerializerRegistry(), array());
+        $cookies = new CookieStore(array());
 
         $this->resource->whenIDo_With(function (ExecuteResource $resource) use ($action) {
             return $resource->doGet($action, $this->resource->args);
