@@ -107,7 +107,7 @@ class PrepareActionsTest extends Specification {
             function __toString() { return $this->id; }'
         );
         $this->class->givenTheClass_WithTheBody('InflateIdentifierTypes\SomeAction', '
-            /** @var SomeEntity-ID */
+            /** @var string|SomeEntity-ID */
             public $string;
             /** @var SomeEntityId */
             public $object;

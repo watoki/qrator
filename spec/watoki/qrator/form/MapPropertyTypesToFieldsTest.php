@@ -44,7 +44,7 @@ class MapPropertyTypesToFieldsTest extends Specification {
 
     function testSelectEntity() {
         $this->class->givenTheClass_WithTheBody('mapSelectEntity\Action', '
-            /** @var \DateTime-ID */
+            /** @var string|\DateTime-ID */
             public $entity;
         ');
         $this->whenIGetTheFieldsOf('mapSelectEntity\Action');
