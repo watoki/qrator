@@ -28,6 +28,30 @@
         </div>
     </div>
 
+    <form property="form" action="execute.html" method="post">
+
+        <div class="panel panel-primary">
+            <div id="formHeader" class="panel-heading">
+                <span class="icon-down glyphicon glyphicon-chevron-down"></span>
+                <span class="icon-up glyphicon glyphicon-chevron-up"></span>
+                <h1 property="title">The Current Action</h1>
+            </div>
+
+            <div id="formBody">
+                <div class="panel-body">
+                    <input property="parameter" type="hidden" name="" value="">
+
+                    <div class="form-group" property="field">
+                        <label for="my-field"><span property="label">Property</span><span property="isRequired">*</span></label>
+                        <input id="my-field" class="form-control" property="property" placeholder="" type="text" name="name" value="With its state">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Execute</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
     <div property="alert" class="alert alert-success">
         Something happened.
     </div>
@@ -114,6 +138,28 @@
     </div>
 
 </div>
+
+<script property="formCanCollapse">
+    var header = document.getElementById('formHeader');
+    var body = document.getElementById('formBody');
+    var collapsed = 'panel-collapse collapse';
+    var shown = collapsed + ' in';
+    var headerClass = header.className;
+
+    header.style.cursor = 'pointer';
+
+    var toggle = function () {
+        if (body.className == collapsed) {
+            body.className = shown;
+            header.className = headerClass + ' is-down'
+        } else {
+            body.className = collapsed;
+            header.className = headerClass + ' is-up'
+        }
+    };
+    header.onclick = toggle;
+    toggle();
+</script>
 
 </body>
 </html>

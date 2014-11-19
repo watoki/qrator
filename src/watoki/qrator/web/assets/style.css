@@ -78,8 +78,32 @@ label {
     margin-bottom: 0;
 }
 
+.panel-heading h1,
+.panel-heading h2 {
+    margin-top: 10px;
+}
+
 .panel-heading {
-    margin-top: 0;
+    position: relative;
+}
+
+.panel-heading .glyphicon  {
+    position: absolute;
+    color: white;
+    font-size: 1.5em;
+    top: auto;
+    bottom: 15pt;
+    right: 1em;
+}
+
+.panel-heading.is-down .icon-down,
+.panel-heading.is-up .icon-up  {
+    display: none;
+}
+
+.panel-heading.is-down .icon-up,
+.panel-heading.is-up .icon-down  {
+    display: block;
 }
 
 h5 {
