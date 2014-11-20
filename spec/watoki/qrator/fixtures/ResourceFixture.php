@@ -61,6 +61,10 @@ class ResourceFixture extends Fixture {
         $this->spec->assertEquals($value, $this->get($modelPath));
     }
 
+    public function then_ShouldNotBe($modelPath, $value) {
+        $this->spec->assertNotEquals($value, $this->get($modelPath));
+    }
+
     public function then_ShouldContain($modelPath, $value) {
         $this->spec->assertContains($value, $this->get($modelPath));
     }

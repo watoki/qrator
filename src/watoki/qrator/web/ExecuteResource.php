@@ -112,6 +112,7 @@ class ExecuteResource extends Container {
             'properties' => null,
             'alert' => null,
             'title' => $representer->getName(),
+            'isPreparing' => true,
             'form' => $this->assembleForm($action, $args),
             'head' => function (Element $element) {
                     $element->getChildren()->append(new Text(implode("\n", array_unique($this->head))));
@@ -128,6 +129,7 @@ class ExecuteResource extends Container {
             $noShow = count($entityModel) > 1 ? 'list' : 'table';
             return [
                 'entity' => $entityModel,
+                'isPreparing' => false,
                 'properties' => $entityModel[0]['properties'],
                 $noShow => ['class' => function (Element $e) {
                         return $e->getAttribute('class')->getValue() . ' no-show';
@@ -135,7 +137,8 @@ class ExecuteResource extends Container {
             ];
         } else {
             return [
-                'alert' => $result ? "Result: " . var_export($result, true) : 'Empty result.'
+                'alert' => $result ? "Result: " . var_export($result, true) : 'Empty result.',
+                'isPreparing' => false,
             ];
         }
     }

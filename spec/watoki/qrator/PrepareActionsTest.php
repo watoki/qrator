@@ -152,9 +152,13 @@ class PrepareActionsTest extends Specification {
     private function thenItShouldShowNoResult() {
         $this->resource->then_ShouldBe('alert', null);
         $this->resource->then_ShouldBe('entity', null);
+        $this->resource->then_ShouldBe('isPreparing', true);
     }
 
     private function thenTheResultShouldBeShown() {
+        $this->resource->then_ShouldBe('alert', null);
+        $this->resource->then_ShouldNotBe('entity', null);
+        $this->resource->then_ShouldBe('isPreparing', false);
     }
 
     private function thenTheField_ShouldHaveNoValue($field) {
