@@ -106,9 +106,6 @@ class ExecuteResource extends Container {
                     $model = $this->assemblePossiblyEmptyResult($result);
                 }
             } catch (\Exception $e) {
-                array_pop($crumbs);
-                $this->saveBreadCrumbs($crumbs);
-
                 $details = '';
                 $currentException = $e;
                 while ($currentException) {
