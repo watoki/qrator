@@ -31,12 +31,6 @@ interface ActionRepresenter extends Representer {
     public function create(Map $args = null);
 
     /**
-     * @param object $object
-     * @return bool
-     */
-    public function hasMissingProperties($object);
-
-    /**
      * @param object $result
      * @return null|\watoki\qrator\representer\ActionLink
      */

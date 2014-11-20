@@ -2,7 +2,7 @@
 namespace spec\watoki\qrator;
 
 use watoki\qrator\form\fields\HiddenField;
-use watoki\qrator\web\PrepareResource;
+use watoki\qrator\web\ExecuteResource;
 use watoki\scrut\Specification;
 
 /**
@@ -11,6 +11,7 @@ use watoki\scrut\Specification;
  * @property \spec\watoki\reflect\fixtures\ClassFixture class <-
  * @property \spec\watoki\qrator\fixtures\ResourceFixture resource <-
  * @property \spec\watoki\qrator\fixtures\RegistryFixture registry <-
+ * @property \spec\watoki\qrator\fixtures\DispatcherFixture dispatcher <-
  */
 class ShowPreparationFormTest extends Specification {
 
@@ -19,20 +20,13 @@ class ShowPreparationFormTest extends Specification {
             public $one;
             public $two;
         ');
-    }
-
-    function testAllPropertiesProvided() {
-        $this->resource->givenTheActionArgument_Is('one', 'uno');
-        $this->resource->givenTheActionArgument_Is('two', 'dos');
-
-        $this->whenIPrepare('PrepareAction');
-        $this->resource->thenIShouldBeRedirectedTo('execute?action=PrepareAction&args[one]=uno&args[two]=dos');
+        $this->dispatcher->givenISetAnEmptyHandlerFor('PrepareAction');
     }
 
     function testInputForMissingProperties() {
         $this->resource->givenTheActionArgument_Is('one', 'uno');
 
-        $this->whenIPrepare('PrepareAction');
+        $this->whenIExecute('PrepareAction');
 
         $this->thenTheTitleShouldBe('Prepare Action');
         $this->thenThereShouldBeAHiddenField_WithValue('action', 'PrepareAction');
@@ -49,7 +43,8 @@ class ShowPreparationFormTest extends Specification {
         $this->class->givenTheClass_WithTheBody('camelCase\Action', '
             public $someProperty;
         ');
-        $this->whenIPrepare('camelCase\Action');
+        $this->dispatcher->givenISetAnEmptyHandlerFor('camelCase\Action');
+        $this->whenIExecute('camelCase\Action');
 
         $this->thenThereShouldBe_Fields(1);
         $this->thenField_ShouldHaveTheLabel(1, 'Some Property');
@@ -62,7 +57,7 @@ class ShowPreparationFormTest extends Specification {
         $this->registry->givenIRegisteredAnActionRepresenterFor('PrepareAction');
         $this->givenISetTheFieldFor_To_For('one', 'MySpecialField', 'PrepareAction');
 
-        $this->whenIPrepare('PrepareAction');
+        $this->whenIExecute('PrepareAction');
         $this->thenField_ShouldBeRenderedAs(1, 'Hello World');
     }
 
@@ -72,6 +67,7 @@ class ShowPreparationFormTest extends Specification {
             public $two;
             public $three;
         ');
+        $this->dispatcher->givenISetAnEmptyHandlerFor('PreFillingAction');
         $this->resource->givenTheActionArgument_Is('two', 'SeventyThree');
 
         $this->registry->givenIRegisteredAnActionRepresenterFor('PreFillingAction');
@@ -80,7 +76,7 @@ class ShowPreparationFormTest extends Specification {
             $fields['one']->setValue("FortyTwo");
         });
 
-        $this->whenIPrepare('PreFillingAction');
+        $this->whenIExecute('PreFillingAction');
         $this->thenField_ShouldTheValue(1, 'FortyTwo');
         $this->thenField_ShouldTheValue(2, 'SeventyThree');
         $this->thenField_ShouldHaveNoValue(3);
@@ -91,9 +87,10 @@ class ShowPreparationFormTest extends Specification {
             public $two;
             function __construct($one) {}
         ');
+        $this->dispatcher->givenISetAnEmptyHandlerFor('PreFillingActionWithoutInstance');
         $this->resource->givenTheActionArgument_Is('one', 'FortyTwo');
 
-        $this->whenIPrepare('PreFillingActionWithoutInstance');
+        $this->whenIExecute('PreFillingActionWithoutInstance');
         $this->thenField_ShouldTheValue(1, 'FortyTwo');
     }
 
@@ -103,8 +100,9 @@ class ShowPreparationFormTest extends Specification {
             public $id;
             public $other;
         ');
+        $this->dispatcher->givenISetAnEmptyHandlerFor('ActionWithId');
 
-        $this->whenIPrepare('ActionWithId');
+        $this->whenIExecute('ActionWithId');
 
         $this->thenThereShouldBe_Fields(2);
         $this->thenField_ShouldBeAHiddenField(1);
@@ -116,9 +114,10 @@ class ShowPreparationFormTest extends Specification {
         $this->class->givenTheClass_WithTheBody('ActionWithHiddenField', '
             public $foo;
         ');
+        $this->dispatcher->givenISetAnEmptyHandlerFor('ActionWithHiddenField');
         $this->registry->givenISetTheField_Of_To('foo', 'ActionWithHiddenField', new HiddenField('foo'));
 
-        $this->whenIPrepare('ActionWithHiddenField');
+        $this->whenIExecute('ActionWithHiddenField');
 
         $this->thenThereShouldBe_Fields(1);
         $this->thenField_ShouldBeInvisible(1);
@@ -131,10 +130,11 @@ class ShowPreparationFormTest extends Specification {
             public $three;
             function __construct($one, $two = null) {}
         ');
+        $this->dispatcher->givenISetAnEmptyHandlerFor('preparation\ActionWithConstructor');
 
         $this->resource->givenTheActionArgument_Is('one', 'uno');
 
-        $this->whenIPrepare('preparation\ActionWithConstructor');
+        $this->whenIExecute('preparation\ActionWithConstructor');
         $this->thenThereShouldBe_Fields(3);
 
         $this->thenField_ShouldBeRequired(1);
@@ -148,7 +148,7 @@ class ShowPreparationFormTest extends Specification {
             function __construct($one, $two) {}
             function setFour($f) {}
         ');
-        $this->whenIPrepare('preparation\IncompleteConstructor');
+        $this->whenIExecute('preparation\IncompleteConstructor');
         $this->thenThereShouldBe_Fields(4);
     }
 
@@ -158,7 +158,7 @@ class ShowPreparationFormTest extends Specification {
             public $two;
             function __construct($one, $two = "dos") {}
         ');
-        $this->whenIPrepare('defaultValue\SomeAction');
+        $this->whenIExecute('defaultValue\SomeAction');
         $this->thenThereShouldBe_Fields(3);
 
         $this->thenField_ShouldHaveNoValue(1);
@@ -168,10 +168,10 @@ class ShowPreparationFormTest extends Specification {
 
     ###############################################################################################
 
-    private function whenIPrepare($action) {
-        $this->resource->whenIDo_With(function (PrepareResource $resource) use ($action) {
+    private function whenIExecute($action) {
+        $this->resource->whenIDo_With(function (ExecuteResource $resource) use ($action) {
             return $resource->doGet($action, $this->resource->args);
-        }, PrepareResource::class);
+        }, ExecuteResource::class);
     }
 
     private function thenThereShouldBe_Fields($int) {

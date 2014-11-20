@@ -151,19 +151,6 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
     }
 
     /**
-     * @param object $object
-     * @return bool
-     */
-    public function hasMissingProperties($object) {
-        foreach ($this->getProperties($object) as $property) {
-            if ($property->canGet() && $property->get($object) === null) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * @param object $result
      * @return null|\watoki\qrator\representer\ActionLink
      */

@@ -2,28 +2,43 @@
 namespace watoki\qrator\web;
 
 use watoki\collections\Map;
+use watoki\curir\Container;
 use watoki\curir\cookie\Cookie;
 use watoki\curir\cookie\CookieStore;
 use watoki\curir\delivery\WebResponse;
 use watoki\curir\error\HttpError;
 use watoki\curir\protocol\Url;
+use watoki\curir\rendering\adapter\TempanRenderer;
 use watoki\curir\Responder;
 use watoki\curir\responder\Redirecter;
+use watoki\deli\Request;
 use watoki\dom\Element;
+use watoki\dom\Text;
 use watoki\factory\exception\InjectionException;
 use watoki\factory\Factory;
+use watoki\qrator\form\Field;
 use watoki\qrator\representer\ActionLink;
+use watoki\qrator\RootAction;
 use watoki\reflect\Property;
 use watoki\qrator\RepresenterRegistry;
 use watoki\tempan\model\ListModel;
 
-class ExecuteResource extends ActionResource {
+class ExecuteResource extends Container {
 
     const LAST_ACTION_COOKIE = 'lastAction';
     const BREADCRUMB_COOKIE = 'breadcrumbs';
 
+    /** @var RepresenterRegistry */
+    protected $registry;
+
     /** @var \watoki\curir\cookie\CookieStore */
     private $cookies;
+
+    /** @var array|string[] */
+    private $head = [];
+
+    /** @var array|string[] */
+    private $foot = [];
 
     /**
      * @param Factory $factory <-
@@ -31,63 +46,63 @@ class ExecuteResource extends ActionResource {
      * @param \watoki\curir\cookie\CookieStore $cookies <-
      */
     function __construct(Factory $factory, RepresenterRegistry $registry, CookieStore $cookies) {
-        parent::__construct($factory, $registry);
+        parent::__construct($factory);
+        $this->registry = $registry;
         $this->cookies = $cookies;
     }
 
+    protected function createDefaultRenderer() {
+        return new TempanRenderer();
+    }
+
+    public function respond(Request $request) {
+        try {
+            return parent::respond($request);
+        } catch (\Exception $e) {
+            throw new HttpError(WebResponse::STATUS_SERVER_ERROR, $e->getMessage(), null, 0, $e);
+        }
+    }
+
     /**
-     * @param string $action
-     * @param \watoki\collections\Map|null $args
-     * @param bool $prepared
-     * @throws HttpError If error occurs during execution of the action
+     * @param $action
+     * @param Map $args
      * @return array
      */
-    public function doGet($action, Map $args = null, $prepared = false) {
-        $args = $args ?: new Map();
+    public function doPost($action, Map $args) {
+        return $this->doGet($action, $args);
+    }
 
-        $crumbs = $this->readBreadcrumbs();
-
+    /**
+     * @param string $action defaults to RootAction
+     * @param \watoki\collections\Map|null $args
+     * @throws \watoki\curir\error\HttpError
+     * @internal param bool $prepared
+     * @return array
+     */
+    public function doGet($action = RootAction::class, Map $args = null) {
+        $args = $args ? : new Map();
         $representer = $this->registry->getActionRepresenter($action);
 
         try {
             $object = $representer->create($args);
         } catch (InjectionException $e) {
-            return $this->redirectToPrepare($action, $args);
+            $object = null;
+            $model = [];
         }
 
-        if (!$prepared && $representer->hasMissingProperties($object)) {
-            return $this->redirectToPrepare($action, $args);
-        }
-
-        try {
+        $crumbs = $this->readBreadcrumbs();
+        if ($object) {
             $result = $representer->execute($object);
-        } catch (\Exception $e) {
-            throw new HttpError(WebResponse::STATUS_SERVER_ERROR, $e->getMessage(), null, 0, $e);
-        }
+            $followUpAction = $representer->getFollowUpAction($result);
 
-        $followUpAction = $representer->getFollowUpAction($result);
-        if ($followUpAction) {
-            return new Redirecter($this->urlOfAction($followUpAction));
-        } else if (is_null($result) && $this->cookies->hasKey(ExecuteResource::LAST_ACTION_COOKIE)) {
-            return new Redirecter($this->urlOfLastAction());
-        } else {
-            $this->storeLastAction($action, $args);
-            $crumbs = $this->updateBreadcrumb($crumbs, $object, $args);
-
-            $entityModel = $this->assembleResult($result);
-            if ($entityModel) {
-                $noShow = count($entityModel) > 1 ? 'list' : 'table';
-                $model = [
-                    'entity' => $entityModel,
-                    'properties' => $entityModel[0]['properties'],
-                    $noShow => ['class' => function (Element $e) {
-                        return $e->getAttribute('class')->getValue() . ' no-show';
-                    }],
-                ];
+            if ($followUpAction) {
+                return new Redirecter($this->urlOfAction($followUpAction));
+            } else if (is_null($result) && $this->cookies->hasKey(ExecuteResource::LAST_ACTION_COOKIE)) {
+                return new Redirecter($this->urlOfLastAction());
             } else {
-                $model = [
-                    'alert' => $result ? "Result: " . var_export($result, true) : 'Empty result.'
-                ];
+                $this->storeLastAction($action, $args);
+                $crumbs = $this->updateBreadcrumb($crumbs, $object, $args);
+                $model = $this->assemblePossiblyEmptyResult($result);
             }
         }
 
@@ -96,8 +111,76 @@ class ExecuteResource extends ActionResource {
             'entity' => null,
             'properties' => null,
             'alert' => null,
-            'title' => $representer->toString($object),
+            'title' => $representer->getName(),
+            'form' => $this->assembleForm($action, $args),
+            'head' => function (Element $element) {
+                    $element->getChildren()->append(new Text(implode("\n", array_unique($this->head))));
+                    return true;
+                },
+            'foot' => implode("\n", array_unique($this->foot))
         ], $model);
+    }
+
+    private function assemblePossiblyEmptyResult($result) {
+        $entityModel = $this->assembleResult($result);
+
+        if ($entityModel) {
+            $noShow = count($entityModel) > 1 ? 'list' : 'table';
+            return [
+                'entity' => $entityModel,
+                'properties' => $entityModel[0]['properties'],
+                $noShow => ['class' => function (Element $e) {
+                        return $e->getAttribute('class')->getValue() . ' no-show';
+                    }],
+            ];
+        } else {
+            return [
+                'alert' => $result ? "Result: " . var_export($result, true) : 'Empty result.'
+            ];
+        }
+    }
+
+    private function assembleForm($action, Map $args) {
+        $representer = $this->registry->getActionRepresenter($action);
+
+        $parameters = [
+            ['name' => 'action', 'value' => $representer->getClass()],
+        ];
+
+        $fields = $representer->getFields();
+
+        foreach ($fields as $field) {
+            $this->head = array_merge($this->head, $field->addToHead());
+            $this->foot = array_merge($this->foot, $field->addToFoot());
+        }
+
+        $this->fill($fields, $args);
+        $representer->preFill($fields);
+
+        $form = [
+            'action' => 'execute',
+            'parameter' => $parameters,
+            'field' => $this->assembleFields($fields)
+        ];
+        return $form;
+    }
+
+    /**
+     * @param Field[] $fields
+     * @param Map $args
+     */
+    private function fill($fields, Map $args) {
+        foreach ($args as $key => $value) {
+            if (array_key_exists($key, $fields)) {
+                $fields[$key]->setValue($value);
+            }
+        }
+    }
+
+    private function assembleFields($fields) {
+        return array_map(function (Field $field) {
+            return $field->render();
+        }, array_values($fields));
     }
 
     private function urlOfLastAction() {
@@ -108,21 +191,6 @@ class ExecuteResource extends ActionResource {
         $url->getParameters()->set('args', new Map($lastAction['arguments']));
 
         return $url;
-    }
-
-    /**
-     * @param $action
-     * @param Map $args
-     * @return array
-     */
-    public function doPost($action, Map $args = null) {
-        return $this->doGet($action, $args, true);
-    }
-
-    private function redirectToPrepare($action, Map $args) {
-        return $this->redirectTo('prepare', $args, array(
-            'action' => $action
-        ));
     }
 
     private function assembleResult($result) {
@@ -237,8 +305,8 @@ class ExecuteResource extends ActionResource {
             'link' => [
                 'href' => $target->toString(),
                 'onclick' => $representer->requiresConfirmation()
-                    ? "return confirm('" . $representer->requiresConfirmation() . "');"
-                    : 'return true;'
+                        ? "return confirm('" . $representer->requiresConfirmation() . "');"
+                        : 'return true;'
             ]
         ];
     }
@@ -309,4 +377,5 @@ class ExecuteResource extends ActionResource {
         $url->getParameters()->set('args', $followUpAction->getArguments());
         return $url;
     }
+
 }

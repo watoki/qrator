@@ -3,13 +3,14 @@ namespace spec\watoki\qrator\form;
 
 use watoki\dom\Parser;
 use watoki\dom\Printer;
-use watoki\qrator\web\PrepareResource;
+use watoki\qrator\web\ExecuteResource;
 use watoki\scrut\Specification;
 
 /**
  * @property \spec\watoki\reflect\fixtures\ClassFixture class <-
  * @property \spec\watoki\qrator\fixtures\RegistryFixture registry <-
  * @property \spec\watoki\qrator\fixtures\ResourceFixture resource <-
+ * @property \spec\watoki\qrator\fixtures\DispatcherFixture dispatcher <-
  */
 class AddFieldRequirementsToPageTest extends Specification {
 
@@ -23,6 +24,7 @@ class AddFieldRequirementsToPageTest extends Specification {
             public $someProperty;
             public $otherProperty;
         ');
+        $this->dispatcher->givenISetAnEmptyHandlerFor('fieldRequirements\SomeAction');
 
         $this->registry->givenIRegisteredAnActionRepresenterFor('fieldRequirements\SomeAction');
         $this->registry->givenISetTheField_Of_ToBeAnInstanceOf('someProperty', 'fieldRequirements\SomeAction',
@@ -30,7 +32,7 @@ class AddFieldRequirementsToPageTest extends Specification {
         $this->registry->givenISetTheField_Of_ToBeAnInstanceOf('otherProperty', 'fieldRequirements\SomeAction',
             'fieldRequirements\SomeField');
 
-        $this->whenIPrepare('fieldRequirements\SomeAction');
+        $this->whenIExecute('fieldRequirements\SomeAction');
         $this->thenTheHeadShouldContains('<meta name="this is so meta"/>');
         $this->thenTheFootShouldBe('<script src="someScript.js"/>');
     }
@@ -40,8 +42,8 @@ class AddFieldRequirementsToPageTest extends Specification {
     /** @var \watoki\dom\Element */
     private $dom;
 
-    private function whenIPrepare($action) {
-        $this->resource->whenIDo_With(function (PrepareResource $resource) use ($action) {
+    private function whenIExecute($action) {
+        $this->resource->whenIDo_With(function (ExecuteResource $resource) use ($action) {
             $model = $resource->doGet($action);
             $this->resource->request->getFormats()->append('html');
 
@@ -50,7 +52,7 @@ class AddFieldRequirementsToPageTest extends Specification {
             $this->dom = $parser->getRoot();
 
             return $model;
-        }, PrepareResource::class);
+        }, ExecuteResource::class);
     }
 
     private function thenTheHeadShouldContains($string) {

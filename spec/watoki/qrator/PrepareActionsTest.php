@@ -1,7 +1,6 @@
 <?php
 namespace spec\watoki\qrator;
 
-use watoki\curir\cookie\CookieStore;
 use watoki\qrator\web\ExecuteResource;
 use watoki\scrut\Specification;
 
@@ -20,46 +19,42 @@ class PrepareActionsTest extends Specification {
 
     public function background() {
         $this->class->givenTheClass_WithTheBody('ComplexAction', '
-            public $one;
-            public $two;
-
-            private $that;
-            public function setThree($v) { $this->that = $v; }
-            public function getThat() { return $this->that; }
+            function __construct($one, $two = "dos") {
+                $this->one = $one;
+                $this->two = $two;
+            }
+            public $three = "tres";
+            public $four;
         ');
         $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
             return new \StdClass();
         }, 'ComplexAction');
     }
 
-    function testAllPropertiesGiven() {
-        $this->resource->givenTheActionArgument_Is('one', 'uno');
-        $this->resource->givenTheActionArgument_Is('two', 'dos');
-        $this->resource->givenTheActionArgument_Is('three', 'tres');
-
-        $this->class->givenTheClass_WithTheBody('allGiven\MyHandler', '
-            public static $action;
-            public function complexAction($action) {
-                self::$action = $action;
-                return new \StdClass();
-            }
-        ');
-        $this->dispatcher->givenIAddedTheClass_AsHandlerFor('allGiven\MyHandler', 'ComplexAction');
-
+    function testNoResultIfActionCannotBeCreated() {
         $this->whenIExecuteTheAction('ComplexAction');
-        $this->resource->thenIShouldNotBeRedirected();
+        $this->thenItShouldShowNoResult();
 
-        $this->class->then_ShouldBe('allGiven\MyHandler::$action->one', 'uno');
-        $this->class->then_ShouldBe('allGiven\MyHandler::$action->two', 'dos');
-        $this->class->then_ShouldBe('allGiven\MyHandler::$action->getThat()', 'tres');
+        $this->thenTheField_ShouldHaveNoValue('one');
+        $this->thenTheField_ShouldHaveTheValue('two', 'dos');
+        $this->thenTheField_ShouldHaveTheValue('three', 'tres');
+        $this->thenTheField_ShouldHaveNoValue('four');
     }
 
-    function testMissingProperty() {
+    function testShowResultIfActionCanBeCreated() {
         $this->resource->givenTheActionArgument_Is('one', 'uno');
-        $this->resource->givenTheActionArgument_Is('three', 'tres');
 
         $this->whenIExecuteTheAction('ComplexAction');
-        $this->resource->thenIShouldBeRedirectedTo('prepare?action=ComplexAction&args[one]=uno&args[three]=tres');
+        $this->thenTheResultShouldBeShown();
+        $this->thenTheField_ShouldHaveTheValue('one', 'uno');
+    }
+
+    function testKeepArgumentsInForm() {
+        $this->resource->givenTheActionArgument_Is('one', 'uno');
+        $this->resource->givenTheActionArgument_Is('two', 'dos');
+
+        $this->whenIExecuteTheAction('ComplexAction');
+        $this->thenTheField_ShouldHaveTheValue('two', 'dos');
     }
 
     function testInflateArguments() {
@@ -95,11 +90,6 @@ class PrepareActionsTest extends Specification {
         $this->class->then_ShouldBe('inflateArgs\MyHandler::$action->inflateMe->getTimestamp()', 1330874160);
     }
 
-    function testMissingPropertiesButPrepared() {
-        $this->whenIExecuteThePreparedAction('ComplexAction');
-        $this->resource->thenIShouldNotBeRedirected();
-    }
-
     function testInflateIdentifierTypes() {
         $this->class->givenTheClass('InflateIdentifierTypes\SomeEntity');
         $this->class->givenTheClass_WithTheBody('InflateIdentifierTypes\SomeEntityId', '
@@ -119,7 +109,15 @@ class PrepareActionsTest extends Specification {
                 self::$action = $action;
                 return new \StdClass();
             }
+            public function listAction() {
+                return [];
+            }
         ');
+
+        $this->class->givenTheClass('InflateIdentifierTypes\ListAction');
+        $this->registry->givenIRegisteredAnEntityRepresenterFor('InflateIdentifierTypes\SomeEntity');
+        $this->registry->givenIHaveSet_AsTheListActionFor('InflateIdentifierTypes\ListAction', 'InflateIdentifierTypes\SomeEntity');
+        $this->dispatcher->givenIAddedTheClass_AsHandlerFor('InflateIdentifierTypes\SomeHandler', 'InflateIdentifierTypes\ListAction');
 
         $this->dispatcher->givenIAddedTheClass_AsHandlerFor('InflateIdentifierTypes\SomeHandler', 'InflateIdentifierTypes\SomeAction');
         $this->resource->givenTheActionArgument_Is('object', 'some ID');
@@ -137,17 +135,35 @@ class PrepareActionsTest extends Specification {
 
     ####################################################################################
 
-    private $prepared = false;
-
-    private function whenIExecuteThePreparedAction($action) {
-        $this->prepared = true;
-        $this->whenIExecuteTheAction($action);
-    }
-
     private function whenIExecuteTheAction($action) {
         $this->resource->whenIDo_With(function (ExecuteResource $resource) use ($action) {
-            return $resource->doGet($action, $this->resource->args, $this->prepared);
+            return $resource->doGet($action, $this->resource->args);
         }, ExecuteResource::class);
+    }
+
+    private function thenItShouldShowNoResult() {
+        $this->resource->then_ShouldBe('alert', null);
+        $this->resource->then_ShouldBe('entity', null);
+    }
+
+    private function thenTheResultShouldBeShown() {
+    }
+
+    private function thenTheField_ShouldHaveNoValue($field) {
+        $this->assertNotContains('value="', $this->findField($field));
+    }
+
+    private function thenTheField_ShouldHaveTheValue($field, $value) {
+        $this->assertContains('value="' . $value . '"', $this->findField($field));
+    }
+
+    private function findField($name) {
+        foreach ($this->resource->get('form/field') as $field) {
+            if (strpos($field, 'name="args[' . $name . ']"')) {
+                return $field;
+            }
+        }
+        throw new \Exception("Field not found: $name in " . print_r($this->resource->get('form/field'), true));
     }
 
 } 

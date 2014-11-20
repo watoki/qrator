@@ -3,9 +3,9 @@ namespace spec\watoki\qrator;
 
 use watoki\collections\Map;
 use watoki\qrator\representer\MethodActionRepresenter;
+use watoki\qrator\web\ExecuteResource;
 use watoki\reflect\type\ClassType;
 use watoki\reflect\type\StringType;
-use watoki\qrator\web\PrepareResource;
 use watoki\scrut\Specification;
 
 /**
@@ -46,11 +46,6 @@ class DeriveActionsFromMethodsTest extends Specification {
         $this->whenIConstructAnActionFromTheMethod_Of('someMethod', 'construct\SomeClass');
         $this->thenProperty_ShouldBeRequired('one');
         $this->thenProperty_ShouldBeOptional('two');
-    }
-
-    function testDetermineMissingProperties() {
-        $this->whenIConstructAnActionFromTheMethod_Of('someMethod', 'construct\SomeClass');
-        $this->thenTheActionShouldHaveMissingProperties();
     }
 
     function testShowPreparationFormOfDerivedAction() {
@@ -122,15 +117,10 @@ class DeriveActionsFromMethodsTest extends Specification {
         $this->assertFalse($this->representer->getProperties()[$string]->isRequired());
     }
 
-    private function thenTheActionShouldHaveMissingProperties() {
-        $object = $this->representer->create(new Map(['one' => 'uno']));
-        $this->assertTrue($this->representer->hasMissingProperties($object));
-    }
-
     private function whenIShowThePerparationFormOfThisAction() {
-        $this->resource->whenIDo_With(function (PrepareResource $resource) {
+        $this->resource->whenIDo_With(function (ExecuteResource $resource) {
             return $resource->doGet($this->representer->getClass());
-        }, PrepareResource::class);
+        }, ExecuteResource::class);
     }
 
     private function thenTheActionShouldBe($string) {

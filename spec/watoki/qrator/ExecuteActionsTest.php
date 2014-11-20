@@ -91,15 +91,6 @@ class ExecuteActionsTest extends Specification {
         $this->class->then_ShouldBe('$GLOBALS[\'two\']', 'dos');
     }
 
-    function testMissingConstructorArguments() {
-        $this->class->givenTheClass_WithTheBody('test\MissingConstructorArguments', '
-            function __construct($one, $two) {}
-        ');
-
-        $this->whenIExecuteTheAction('test\MissingConstructorArguments');
-        $this->resource->thenIShouldBeRedirectedTo('prepare?action=test%5CMissingConstructorArguments');
-    }
-
     function testFollowUpAction() {
         $this->class->givenTheClass('ActionWithFollowUp');
         $this->class->givenTheClass('FollowUpAction');
