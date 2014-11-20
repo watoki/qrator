@@ -149,6 +149,10 @@ class ExecuteResource extends Container {
 
         $fields = $representer->getFields();
 
+        if (!$fields) {
+            return null;
+        }
+
         foreach ($fields as $field) {
             $this->head = array_merge($this->head, $field->addToHead());
             $this->foot = array_merge($this->foot, $field->addToFoot());

@@ -57,6 +57,14 @@ class PrepareActionsTest extends Specification {
         $this->thenTheField_ShouldHaveTheValue('two', 'dos');
     }
 
+    function testHideActionFormIfItHasNoFields() {
+        $this->class->givenTheClass('EmptyAction');
+        $this->dispatcher->givenISetAnEmptyHandlerFor('EmptyAction');
+
+        $this->whenIExecuteTheAction('EmptyAction');
+        $this->thenTheActionFormShouldNotBeThere();
+    }
+
     function testInflateArguments() {
         $this->class->givenTheClass_WithTheBody('inflateArgs\InflatableAction', '
             public $inflateMe;
@@ -164,6 +172,10 @@ class PrepareActionsTest extends Specification {
             }
         }
         throw new \Exception("Field not found: $name in " . print_r($this->resource->get('form/field'), true));
+    }
+
+    private function thenTheActionFormShouldNotBeThere() {
+        $this->resource->then_ShouldBe('form', null);
     }
 
 } 
