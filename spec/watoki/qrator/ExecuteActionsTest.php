@@ -2,7 +2,6 @@
 namespace spec\watoki\qrator;
 
 use watoki\curir\cookie\Cookie;
-use watoki\curir\cookie\CookieStore;
 use watoki\qrator\representer\ActionLink;
 use watoki\qrator\web\ExecuteResource;
 use watoki\scrut\Specification;

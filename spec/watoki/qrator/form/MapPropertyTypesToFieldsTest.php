@@ -7,7 +7,6 @@ use watoki\qrator\form\fields\DateTimeField;
 use watoki\qrator\form\fields\SelectEntityField;
 use watoki\qrator\form\fields\StringField;
 use watoki\qrator\representer\generic\GenericActionRepresenter;
-use watoki\qrator\RepresenterRegistry;
 use watoki\scrut\Specification;
 
 /**

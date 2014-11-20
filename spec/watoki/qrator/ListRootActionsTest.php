@@ -1,7 +1,6 @@
 <?php
 namespace spec\watoki\qrator;
 
-use watoki\curir\cookie\CookieStore;
 use watoki\qrator\RootAction;
 use watoki\qrator\web\ExecuteResource;
 use watoki\qrator\web\IndexResource;

@@ -2,11 +2,9 @@
 namespace watoki\qrator;
 
 use watoki\factory\Factory;
-use watoki\factory\Injector;
-use watoki\qrator\Representer;
-use watoki\qrator\representer\ActionLink;
 use watoki\qrator\representer\generic\GenericActionRepresenter;
 use watoki\qrator\representer\generic\GenericEntityRepresenter;
+use watoki\qrator\Representer;
 use watoki\qrator\representer\MethodActionRepresenter;
 
 class RepresenterRegistry {

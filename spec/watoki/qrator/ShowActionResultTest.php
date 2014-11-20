@@ -2,7 +2,6 @@
 namespace spec\watoki\qrator;
 
 use watoki\collections\Liste;
-use watoki\curir\cookie\CookieStore;
 use watoki\factory\exception\InjectionException;
 use watoki\qrator\web\ExecuteResource;
 use watoki\scrut\Specification;
