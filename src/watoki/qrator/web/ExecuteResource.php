@@ -116,7 +116,8 @@ class ExecuteResource extends Container {
                     'error' => [
                         'message' => $e->getMessage(),
                         'details' => $details
-                    ]
+                    ],
+                    'isPreparing' => false
                 ];
             }
         }
