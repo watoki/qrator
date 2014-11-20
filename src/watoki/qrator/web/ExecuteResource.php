@@ -65,10 +65,10 @@ class ExecuteResource extends Container {
 
     /**
      * @param $action
-     * @param Map $args
+     * @param Map|null $args
      * @return array
      */
-    public function doPost($action, Map $args) {
+    public function doPost($action, Map $args = null) {
         return $this->doGet($action, $args);
     }
 
@@ -87,9 +87,9 @@ class ExecuteResource extends Container {
             $object = $representer->create($args);
         } catch (InjectionException $e) {
             $object = null;
-            $model = [];
         }
 
+        $model = [];
         $crumbs = $this->readBreadcrumbs();
         if ($object) {
             $result = $representer->execute($object);
