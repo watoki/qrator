@@ -7,9 +7,9 @@ use watoki\qrator\ActionRepresenter;
 use watoki\qrator\form\fields\ArrayField;
 use watoki\qrator\form\fields\CheckboxField;
 use watoki\qrator\form\fields\DateTimeField;
-use watoki\qrator\form\fields\HiddenField;
 use watoki\qrator\form\fields\SelectEntityField;
 use watoki\qrator\form\fields\StringField;
+use watoki\qrator\RepresenterRegistry;
 use watoki\reflect\Property;
 use watoki\reflect\type\ArrayType;
 use watoki\reflect\type\BooleanType;
@@ -17,7 +17,6 @@ use watoki\reflect\type\ClassType;
 use watoki\reflect\type\IdentifierObjectType;
 use watoki\reflect\type\IdentifierType;
 use watoki\reflect\type\MultiType;
-use watoki\qrator\RepresenterRegistry;
 
 abstract class BasicActionRepresenter extends BasicRepresenter implements ActionRepresenter {
 
@@ -101,9 +100,6 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
      * @return \watoki\qrator\form\Field
      */
     protected function getField(Property $property) {
-        if ($property->name() == 'id') {
-            return new HiddenField('id');
-        }
         return $this->getFieldForType($property->name(), $property->type());
     }
 
