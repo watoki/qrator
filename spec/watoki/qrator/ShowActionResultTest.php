@@ -2,7 +2,6 @@
 namespace spec\watoki\qrator;
 
 use watoki\collections\Liste;
-use watoki\factory\exception\InjectionException;
 use watoki\qrator\web\ExecuteResource;
 use watoki\scrut\Specification;
 
@@ -12,7 +11,6 @@ use watoki\scrut\Specification;
  * @property \spec\watoki\qrator\fixtures\RegistryFixture registry <-
  * @property \spec\watoki\qrator\fixtures\DispatcherFixture dispatcher <-
  * @property \spec\watoki\reflect\fixtures\ClassFixture class <-
- * @property \watoki\scrut\ExceptionFixture try <-
  * @property \spec\watoki\qrator\fixtures\ResourceFixture resource <-
  */
 class ShowActionResultTest extends Specification {
@@ -172,15 +170,6 @@ class ShowActionResultTest extends Specification {
 
         $this->whenIShowTheResultsOf('MyAction');
         $this->thenThereShouldBe_Entities(2);
-    }
-
-    function testThrowExceptions() {
-        $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
-            throw new \Exception('Something went wrong');
-        }, 'MyAction');
-
-        $this->whenITryToShowTheResultsOf('MyAction');
-        $this->try->thenTheException_ShouldBeThrown('Something went wrong');
     }
 
     function testEntityActionsWithProperty() {
@@ -349,27 +338,12 @@ class ShowActionResultTest extends Specification {
         $this->thenValue_OfProperty_ShouldHaveAction_WithTheLinkTarget(2, 1, 1, 'execute?action=arrayPropertyActions%5CPropertyAction&args[id]=someID&args[object]=73');
     }
 
-    function testEdgeCaseDoNotRedirectOnInjectionExceptionDuringExecution() {
-        $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
-            throw new InjectionException('Something went wrong');
-        }, 'MyAction');
-
-        $this->whenITryToShowTheResultsOf('MyAction');
-        $this->try->thenTheException_ShouldBeThrown('Something went wrong');
-    }
-
     ###########################################################################################
 
     private function whenIShowTheResultsOf($action) {
         $this->resource->whenIDo_With(function (ExecuteResource $resource) use ($action) {
             return $resource->doGet($action, $this->resource->args);
         }, ExecuteResource::class);
-    }
-
-    private function whenITryToShowTheResultsOf($action) {
-        $this->try->tryTo(function () use ($action) {
-            $this->whenIShowTheResultsOf($action);
-        });
     }
 
     private function thenTheNameShouldBe($string) {

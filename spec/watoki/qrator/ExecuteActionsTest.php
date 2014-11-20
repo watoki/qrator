@@ -2,6 +2,7 @@
 namespace spec\watoki\qrator;
 
 use watoki\curir\cookie\Cookie;
+use watoki\factory\exception\InjectionException;
 use watoki\qrator\representer\ActionLink;
 use watoki\qrator\web\ExecuteResource;
 use watoki\scrut\Specification;
@@ -117,6 +118,25 @@ class ExecuteActionsTest extends Specification {
         $this->thenIShouldBeRedirectedTo('execute?action=FollowUpActionWithProperty&args[foo]=baz');
     }
 
+    function testThrowExceptions() {
+        $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
+            throw new \Exception('Something went wrong');
+        }, 'MyAction');
+
+        $this->whenIExecuteTheAction('MyAction');
+        $this->thenItShouldShowTheError('Something went wrong');
+    }
+
+
+    function testEdgeCaseDoNotRedirectOnInjectionExceptionDuringExecution() {
+        $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
+            throw new InjectionException('Something went wrong');
+        }, 'MyAction');
+
+        $this->whenIExecuteTheAction('MyAction');
+        $this->thenItShouldShowTheError('Something went wrong');
+    }
+
     ####################################################################################################
 
     private function givenTheLastActionWas_WithArguments($action, $arguments) {
@@ -157,6 +177,10 @@ class ExecuteActionsTest extends Specification {
 
     private function thenIShouldBeRedirectedTo($string) {
         $this->resource->thenIShouldBeRedirectedTo($string);
+    }
+
+    private function thenItShouldShowTheError($string) {
+        $this->resource->then_ShouldBe('error/message', $string);
     }
 
 } 

@@ -92,17 +92,32 @@ class ExecuteResource extends Container {
         $model = [];
         $crumbs = $this->readBreadcrumbs();
         if ($object) {
-            $result = $representer->execute($object);
-            $followUpAction = $representer->getFollowUpAction($result);
+            try {
+                $result = $representer->execute($object);
+                $followUpAction = $representer->getFollowUpAction($result);
 
-            if ($followUpAction) {
-                return new Redirecter($this->urlOfAction($followUpAction));
-            } else if (is_null($result) && $this->cookies->hasKey(ExecuteResource::LAST_ACTION_COOKIE)) {
-                return new Redirecter($this->urlOfLastAction());
-            } else {
-                $this->storeLastAction($action, $args);
-                $crumbs = $this->updateBreadcrumb($crumbs, $object, $args);
-                $model = $this->assemblePossiblyEmptyResult($result);
+                if ($followUpAction) {
+                    return new Redirecter($this->urlOfAction($followUpAction));
+                } else if (is_null($result) && $this->cookies->hasKey(ExecuteResource::LAST_ACTION_COOKIE)) {
+                    return new Redirecter($this->urlOfLastAction());
+                } else {
+                    $this->storeLastAction($action, $args);
+                    $crumbs = $this->updateBreadcrumb($crumbs, $object, $args);
+                    $model = $this->assemblePossiblyEmptyResult($result);
+                }
+            } catch (\Exception $e) {
+                $details = '';
+                $currentException = $e;
+                while ($currentException) {
+                    $details .= $e->getFile() . ':' . $e->getLine() . "\n" . $e->getTraceAsString() . "\n\n";
+                    $currentException = $currentException->getPrevious();
+                }
+                $model = [
+                    'error' => [
+                        'message' => $e->getMessage(),
+                        'details' => $details
+                    ]
+                ];
             }
         }
 
@@ -111,6 +126,7 @@ class ExecuteResource extends Container {
             'entity' => null,
             'properties' => null,
             'alert' => null,
+            'error' => null,
             'title' => $representer->getName(),
             'isPreparing' => true,
             'form' => $this->assembleForm($action, $args),
