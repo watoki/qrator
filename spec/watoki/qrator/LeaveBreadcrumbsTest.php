@@ -72,6 +72,23 @@ class LeaveBreadcrumbsTest extends Specification {
         ]);
     }
 
+    function testPopCrumbOnException() {
+        $this->class->givenTheClass('test\ExceptionalAction');
+        $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
+            throw new \Exception();
+        }, 'test\ExceptionalAction');
+
+        $this->givenTheStoredBreadcrumbs([
+            ['one', 'first', []],
+            ['two', 'second', []],
+        ]);
+
+        $this->whenIExecuteTheAction('test\ExceptionalAction');
+        $this->thenTheBreadcrumbs_ShouldBeStored([
+            ['one', 'first', []],
+        ]);
+    }
+
     ################################################################################################
 
     private function whenIExecuteTheAction($action) {

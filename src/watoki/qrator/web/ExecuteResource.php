@@ -106,6 +106,9 @@ class ExecuteResource extends Container {
                     $model = $this->assemblePossiblyEmptyResult($result);
                 }
             } catch (\Exception $e) {
+                array_pop($crumbs);
+                $this->saveBreadCrumbs($crumbs);
+
                 $details = '';
                 $currentException = $e;
                 while ($currentException) {
@@ -361,9 +364,13 @@ class ExecuteResource extends Container {
 
         $crumbs[] = [$caption, $representer->getClass(), $args->toArray()];
 
-        $this->cookies->create(new Cookie($crumbs), self::BREADCRUMB_COOKIE);
+        $this->saveBreadCrumbs($crumbs);
 
         return $crumbs;
+    }
+
+    private function saveBreadCrumbs($crumbs) {
+        $this->cookies->create(new Cookie($crumbs), self::BREADCRUMB_COOKIE);
     }
 
     private function readBreadcrumbs() {
