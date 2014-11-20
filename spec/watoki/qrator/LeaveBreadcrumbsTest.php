@@ -31,8 +31,8 @@ class LeaveBreadcrumbsTest extends Specification {
 
     function testNoBreadcrumbsToShow() {
         $this->whenIExecuteTheAction('test\SomeAction');
-        $this->thenThereShouldBeNoBreadcrumbs();
-        $this->thenTheCurrentOneShouldBe('Some Action');
+        $this->thenThereShouldBe_Breadcrumbs(1);
+        $this->thenBreadcrumb_ShouldHaveTheCaption(1, 'Some Action');
     }
 
     function testShowBreadcrumbs() {
@@ -42,7 +42,7 @@ class LeaveBreadcrumbsTest extends Specification {
         ]);
 
         $this->whenIExecuteTheAction('test\SomeAction');
-        $this->thenThereShouldBe_Breadcrumbs(2);
+        $this->thenThereShouldBe_Breadcrumbs(3);
         $this->thenBreadcrumb_ShouldHaveTheCaption(1, 'one');
         $this->thenBreadcrumb_ShouldHaveTheLinkTarget(1, 'execute?action=first');
     }
@@ -101,10 +101,6 @@ class LeaveBreadcrumbsTest extends Specification {
         $this->resource->thenThePayloadOfCookie_ShouldBe(ExecuteResource::BREADCRUMB_COOKIE, $array);
     }
 
-    private function thenThereShouldBeNoBreadcrumbs() {
-        $this->thenThereShouldBe_Breadcrumbs(0);
-    }
-
     private function givenTheStoredBreadcrumbs($array) {
         $this->resource->cookies->create(new Cookie($array), ExecuteResource::BREADCRUMB_COOKIE);
     }
@@ -121,10 +117,6 @@ class LeaveBreadcrumbsTest extends Specification {
     private function thenBreadcrumb_ShouldHaveTheLinkTarget($int, $string) {
         $int--;
         $this->resource->then_ShouldBe("breadcrumbs/breadcrumb/$int/link/href", $string);
-    }
-
-    private function thenTheCurrentOneShouldBe($string) {
-        $this->resource->then_ShouldBe('breadcrumbs/current', $string);
     }
 
 } 

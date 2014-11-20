@@ -381,8 +381,6 @@ class ExecuteResource extends Container {
     }
 
     private function assembleBreadcrumbs($crumbs) {
-        $last = array_pop($crumbs);
-
         return [
             'breadcrumb' => array_map(function ($crumb) {
                 list($caption, $action, $args) = $crumb;
@@ -393,8 +391,7 @@ class ExecuteResource extends Container {
                     'caption' => $caption,
                     'link' => ['href' => $url->toString()]
                 ];
-            }, $crumbs),
-            'current' => $last[0]
+            }, $crumbs)
         ];
     }
 
