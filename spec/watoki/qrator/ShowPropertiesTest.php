@@ -236,7 +236,9 @@ class ShowPropertiesTest extends Specification {
         $this->class->givenTheClass_WithTheBody('referencingEntity\SomeEntity', '
             /** @var int|OtherEntity-ID */
             public $other;
-            function __construct($other) { $this->other = $other; }
+            /** @var null|int|OtherEntity-ID */
+            public $otherNull;
+            function __construct($other) { $this->other = $other; $this->otherNull = $other; }
         ');
         $this->class->givenTheClass_WithTheBody('referencingEntity\OtherEntity', '
             function __toString() { return "The Other"; }
@@ -258,8 +260,9 @@ class ShowPropertiesTest extends Specification {
         $this->registry->givenIHaveSet_AsTheReadActionFor('referencingEntity\ReadOther', 'referencingEntity\OtherEntity');
 
         $this->whenIShowTheResultsOf('MyAction');
-        $this->thenThereShouldBe_Properties(1);
+        $this->thenThereShouldBe_Properties(2);
         $this->thenProperty_ShouldHaveTheName_AndValue(1, 'other', 'The Other');
+        $this->thenProperty_ShouldHaveTheName_AndValue(2, 'otherNull', 'The Other');
     }
 
     ########################################################################################################

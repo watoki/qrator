@@ -22,6 +22,7 @@ use watoki\qrator\RootAction;
 use watoki\reflect\Property;
 use watoki\qrator\RepresenterRegistry;
 use watoki\reflect\type\IdentifierType;
+use watoki\reflect\type\NullableType;
 use watoki\tempan\model\ListModel;
 
 class ExecuteResource extends Container {
@@ -283,6 +284,9 @@ class ExecuteResource extends Container {
 
     private function assembleValueWithActions($entity, Property $property, $value) {
         $type = $property->type();
+        if ($type instanceof NullableType) {
+            $type = $type->getType();
+        }
         if ($type instanceof IdentifierType) {
             $targetRepresenter = $this->registry->getEntityRepresenter($type->getTarget());
             $readActionLink = $targetRepresenter->getReadAction();
