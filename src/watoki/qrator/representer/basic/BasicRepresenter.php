@@ -40,6 +40,11 @@ abstract class BasicRepresenter implements Representer {
                     ->join('|')
                 . ']';
         }
+
+        if (strlen($propertyString) > 21) {
+            $propertyString = substr($propertyString, 0, 9) . '...' . substr($propertyString, -9);
+        }
+
         return $this->getName() . $propertyString;
     }
 
