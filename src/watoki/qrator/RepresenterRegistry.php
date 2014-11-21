@@ -31,10 +31,14 @@ class RepresenterRegistry {
         $this->register((new GenericEntityRepresenter(RootEntity::class))
             ->setName('Qrator'));
 
+        $printDateTime = function (\DateTimeInterface $d) {
+            return $d->format('Y-m-d H:i:s');
+        };
         $this->register((new GenericEntityRepresenter(\DateTime::class))
-            ->setStringifier(function (\DateTime $d) {
-                return $d->format('Y-m-d H:i:s');
-            }));
+            ->setStringifier($printDateTime));
+
+        $this->register((new GenericEntityRepresenter(\DateTimeImmutable::class))
+            ->setStringifier($printDateTime));
     }
 
     /**
