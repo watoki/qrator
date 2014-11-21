@@ -287,7 +287,7 @@ class ExecuteResource extends Container {
         if ($type instanceof NullableType) {
             $type = $type->getType();
         }
-        if ($type instanceof IdentifierType) {
+        if ($type instanceof IdentifierType && $type->getTarget() != get_class($entity)) {
             $targetRepresenter = $this->registry->getEntityRepresenter($type->getTarget());
             $readActionLink = $targetRepresenter->getReadAction($value);
             if ($readActionLink) {
