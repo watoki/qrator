@@ -78,7 +78,9 @@ class RegistryFixture extends Fixture {
     }
 
     public function givenIHaveSet_AsTheReadActionFor($action, $entity) {
-        $this->representers[$entity]->setReadAction(new ActionLink($action));
+        $this->representers[$entity]->setReadAction(function ($id) use ($action) {
+            return new ActionLink($action, ['id' => $id]);
+        });
     }
 
     public function givenISetTheField_Of_To($name, $class, $field) {

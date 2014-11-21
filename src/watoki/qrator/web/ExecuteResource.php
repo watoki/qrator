@@ -289,7 +289,7 @@ class ExecuteResource extends Container {
         }
         if ($type instanceof IdentifierType) {
             $targetRepresenter = $this->registry->getEntityRepresenter($type->getTarget());
-            $readActionLink = $targetRepresenter->getReadAction();
+            $readActionLink = $targetRepresenter->getReadAction($value);
             if ($readActionLink) {
                 $actionRepresenter = $this->registry->getActionRepresenter($readActionLink->getClass());
                 $value = $actionRepresenter->execute($actionRepresenter->create($readActionLink->getArguments()));

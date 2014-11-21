@@ -2,7 +2,6 @@
 namespace watoki\qrator\representer\generic;
 
 use watoki\collections\Set;
-use watoki\qrator\representer\ActionLink;
 use watoki\qrator\representer\basic\BasicEntityRepresenter;
 
 class GenericEntityRepresenter extends BasicEntityRepresenter {
@@ -20,7 +19,7 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
     private $listAction;
 
     /** @var callable|null */
-    private $readAction;
+    private $readActionGenerator;
 
     /** @var null|callable */
     private $stringifier;
@@ -148,18 +147,21 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
     }
 
     /**
-     * @return null|ActionLink
+     * @param mixed $id
+     * @return null|\watoki\qrator\representer\ActionLink
      */
-    public function getReadAction() {
-        return $this->readAction;
+    public function getReadAction($id) {
+        return $this->readActionGenerator
+            ? call_user_func($this->readActionGenerator, $id)
+            : null;
     }
 
     /**
-     * @param null|ActionLink $action
+     * @param null|callable $generator
      * @return $this
      */
-    public function setReadAction(ActionLink $action) {
-        $this->readAction = $action;
+    public function setReadAction($generator) {
+        $this->readActionGenerator = $generator;
         return $this;
     }
 

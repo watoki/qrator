@@ -252,9 +252,10 @@ class ShowPropertiesTest extends Specification {
                 return new OtherEntity();
             }
         ');
+        $this->class->givenTheClass_WithTheBody('referencingEntity\ReadOther', 'function __construct($id) {}');
+
         $this->dispatcher->givenIAddedTheClass_AsHandlerFor('referencingEntity\MyHandler', 'MyAction');
 
-        $this->class->givenTheClass('referencingEntity\ReadOther');
         $this->dispatcher->givenIAddedTheClass_AsHandlerFor('referencingEntity\MyHandler', 'referencingEntity\ReadOther');
         $this->registry->givenIRegisteredAnEntityRepresenterFor('referencingEntity\OtherEntity');
         $this->registry->givenIHaveSet_AsTheReadActionFor('referencingEntity\ReadOther', 'referencingEntity\OtherEntity');

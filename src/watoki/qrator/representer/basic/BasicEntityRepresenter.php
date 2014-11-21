@@ -33,9 +33,10 @@ abstract class BasicEntityRepresenter extends BasicRepresenter implements Entity
     }
 
     /**
-     * @return object|null
+     * @param mixed $id
+     * @return null|\watoki\qrator\representer\ActionLink
      */
-    public function getReadAction() {
+    public function getReadAction($id) {
         return null;
     }
 
