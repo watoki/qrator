@@ -33,10 +33,9 @@ abstract class BasicEntityRepresenter extends BasicRepresenter implements Entity
     }
 
     /**
-     * @param object $entity
      * @return object|null
      */
-    public function getReadAction($entity) {
+    public function getReadAction() {
         return null;
     }
 

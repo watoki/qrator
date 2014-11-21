@@ -21,6 +21,7 @@ use watoki\qrator\representer\ActionLink;
 use watoki\qrator\RootAction;
 use watoki\reflect\Property;
 use watoki\qrator\RepresenterRegistry;
+use watoki\reflect\type\IdentifierType;
 use watoki\tempan\model\ListModel;
 
 class ExecuteResource extends Container {
@@ -281,8 +282,18 @@ class ExecuteResource extends Container {
     }
 
     private function assembleValueWithActions($entity, Property $property, $value) {
-        $entityRepresenter = $this->registry->getEntityRepresenter($entity);
+        $type = $property->type();
+        if ($type instanceof IdentifierType) {
+            $targetRepresenter = $this->registry->getEntityRepresenter($type->getTarget());
+            $readActionLink = $targetRepresenter->getReadAction();
+            if ($readActionLink) {
+                $actionRepresenter = $this->registry->getActionRepresenter($readActionLink->getClass());
+                $value = $actionRepresenter->execute($actionRepresenter->create($readActionLink->getArguments()));
+            }
+        }
+
         if (is_object($value)) {
+            $entityRepresenter = $this->registry->getEntityRepresenter($entity);
             $propertyRepresenter = $this->registry->getEntityRepresenter($value);
 
             return [

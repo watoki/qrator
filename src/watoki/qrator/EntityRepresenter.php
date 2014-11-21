@@ -24,10 +24,9 @@ interface EntityRepresenter extends Representer {
     public function getPropertyActions($entity, $propertyName, $value);
 
     /**
-     * @param object $entity
      * @return \watoki\qrator\representer\ActionLink|null
      */
-    public function getReadAction($entity);
+    public function getReadAction();
 
     /**
      * @return \watoki\qrator\representer\ActionLink|null

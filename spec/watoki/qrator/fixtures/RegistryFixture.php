@@ -77,6 +77,10 @@ class RegistryFixture extends Fixture {
         $this->representers[$entity]->setListAction(new ActionLink($action));
     }
 
+    public function givenIHaveSet_AsTheReadActionFor($action, $entity) {
+        $this->representers[$entity]->setReadAction(new ActionLink($action));
+    }
+
     public function givenISetTheField_Of_To($name, $class, $field) {
         $this->givenIRegisteredAnActionRepresenterFor($class);
         $this->representers[$class]->setField($name, $field);
