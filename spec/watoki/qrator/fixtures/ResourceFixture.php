@@ -4,6 +4,7 @@ namespace spec\watoki\qrator\fixtures;
 use watoki\collections\Map;
 use watoki\curir\cookie\CookieStore;
 use watoki\curir\delivery\WebRequest;
+use watoki\curir\delivery\WebResponse;
 use watoki\curir\protocol\Url;
 use watoki\curir\responder\Redirecter;
 use watoki\deli\Path;
@@ -110,6 +111,13 @@ class ResourceFixture extends Fixture {
     public function thenThePayloadOfCookie_ShouldBe($name, $payload) {
         $cookie = $this->cookies->read($name);
         $this->spec->assertEquals($payload, $cookie->payload);
+    }
+
+    public function thenTheResponseBodyShouldBe($string) {
+        if (!($this->returned instanceof WebResponse)) {
+            $this->spec->fail("Not a WebResponse");
+        }
+        $this->spec->assertEquals($string, $this->returned->getBody());
     }
 
 }

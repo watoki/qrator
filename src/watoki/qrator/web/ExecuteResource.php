@@ -96,6 +96,11 @@ class ExecuteResource extends Container {
         if ($object) {
             try {
                 $result = $representer->execute($object);
+
+                if ($result instanceof Responder || $result instanceof WebResponse) {
+                    return $result;
+                }
+
                 $followUpAction = $representer->getFollowUpAction($result);
 
                 if ($followUpAction) {

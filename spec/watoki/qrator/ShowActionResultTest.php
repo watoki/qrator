@@ -2,6 +2,8 @@
 namespace spec\watoki\qrator;
 
 use watoki\collections\Liste;
+use watoki\curir\delivery\WebResponse;
+use watoki\curir\responder\MultiResponder;
 use watoki\qrator\web\ExecuteResource;
 use watoki\scrut\Specification;
 
@@ -128,6 +130,24 @@ class ShowActionResultTest extends Specification {
         $this->whenIShowTheResultsOf('MyAction');
         $this->thenAnAlertShouldSay("Empty result.");
         $this->resource->then_ShouldBe('isPreparing', false);
+    }
+
+    function testResultIsAResponse() {
+        $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
+            return new WebResponse('Hello World');
+        }, 'MyAction');
+
+        $this->whenIShowTheResultsOf('MyAction');
+        $this->resource->thenTheResponseBodyShouldBe('Hello World');
+    }
+
+    function testResultIsAResponder() {
+        $this->dispatcher->givenIAddedTheClosure_AsHandlerFor(function () {
+            return new MultiResponder('Hey there');
+        }, 'MyAction');
+
+        $this->whenIShowTheResultsOf('MyAction');
+        $this->resource->thenItShouldReturn(new MultiResponder('Hey there'));
     }
 
     ###########################################################################################
