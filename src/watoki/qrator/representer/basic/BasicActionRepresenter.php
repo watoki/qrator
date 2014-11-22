@@ -2,6 +2,7 @@
 namespace watoki\qrator\representer\basic;
 
 use watoki\collections\Map;
+use watoki\curir\protocol\UploadedFile;
 use watoki\factory\Factory;
 use watoki\qrator\ActionRepresenter;
 use watoki\qrator\form\fields\ArrayField;
@@ -9,6 +10,7 @@ use watoki\qrator\form\fields\CheckboxField;
 use watoki\qrator\form\fields\DateTimeField;
 use watoki\qrator\form\fields\SelectEntityField;
 use watoki\qrator\form\fields\StringField;
+use watoki\qrator\form\fields\UploadFileField;
 use watoki\qrator\RepresenterRegistry;
 use watoki\reflect\Property;
 use watoki\reflect\type\ArrayType;
@@ -141,6 +143,8 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
         switch ($class) {
             case \DateTime::class:
                 return new DateTimeField($name);
+            case UploadedFile::class:
+                return new UploadFileField($name);
             default:
                 throw new \Exception("Class [$class] cannot be mapped to a field.");
         }
