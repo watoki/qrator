@@ -35,7 +35,7 @@ class ShowPropertiesTest extends Specification {
 
         $this->whenIShowTheResultsOf('MyAction');
         $this->thenThereShouldBe_Properties(2);
-        $this->thenProperty_ShouldHaveTheName_AndValue(1, 'propertyOne', 'valueOne');
+        $this->thenProperty_ShouldHaveTheName_AndCaption(1, 'propertyOne', 'valueOne');
         $this->thenProperty_ShouldHaveTheLabel(1, 'Property One');
     }
 
@@ -56,9 +56,9 @@ class ShowPropertiesTest extends Specification {
 
         $this->whenIShowTheResultsOf('MyAction');
         $this->thenThereShouldBe_Properties(3);
-        $this->thenProperty_ShouldHaveTheName_AndValue(1, 'zero', 'null');
-        $this->thenProperty_ShouldHaveTheName_AndValue(2, 'one', 'uno');
-        $this->thenProperty_ShouldHaveTheName_AndValue(3, 'two', 'dos');
+        $this->thenProperty_ShouldHaveTheName_AndCaption(1, 'zero', 'null');
+        $this->thenProperty_ShouldHaveTheName_AndCaption(2, 'one', 'uno');
+        $this->thenProperty_ShouldHaveTheName_AndCaption(3, 'two', 'dos');
     }
 
     function testPropertyWithBooleanValues() {
@@ -75,8 +75,8 @@ class ShowPropertiesTest extends Specification {
 
         $this->whenIShowTheResultsOf('MyAction');
         $this->thenThereShouldBe_Properties(2);
-        $this->thenProperty_ShouldHaveTheName_AndValue(1, 'true', 'Yes');
-        $this->thenProperty_ShouldHaveTheName_AndValue(2, 'false', 'No');
+        $this->thenProperty_ShouldHaveTheName_AndCaption(1, 'true', 'Yes');
+        $this->thenProperty_ShouldHaveTheName_AndCaption(2, 'false', 'No');
     }
 
     function testRenderObjectProperties() {
@@ -93,7 +93,7 @@ class ShowPropertiesTest extends Specification {
 
         $this->whenIShowTheResultsOf('MyAction');
         $this->thenThereShouldBe_Properties(1);
-        $this->thenProperty_ShouldHaveTheName_AndValue(1, 'one', '2012-03-04 15:16');
+        $this->thenProperty_ShouldHaveTheName_AndCaption(1, 'one', '2012-03-04 15:16');
     }
 
     function testShowCollectionObjectProperty() {
@@ -236,11 +236,21 @@ class ShowPropertiesTest extends Specification {
         $this->class->givenTheClass_WithTheBody('referencingEntity\SomeEntity', '
             /** @var int|OtherEntity-ID */
             public $other;
+
             /** @var null|int|OtherEntity-ID */
             public $otherNull;
+
             /** @var null|int|OtherEntity-ID */
             public $reallyNull;
-            function __construct($other) { $this->other = $other; $this->otherNull = $other; }
+
+            /** @var array|int[]|OtherEntity-ID[] */
+            public $others;
+
+            function __construct($other) {
+                $this->other = $other;
+                $this->otherNull = $other;
+                $this->others = array($other);
+            }
         ');
         $this->class->givenTheClass_WithTheBody('referencingEntity\OtherEntity', '
             /** @var int|OtherEntity-ID */
@@ -265,15 +275,19 @@ class ShowPropertiesTest extends Specification {
         $this->registry->givenIHaveSet_AsTheReadActionFor('referencingEntity\ReadOther', 'referencingEntity\OtherEntity');
 
         $this->whenIShowTheResultsOf('MyAction');
-        $this->thenThereShouldBe_Properties(3);
-        $this->thenProperty_ShouldHaveTheName_AndValue(1, 'other', 'The Other');
-        $this->thenProperty_ShouldHaveTheName_AndValue(2, 'otherNull', 'The Other');
-        $this->thenProperty_ShouldHaveTheName_AndValue(3, 'reallyNull', '');
+        $this->thenThereShouldBe_Properties(4);
+        $this->thenProperty_ShouldHaveTheName_AndCaption(1, 'other', 'The Other');
+        $this->thenProperty_ShouldHaveTheName_AndCaption(2, 'otherNull', 'The Other');
+        $this->thenProperty_ShouldHaveTheName_AndCaption(3, 'reallyNull', '');
+        $this->thenProperty_ShouldHaveTheName_AndValue(4, 'others', array(array(
+            'caption' => 'The Other',
+            'actions' => array()
+        )));
 
         $this->resource->givenTheActionArgument_Is('id', 12);
         $this->whenIShowTheResultsOf('referencingEntity\ReadOther');
         $this->thenThereShouldBe_Properties(1);
-        $this->thenProperty_ShouldHaveTheName_AndValue(1, 'me', '73');
+        $this->thenProperty_ShouldHaveTheName_AndCaption(1, 'me', '73');
     }
 
     ########################################################################################################
@@ -292,10 +306,16 @@ class ShowPropertiesTest extends Specification {
         $this->resource->thenThereShouldBe_Of($int, 'entity/0/properties/item');
     }
 
-    private function thenProperty_ShouldHaveTheName_AndValue($int, $name, $value) {
+    private function thenProperty_ShouldHaveTheName_AndCaption($int, $name, $value) {
         $this->thenProperty_ShouldHaveTheName($int, $name);
         $int--;
         $this->resource->then_ShouldBe("entity/0/properties/item/$int/value/caption", $value);
+    }
+
+    private function thenProperty_ShouldHaveTheName_AndValue($int, $name, $value) {
+        $this->thenProperty_ShouldHaveTheName($int, $name);
+        $int--;
+        $this->resource->then_ShouldBe("entity/0/properties/item/$int/value", $value);
     }
 
     private function thenValue_OfProperty_ShouldHaveAction_WithTheLinkTarget($valuePos, $propertyPos, $actionPos, $target) {

@@ -21,6 +21,7 @@ use watoki\qrator\representer\ActionLink;
 use watoki\qrator\RootAction;
 use watoki\reflect\Property;
 use watoki\qrator\RepresenterRegistry;
+use watoki\reflect\type\ArrayType;
 use watoki\reflect\type\IdentifierType;
 use watoki\reflect\type\NullableType;
 use watoki\tempan\model\ListModel;
@@ -291,6 +292,8 @@ class ExecuteResource extends Container {
         $type = $property->type();
         if ($type instanceof NullableType) {
             $type = $type->getType();
+        } else if ($type instanceof ArrayType) {
+            $type = $type->getItemType();
         }
         if ($value && $type instanceof IdentifierType && $type->getTarget() != get_class($entity)) {
             $targetRepresenter = $this->registry->getEntityRepresenter($type->getTarget());
