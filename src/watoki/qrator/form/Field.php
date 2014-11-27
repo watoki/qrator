@@ -9,6 +9,9 @@ abstract class Field {
     /** @var mixed */
     private $value;
 
+    /** @var string */
+    private $label;
+
     /** @var bool */
     private $required = false;
 
@@ -17,6 +20,7 @@ abstract class Field {
      */
     public function __construct($name) {
         $this->name = $name;
+        $this->label = ucfirst(preg_replace('/([a-z])([A-Z])/', '$1 $2', $this->getName()));
     }
 
     /**
@@ -43,7 +47,7 @@ abstract class Field {
      * @return string
      */
     public function getLabel() {
-        return ucfirst(preg_replace('/([a-z])([A-Z])/', '$1 $2', $this->getName()));
+        return $this->label;
     }
 
     /**
@@ -87,6 +91,14 @@ abstract class Field {
      */
     public function addToFoot() {
         return [];
+    }
+
+    /**
+     * @param string $label
+     */
+    public function setLabel($label) {
+        $this->label = $label;
+        return $this;
     }
 
 }
