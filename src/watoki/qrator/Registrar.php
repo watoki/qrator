@@ -34,6 +34,7 @@ class Registrar {
                     $actions[] = new ActionLink($action, call_user_func($arguments, $entity));
                 }
             }
+
             return $actions;
         });
     }
@@ -56,20 +57,25 @@ class Registrar {
         $representer = new MethodActionRepresenter($class, $method, $this->factory);
         $this->registry->register($representer);
 
-        $predicate = $predicate ?: function () {
+        $predicate = $predicate ? : function () {
             return true;
         };
-        $arguments = $arguments ?: function ($entity) {
-            if (isset($entity->id)) {
-                return ['id' => $entity->id];
-            } else if (method_exists($entity, 'getId')) {
-                return ['id' => call_user_func([$entity, 'getId'])];
-            } else {
+        $arguments = $arguments ? : function ($entity) {
+            $representer = $this->registry->getEntityRepresenter($entity);
+            $key = $representer->keyProperty();
+
+            $properties = $representer->getProperties($entity);
+            if (!$properties->has($key)) {
                 return [];
             }
+
+            return [
+                $key => (string)$properties[$key]->get($entity)
+            ];
         };
 
         $this->actions[$representer->getClass()] = [$predicate, $arguments];
+
         return $representer;
     }
 }

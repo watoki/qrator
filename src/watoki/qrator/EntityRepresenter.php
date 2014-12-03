@@ -40,4 +40,9 @@ interface EntityRepresenter extends Representer {
      */
     public function getCondensedProperties($object);
 
+    /**
+     * @return string Name of key property
+     */
+    public function keyProperty();
+
 } 

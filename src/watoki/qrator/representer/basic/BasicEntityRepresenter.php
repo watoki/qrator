@@ -55,4 +55,11 @@ abstract class BasicEntityRepresenter extends BasicRepresenter implements Entity
         $properties = $this->getProperties($object);
         return $properties->select($properties->keys()->limit(5));
     }
+
+    /**
+     * @return string
+     */
+    public function keyProperty() {
+        return 'id';
+    }
 }

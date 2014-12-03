@@ -33,6 +33,9 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
     /** @var array|null */
     private $condensedProperties;
 
+    /** @var null|string */
+    private $keyProperty;
+
     /**
      * @param string $class
      */
@@ -101,6 +104,7 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
     /**
      * @param object $entity
      * @param string $propertyName
+     * @param mixed $value
      * @return array|\watoki\qrator\representer\ActionLink[]
      */
     public function getPropertyActions($entity, $propertyName, $value) {
@@ -200,4 +204,20 @@ class GenericEntityRepresenter extends BasicEntityRepresenter {
         }
         return $this->getProperties($object)->select(new Set($this->condensedProperties));
     }
+
+    /**
+     * @return string
+     */
+    public function keyProperty() {
+        return $this->keyProperty ? : parent::keyProperty();
+    }
+
+    /**
+     * @param null|string $keyProperty
+     */
+    public function setKeyProperty($keyProperty) {
+        $this->keyProperty = $keyProperty;
+    }
+
+
 }

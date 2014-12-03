@@ -43,7 +43,7 @@ class SelectEntityField extends SelectField {
         return $this->entityClass;
     }
 
-    protected function getOptions() {
+    protected function getEntityList() {
         $representer = $this->registry->getEntityRepresenter($this->entityClass);
         $listActionLink = $representer->getListAction();
 
@@ -53,10 +53,15 @@ class SelectEntityField extends SelectField {
         }
 
         $actionRepresenter = $this->registry->getActionRepresenter($listActionLink->getClass());
+        return $actionRepresenter->execute($actionRepresenter->create($listActionLink->getArguments()));
+    }
+
+    protected function getOptions() {
+        $representer = $this->registry->getEntityRepresenter($this->entityClass);
 
         $options = [];
-        foreach ($actionRepresenter->execute($actionRepresenter->create($listActionLink->getArguments())) as $entity) {
-            $options[(string)$representer->getProperties($entity)['id']->get($entity)] = $representer->toString($entity);
+        foreach ($this->getEntityList() as $entity) {
+            $options[(string)$representer->getProperties($entity)[$representer->keyProperty()]->get($entity)] = $representer->toString($entity);
         }
         return $options;
     }
