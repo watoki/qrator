@@ -3,6 +3,7 @@ namespace watoki\qrator;
 
 use watoki\factory\Factory;
 use watoki\qrator\representer\ActionLink;
+use watoki\qrator\representer\generic\GenericActionRepresenter;
 use watoki\qrator\representer\generic\GenericEntityRepresenter;
 use watoki\qrator\representer\MethodActionRepresenter;
 
@@ -54,7 +55,30 @@ class Registrar {
      * @return MethodActionRepresenter
      */
     public function addMethodAction($class, $method, $predicate = null, $arguments = null) {
-        $representer = new MethodActionRepresenter($class, $method, $this->factory);
+        return $this->add(new MethodActionRepresenter($class, $method, $this->factory), $predicate, $arguments);
+    }
+
+    /**
+     * @param string $class
+     * @param callable|object|string $handler
+     * @param null|callable $predicate
+     * @param null|callable $arguments
+     * @return GenericActionRepresenter
+     */
+    public function addAction($class, $handler, $predicate = null, $arguments = null) {
+        $representer = new GenericActionRepresenter($class, $this->factory);
+        $representer->setHandler($handler);
+        return $this->add($representer, $predicate, $arguments);
+    }
+
+
+    /**
+     * @param ActionRepresenter $representer
+     * @param null|callable $predicate
+     * @param null|callable $arguments
+     * @return ActionRepresenter
+     */
+    public function add(ActionRepresenter $representer, $predicate = null, $arguments = null) {
         $this->registry->register($representer);
 
         $predicate = $predicate ? : function () {
