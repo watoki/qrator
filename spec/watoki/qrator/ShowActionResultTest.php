@@ -159,25 +159,25 @@ class ShowActionResultTest extends Specification {
     }
 
     private function thenTheNameShouldBe($string) {
-        $this->resource->then_ShouldBe('entity/0/name', $string);
+        $this->resource->then_ShouldBe('entity/name', $string);
     }
 
     private function thenThereShouldBe_Actions($int) {
-        $this->resource->thenThereShouldBe_Of($int, 'entity/0/actions/item');
+        $this->resource->thenThereShouldBe_Of($int, 'entity/actions/item');
     }
 
     private function thenThereShouldBeNoActions() {
-        $this->resource->then_ShouldBe('entity/0/actions/isEmpty', true);
+        $this->resource->then_ShouldBe('entity/actions/isEmpty', true);
     }
 
     private function thenAction_ShouldHaveTheCaption($int, $string) {
         $int--;
-        $this->resource->then_ShouldBe("entity/0/actions/item/$int/caption", $string);
+        $this->resource->then_ShouldBe("entity/actions/item/$int/caption", $string);
     }
 
     private function thenAction_ShouldLinkTo($int, $string) {
         $int--;
-        $this->resource->then_ShouldBe("entity/0/actions/item/$int/link/href", $string);
+        $this->resource->then_ShouldBe("entity/actions/item/$int/link/href", $string);
     }
 
     private function thenThereShouldBe_Entities($int) {
@@ -204,12 +204,12 @@ class ShowActionResultTest extends Specification {
 
     private function thenAction_ShouldRequireConfirming($int, $message) {
         $int--;
-        $this->resource->then_ShouldBe("entity/0/actions/item/$int/link/onclick", "return confirm('$message');");
+        $this->resource->then_ShouldBe("entity/actions/item/$int/link/onclick", "return confirm('$message');");
     }
 
     private function thenAction_ShouldNotRequireConfirmation($int) {
         $int--;
-        $this->resource->then_ShouldBe("entity/0/actions/item/$int/link/onclick", "return true;");
+        $this->resource->then_ShouldBe("entity/actions/item/$int/link/onclick", "return true;");
     }
 
     private function givenISet_ToRequireConfirmation($class) {

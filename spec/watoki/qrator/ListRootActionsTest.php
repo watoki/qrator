@@ -21,7 +21,7 @@ class ListRootActionsTest extends Specification {
 
     function testRootActionReturnsItself() {
         $this->whenIExecute(RootAction::class);
-        $this->thenItShouldShouldTheEntity('Qrator');
+        $this->thenItShouldShowTheEntity('Qrator');
     }
 
     ####################################################################################################
@@ -38,8 +38,8 @@ class ListRootActionsTest extends Specification {
         }, ExecuteResource::class);
     }
 
-    private function thenItShouldShouldTheEntity($string) {
-        $this->resource->then_ShouldBe('entity/0/name', $string);
+    private function thenItShouldShowTheEntity($string) {
+        $this->resource->then_ShouldBe('entity/name', $string);
     }
 
 } 

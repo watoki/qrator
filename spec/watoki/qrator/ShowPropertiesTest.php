@@ -299,69 +299,69 @@ class ShowPropertiesTest extends Specification {
     }
 
     private function thenThereShouldBeNoProperties() {
-        $this->resource->then_ShouldBe('entity/0/properties/isEmpty', true);
+        $this->resource->then_ShouldBe('entity/properties/isEmpty', true);
     }
 
     private function thenThereShouldBe_Properties($int) {
-        $this->resource->thenThereShouldBe_Of($int, 'entity/0/properties/item');
+        $this->resource->thenThereShouldBe_Of($int, 'entity/properties/item');
     }
 
     private function thenProperty_ShouldHaveTheName_AndCaption($int, $name, $value) {
         $this->thenProperty_ShouldHaveTheName($int, $name);
         $int--;
-        $this->resource->then_ShouldBe("entity/0/properties/item/$int/value/caption", $value);
+        $this->resource->then_ShouldBe("entity/properties/item/$int/value/caption", $value);
     }
 
     private function thenProperty_ShouldHaveTheName_AndValue($int, $name, $value) {
         $this->thenProperty_ShouldHaveTheName($int, $name);
         $int--;
-        $this->resource->then_ShouldBe("entity/0/properties/item/$int/value", $value);
+        $this->resource->then_ShouldBe("entity/properties/item/$int/value", $value);
     }
 
     private function thenValue_OfProperty_ShouldHaveAction_WithTheLinkTarget($valuePos, $propertyPos, $actionPos, $target) {
         $propertyPos--;
         $valuePos--;
         $actionPos--;
-        $this->resource->then_ShouldBe("entity/0/properties/item/$propertyPos/value/$valuePos/actions/$actionPos/link/href", $target);
+        $this->resource->then_ShouldBe("entity/properties/item/$propertyPos/value/$valuePos/actions/$actionPos/link/href", $target);
     }
 
     private function thenProperty_ShouldHaveTheName($int, $name) {
         $int--;
-        $this->resource->then_ShouldBe("entity/0/properties/item/$int/name", $name);
+        $this->resource->then_ShouldBe("entity/properties/item/$int/name", $name);
     }
 
     private function thenProperty_ShouldHaveTheLabel($int, $name) {
         $int--;
-        $this->resource->then_ShouldBe("entity/0/properties/item/$int/label", $name);
+        $this->resource->then_ShouldBe("entity/properties/item/$int/label", $name);
     }
 
     private function thenProperty_ShouldHave_Value($pos, $count) {
         $pos--;
-        $this->resource->thenThereShouldBe_Of($count, "entity/0/properties/item/$pos/value");
+        $this->resource->thenThereShouldBe_Of($count, "entity/properties/item/$pos/value");
     }
 
     private function thenProperty_ShouldHaveValue_WithTheCaption($propertyPos, $valuePos, $caption) {
         $propertyPos--;
         $valuePos--;
-        $value = $this->resource->get("entity/0/properties/item/$propertyPos/value/$valuePos/caption");
+        $value = $this->resource->get("entity/properties/item/$propertyPos/value/$valuePos/caption");
         $this->assertEquals($caption, str_replace("\n", '', $value));
     }
 
     private function thenProperty_ShouldHave_Actions($propertyPos, $count) {
         $propertyPos--;
-        $this->resource->thenThereShouldBe_Of($count, "entity/0/properties/item/$propertyPos/value/actions");
+        $this->resource->thenThereShouldBe_Of($count, "entity/properties/item/$propertyPos/value/actions");
     }
 
     private function thenProperty_ShouldHaveAction_WithTheCaption($propertyPos, $actionPos, $name) {
         $propertyPos--;
         $actionPos--;
-        $this->resource->then_ShouldBe("entity/0/properties/item/$propertyPos/value/actions/$actionPos/caption", $name);
+        $this->resource->then_ShouldBe("entity/properties/item/$propertyPos/value/actions/$actionPos/caption", $name);
     }
 
     private function thenProperty_ShouldHaveAction_WithTheLinkTarget($propertyPos, $actionPos, $target) {
         $propertyPos--;
         $actionPos--;
-        $this->resource->then_ShouldBe("entity/0/properties/item/$propertyPos/value/actions/$actionPos/link/href", $target);
+        $this->resource->then_ShouldBe("entity/properties/item/$propertyPos/value/actions/$actionPos/link/href", $target);
     }
 
 } 

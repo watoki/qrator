@@ -9,8 +9,8 @@ use watoki\curir\delivery\WebResponse;
 use watoki\curir\error\HttpError;
 use watoki\curir\protocol\Url;
 use watoki\curir\rendering\adapter\TempanRenderer;
-use watoki\curir\Responder;
 use watoki\curir\responder\Redirecter;
+use watoki\curir\Responder;
 use watoki\deli\Request;
 use watoki\dom\Element;
 use watoki\dom\Text;
@@ -18,9 +18,9 @@ use watoki\factory\exception\InjectionException;
 use watoki\factory\Factory;
 use watoki\qrator\form\Field;
 use watoki\qrator\representer\ActionLink;
+use watoki\qrator\RepresenterRegistry;
 use watoki\qrator\RootAction;
 use watoki\reflect\Property;
-use watoki\qrator\RepresenterRegistry;
 use watoki\reflect\type\ArrayType;
 use watoki\reflect\type\IdentifierType;
 use watoki\reflect\type\NullableType;
@@ -151,11 +151,13 @@ class ExecuteResource extends Container {
         $entityModel = $this->assembleResult($result);
 
         if ($entityModel) {
-            $noShow = count($entityModel) > 1 ? 'list' : 'table';
+            $keys = array_keys($entityModel);
+            $noShow = $keys[0] !== 0 ? 'table' : 'list';
+
             return [
                 'entity' => $entityModel,
                 'isPreparing' => false,
-                'properties' => $entityModel[0]['properties'],
+                'properties' => $keys[0] !== 0 ? $entityModel['properties'] : $entityModel[0]['properties'],
                 $noShow => ['class' => function (Element $e) {
                         return $e->getAttribute('class')->getValue() . ' no-show';
                     }],
@@ -233,7 +235,7 @@ class ExecuteResource extends Container {
             }
             return $entities;
         } else if (is_object($result)) {
-            return [$this->assembleEntity($result)];
+            return $this->assembleEntity($result);
         } else {
             return null;
         }
@@ -256,7 +258,10 @@ class ExecuteResource extends Container {
         $properties = [];
 
         $representer = $this->registry->getEntityRepresenter($entity);
-        $entityProperties = $short ? $representer->getCondensedProperties($entity) : $representer->getProperties($entity);
+        $entityProperties = $short
+            ? $representer->getCondensedProperties($entity)
+            : $representer->getProperties($entity);
+
         foreach ($entityProperties as $property) {
             if ($property->canGet($entity)) {
                 $properties[] = $this->assembleProperty($entity, $property);
