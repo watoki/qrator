@@ -16,7 +16,7 @@ class CheckboxFieldTest extends Specification {
     function testUnchecked() {
         $this->field->whenIRenderTheField();
         $this->field->thenTheOutputShouldBe('
-        <div class="checkbox">
+        <div>
             <label>
                 <input name="args[test]" type="checkbox" value="on">
                 Test</label>
@@ -27,7 +27,7 @@ class CheckboxFieldTest extends Specification {
         $this->field->givenTheValueIs(true);
         $this->field->whenIRenderTheField();
         $this->field->thenTheOutputShouldBe('
-        <div class="checkbox">
+        <div>
             <label>
                 <input name="args[test]" type="checkbox" checked value="on">
                 Test</label>
