@@ -99,6 +99,7 @@ class ExecuteResource extends Container {
                 $result = $representer->execute($object);
 
                 if ($result instanceof Responder || $result instanceof WebResponse) {
+                    $this->updateBreadcrumb($crumbs, $object, $args);
                     return $result;
                 }
 
