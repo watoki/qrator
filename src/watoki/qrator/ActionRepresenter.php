@@ -47,4 +47,9 @@ interface ActionRepresenter extends Representer {
      */
     public function requiresConfirmation();
 
+    /**
+     * @return \watoki\curir\protocol\Url of the Resource that represents the action
+     */
+    public function getResourceUrl();
+
 } 

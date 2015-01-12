@@ -9,8 +9,8 @@ use watoki\curir\delivery\WebResponse;
 use watoki\curir\error\HttpError;
 use watoki\curir\protocol\Url;
 use watoki\curir\rendering\adapter\TempanRenderer;
-use watoki\curir\responder\Redirecter;
 use watoki\curir\Responder;
+use watoki\curir\responder\Redirecter;
 use watoki\deli\Request;
 use watoki\dom\Element;
 use watoki\dom\Text;
@@ -148,7 +148,7 @@ class ExecuteResource extends Container {
         ], $model);
     }
 
-    private function assemblePossiblyEmptyResult($result) {
+    protected function assemblePossiblyEmptyResult($result) {
         $entityModel = $this->assembleResult($result);
 
         if ($entityModel) {
@@ -171,7 +171,7 @@ class ExecuteResource extends Container {
         }
     }
 
-    private function assembleForm($action, Map $args) {
+    protected function assembleForm($action, Map $args) {
         $representer = $this->registry->getActionRepresenter($action);
 
         $parameters = [
@@ -193,7 +193,7 @@ class ExecuteResource extends Container {
         $representer->preFill($fields);
 
         $form = [
-            'action' => 'execute',
+            'action' => $representer->getResourceUrl()->toString(),
             'parameter' => $parameters,
             'field' => $this->assembleFields($fields)
         ];
@@ -204,7 +204,7 @@ class ExecuteResource extends Container {
      * @param Field[] $fields
      * @param Map $args
      */
-    private function fill($fields, Map $args) {
+    protected function fill($fields, Map $args) {
         foreach ($args as $key => $value) {
             if (array_key_exists($key, $fields)) {
                 $fields[$key]->setValue($value);
@@ -212,23 +212,25 @@ class ExecuteResource extends Container {
         }
     }
 
-    private function assembleFields($fields) {
+    protected function assembleFields($fields) {
         return array_map(function (Field $field) {
             return $field->render();
         }, array_values($fields));
     }
 
-    private function urlOfLastAction() {
+    protected function urlOfLastAction() {
         $lastAction = $this->cookies->read(ExecuteResource::LAST_ACTION_COOKIE)->payload;
 
-        $url = Url::fromString('execute');
+        $representer = $this->registry->getActionRepresenter($lastAction['action']);
+
+        $url = $representer->getResourceUrl();
         $url->getParameters()->set('action', $lastAction['action']);
         $url->getParameters()->set('args', new Map($lastAction['arguments']));
 
         return $url;
     }
 
-    private function assembleResult($result) {
+    protected function assembleResult($result) {
         if ($this->isArray($result)) {
             $entities = [];
             foreach ($result as $entity) {
@@ -242,7 +244,7 @@ class ExecuteResource extends Container {
         }
     }
 
-    private function assembleEntity($entity, $short = false) {
+    protected function assembleEntity($entity, $short = false) {
         $representer = $this->registry->getEntityRepresenter($entity);
         $properties = $this->assembleProperties($entity, $short);
         $actions = $this->assembleActions($representer->getActions($entity), $entity);
@@ -255,7 +257,7 @@ class ExecuteResource extends Container {
         ];
     }
 
-    private function assembleProperties($entity, $short) {
+    protected function assembleProperties($entity, $short) {
         $properties = [];
 
         $representer = $this->registry->getEntityRepresenter($entity);
@@ -272,7 +274,7 @@ class ExecuteResource extends Container {
         return $properties;
     }
 
-    private function assembleProperty($entity, Property $property) {
+    protected function assembleProperty($entity, Property $property) {
         return [
             'name' => $property->name(),
             'label' => ucfirst(preg_replace('/([a-z])([A-Z])/', '$1 $2', $property->name())),
@@ -280,7 +282,7 @@ class ExecuteResource extends Container {
         ];
     }
 
-    private function assembleValue($entity, Property $property) {
+    protected function assembleValue($entity, Property $property) {
         $value = $property->get($entity);
 
         if ($this->isArray($value)) {
@@ -294,7 +296,7 @@ class ExecuteResource extends Container {
         }
     }
 
-    private function assembleValueWithActions($entity, Property $property, $value) {
+    protected function assembleValueWithActions($entity, Property $property, $value) {
         $type = $property->type();
         if ($type instanceof NullableType) {
             $type = $type->getType();
@@ -340,19 +342,20 @@ class ExecuteResource extends Container {
      * @param $actions
      * @return array|\watoki\qrator\representer\ActionLink[]
      */
-    private function assembleActions($actions) {
+    protected function assembleActions($actions) {
         return array_map(function ($action) {
             return $this->assembleAction($action);
         }, $actions);
     }
 
-    private function assembleAction(ActionLink $action) {
-        $target = Url::fromString('execute');
+    protected function assembleAction(ActionLink $action) {
+        $representer = $this->registry->getActionRepresenter($action->getClass());
+
+        $target = Url::fromString($representer->getResourceUrl());
 
         $target->getParameters()->set('action', $action->getClass());
         $target->getParameters()->set('args', $action->getArguments());
 
-        $representer = $this->registry->getActionRepresenter($action->getClass());
         return [
             'caption' => $representer->render(),
             'link' => [
@@ -364,14 +367,14 @@ class ExecuteResource extends Container {
         ];
     }
 
-    private function storeLastAction($action, Map $args) {
+    protected function storeLastAction($action, Map $args) {
         $this->cookies->create(new Cookie([
             'action' => $action,
             'arguments' => $args->toArray()
         ]), self::LAST_ACTION_COOKIE);
     }
 
-    private function updateBreadcrumb($crumbs, $object, Map $args) {
+    protected function updateBreadcrumb($crumbs, $object, Map $args) {
         if ($crumbs) {
             $newCrumbs = [];
             foreach ($crumbs as $crumb) {
@@ -395,22 +398,24 @@ class ExecuteResource extends Container {
         return $crumbs;
     }
 
-    private function saveBreadCrumbs($crumbs) {
+    protected function saveBreadCrumbs($crumbs) {
         $this->cookies->create(new Cookie($crumbs), self::BREADCRUMB_COOKIE);
     }
 
-    private function readBreadcrumbs() {
+    protected function readBreadcrumbs() {
         if ($this->cookies->hasKey(self::BREADCRUMB_COOKIE)) {
             return $this->cookies->read(self::BREADCRUMB_COOKIE)->payload;
         }
         return [];
     }
 
-    private function assembleBreadcrumbs($crumbs) {
+    protected function assembleBreadcrumbs($crumbs) {
         return [
             'breadcrumb' => array_map(function ($crumb) {
                 list($caption, $action, $args) = $crumb;
-                $url = Url::fromString('execute');
+                $representer = $this->registry->getActionRepresenter($action);
+
+                $url = $representer->getResourceUrl();
                 $url->getParameters()->set('action', $action);
                 $url->getParameters()->set('args', new Map($args));
                 return [
@@ -421,12 +426,14 @@ class ExecuteResource extends Container {
         ];
     }
 
-    private function isArray($var) {
+    protected function isArray($var) {
         return is_array($var) || $var instanceof \ArrayAccess;
     }
 
-    private function urlOfAction(ActionLink $followUpAction) {
-        $url = Url::fromString('execute');
+    protected function urlOfAction(ActionLink $followUpAction) {
+        $representer = $this->registry->getActionRepresenter($followUpAction->getClass());
+
+        $url = $representer->getResourceUrl();
         $url->getParameters()->set('action', $followUpAction->getClass());
         $url->getParameters()->set('args', $followUpAction->getArguments());
         return $url;

@@ -3,6 +3,7 @@ namespace watoki\qrator\representer\basic;
 
 use watoki\collections\Map;
 use watoki\curir\protocol\UploadedFile;
+use watoki\curir\protocol\Url;
 use watoki\factory\Factory;
 use watoki\qrator\ActionRepresenter;
 use watoki\qrator\form\fields\ArrayField;
@@ -49,7 +50,7 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
      * @return object
      */
     public function create(Map $args = null) {
-        $args = $args ?: new Map();
+        $args = $args ? : new Map();
 
         $inflated = [];
         foreach ($this->getProperties() as $property) {
@@ -201,5 +202,12 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
                 return call_user_func(array($handler, $methodName), $action);
             };
         }
+    }
+
+    /**
+     * @return Url
+     */
+    public function getResourceUrl() {
+        return Url::fromString('execute');
     }
 }

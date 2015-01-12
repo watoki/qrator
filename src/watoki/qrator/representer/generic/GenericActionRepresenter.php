@@ -1,6 +1,7 @@
 <?php
 namespace watoki\qrator\representer\generic;
 
+use watoki\curir\protocol\Url;
 use watoki\factory\Factory;
 use watoki\qrator\form\Field;
 use watoki\qrator\representer\basic\BasicActionRepresenter;
@@ -32,6 +33,9 @@ class GenericActionRepresenter extends BasicActionRepresenter {
     /** @var string|null */
     private $confirmation;
 
+    /** @var null|Url */
+    private $resourceUrl;
+
     /**
      * @param string $class
      * @param Factory $factory <-
@@ -51,7 +55,7 @@ class GenericActionRepresenter extends BasicActionRepresenter {
      * @return string
      */
     public function getName() {
-        return $this->name ?: parent::getName();
+        return $this->name ? : parent::getName();
     }
 
     /**
@@ -182,5 +186,25 @@ class GenericActionRepresenter extends BasicActionRepresenter {
         }
         $this->confirmation = $message;
         return $this;
+    }
+
+    /**
+     * @return Url
+     */
+    public function getResourceUrl() {
+        if ($this->resourceUrl) {
+            return $this->resourceUrl->copy();
+        }
+        return parent::getResourceUrl();
+    }
+
+    /**
+     * @param null|string|Url $url
+     */
+    public function setResourceUrl($url) {
+        if (is_string($url)) {
+            $url = Url::fromString($url);
+        }
+        $this->resourceUrl = $url;
     }
 }
