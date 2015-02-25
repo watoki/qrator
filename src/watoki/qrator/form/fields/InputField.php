@@ -5,7 +5,7 @@ use watoki\qrator\form\TemplatedField;
 
 class InputField extends TemplatedField {
 
-    private $type;
+    protected $type;
 
     public function __construct($name, $type = 'text') {
         parent::__construct($name);

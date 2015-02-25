@@ -12,6 +12,9 @@ class DateTimeField extends InputField {
     }
 
     public function addToHead() {
+        if ($this->type != 'text') {
+            return [];
+        }
         return [
             'jquery' => self::ASSET_JQUERY,
             'jquery.datetimepicker' => '
@@ -21,6 +24,9 @@ class DateTimeField extends InputField {
     }
 
     public function addToFoot() {
+        if ($this->type != 'text') {
+            return [];
+        }
         return ["
             <script>
                 $('.date-time-field').datetimepicker({
