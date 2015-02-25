@@ -9,8 +9,8 @@ use watoki\qrator\ActionRepresenter;
 use watoki\qrator\form\fields\ArrayField;
 use watoki\qrator\form\fields\CheckboxField;
 use watoki\qrator\form\fields\DateTimeField;
-use watoki\qrator\form\fields\SelectEntityField;
 use watoki\qrator\form\fields\InputField;
+use watoki\qrator\form\fields\SelectEntityField;
 use watoki\qrator\form\fields\UploadFileField;
 use watoki\qrator\RepresenterRegistry;
 use watoki\reflect\Property;
@@ -19,6 +19,7 @@ use watoki\reflect\type\BooleanType;
 use watoki\reflect\type\ClassType;
 use watoki\reflect\type\IdentifierObjectType;
 use watoki\reflect\type\IdentifierType;
+use watoki\reflect\type\IntegerType;
 use watoki\reflect\type\MultiType;
 
 abstract class BasicActionRepresenter extends BasicRepresenter implements ActionRepresenter {
@@ -129,6 +130,8 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
             return $this->getFieldForType($name, $type->getTypes()[0]);
         } else if ($type instanceof ClassType) {
             return $this->getFieldForClass($name, $type->getClass());
+        } else if ($type instanceof IntegerType) {
+            return new InputField($name, 'number');
         } else {
             return new InputField($name);
         }
