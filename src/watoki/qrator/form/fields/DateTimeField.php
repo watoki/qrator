@@ -1,7 +1,7 @@
 <?php
 namespace watoki\qrator\form\fields;
 
-class DateTimeField extends StringField {
+class DateTimeField extends InputField {
 
     public function inflate($value) {
         return new \DateTime($value);

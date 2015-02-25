@@ -3,11 +3,19 @@ namespace watoki\qrator\form\fields;
 
 use watoki\qrator\form\TemplatedField;
 
-class StringField extends TemplatedField {
+class InputField extends TemplatedField {
+
+    private $type;
+
+    public function __construct($name, $type = 'text') {
+        parent::__construct($name);
+        $this->type = $type;
+    }
 
     protected function getModel() {
         return array_merge(parent::getModel(), [
-            'class' => $this->getClass()
+            'class' => $this->getClass(),
+            'type' => $this->type
         ]);
     }
 
@@ -17,6 +25,5 @@ class StringField extends TemplatedField {
     protected function getClass() {
         return 'form-control';
     }
-
 
 }

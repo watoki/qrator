@@ -2,7 +2,7 @@
 namespace spec\watoki\qrator\form\fields;
 
 use watoki\qrator\form\fields\ArrayField;
-use watoki\qrator\form\fields\StringField;
+use watoki\qrator\form\fields\InputField;
 use watoki\scrut\Specification;
 
 /**
@@ -42,7 +42,7 @@ class ArrayFieldTest extends Specification {
      * @param $innerName
      */
     private function givenAndArrayField_OfStringFields($outerName, $innerName) {
-        $this->field->givenTheField(new ArrayField($outerName, new StringField($innerName)));
+        $this->field->givenTheField(new ArrayField($outerName, new InputField($innerName)));
     }
 
 } 

@@ -10,7 +10,7 @@ use watoki\qrator\form\fields\ArrayField;
 use watoki\qrator\form\fields\CheckboxField;
 use watoki\qrator\form\fields\DateTimeField;
 use watoki\qrator\form\fields\SelectEntityField;
-use watoki\qrator\form\fields\StringField;
+use watoki\qrator\form\fields\InputField;
 use watoki\qrator\form\fields\UploadFileField;
 use watoki\qrator\RepresenterRegistry;
 use watoki\reflect\Property;
@@ -130,7 +130,7 @@ abstract class BasicActionRepresenter extends BasicRepresenter implements Action
         } else if ($type instanceof ClassType) {
             return $this->getFieldForClass($name, $type->getClass());
         } else {
-            return new StringField($name);
+            return new InputField($name);
         }
     }
 

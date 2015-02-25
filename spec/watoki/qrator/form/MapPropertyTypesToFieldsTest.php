@@ -5,7 +5,7 @@ use watoki\qrator\form\fields\ArrayField;
 use watoki\qrator\form\fields\CheckboxField;
 use watoki\qrator\form\fields\DateTimeField;
 use watoki\qrator\form\fields\SelectEntityField;
-use watoki\qrator\form\fields\StringField;
+use watoki\qrator\form\fields\InputField;
 use watoki\qrator\representer\generic\GenericActionRepresenter;
 use watoki\scrut\Specification;
 
@@ -19,7 +19,7 @@ class MapPropertyTypesToFieldsTest extends Specification {
             public $unknown;
         ');
         $this->whenIGetTheFieldsOf('mapUnknown\Action');
-        $this->then_ShouldBeA('unknown', StringField::class);
+        $this->then_ShouldBeA('unknown', InputField::class);
     }
 
     function testString() {
@@ -28,7 +28,7 @@ class MapPropertyTypesToFieldsTest extends Specification {
             public $string;
         ');
         $this->whenIGetTheFieldsOf('mapString\Action');
-        $this->then_ShouldBeA('string', StringField::class);
+        $this->then_ShouldBeA('string', InputField::class);
     }
 
     function testArray() {
@@ -38,7 +38,7 @@ class MapPropertyTypesToFieldsTest extends Specification {
         ');
         $this->whenIGetTheFieldsOf('mapArray\Action');
         $this->then_ShouldBeA('array', ArrayField::class);
-        $this->thenTheInnerFieldOf_ShouldBeA('array', StringField::class);
+        $this->thenTheInnerFieldOf_ShouldBeA('array', InputField::class);
     }
 
     function testSelectEntity() {
