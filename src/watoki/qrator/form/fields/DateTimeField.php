@@ -4,6 +4,9 @@ namespace watoki\qrator\form\fields;
 class DateTimeField extends InputField {
 
     public function inflate($value) {
+        if (!$value) {
+            return null;
+        }
         return new \DateTime($value);
     }
 
