@@ -20,7 +20,7 @@ class RepresenterRegistry {
      */
     public function __construct(Factory $factory) {
         $this->factory = $factory;
-        $factory->setSingleton(get_class($this), $this);
+        $factory->setSingleton($this, get_class($this));
 
         $this->register((new GenericActionRepresenter(RootAction::class, $factory))
             ->setHandler(function () {

@@ -28,7 +28,7 @@ class ResourceFixture extends Fixture {
         parent::setUp();
         $this->request = new WebRequest(Url::fromString('http://example.com'), new Path());
         $this->args = new Map();
-        $this->cookies = $this->spec->factory->setSingleton(CookieStore::class, new CookieStore(array()));
+        $this->cookies = $this->spec->factory->setSingleton(new CookieStore(array()), CookieStore::class);
     }
 
     public function givenTheActionArgument_Is($key, $value) {
