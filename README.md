@@ -1,3 +1,9 @@
+# Deprecated #
+
+This project was replaced by [rtens/domin] and will no longer be maintained.
+
+[rtens/domin]: http://github.com/rtens/domin
+
 # qrator [![Build Status](https://travis-ci.org/watoki/qrator.png?branch=master)](https://travis-ci.org/watoki/qrator)
 
 Administration interface using the [Command Object][commandobject] pattern.
