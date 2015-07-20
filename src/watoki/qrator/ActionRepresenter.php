@@ -25,7 +25,6 @@ interface ActionRepresenter extends Representer {
 
     /**
      * @param \watoki\collections\Map|null $args
-     * @internal param $action
      * @return object
      */
     public function create(Map $args = null);

@@ -232,64 +232,6 @@ class ShowPropertiesTest extends Specification {
         $this->thenValue_OfProperty_ShouldHaveAction_WithTheLinkTarget(2, 1, 1, 'execute?action=arrayPropertyActions%5CPropertyAction&args[id]=someID&args[object]=73');
     }
 
-    function testReadReferencedEntity() {
-        $this->class->givenTheClass_WithTheBody('referencingEntity\SomeEntity', '
-            /** @var int|OtherEntity-ID */
-            public $other;
-
-            /** @var null|int|OtherEntity-ID */
-            public $otherNull;
-
-            /** @var null|int|OtherEntity-ID */
-            public $reallyNull;
-
-            /** @var array|int[]|OtherEntity-ID[] */
-            public $others;
-
-            function __construct($other) {
-                $this->other = $other;
-                $this->otherNull = $other;
-                $this->others = array($other);
-            }
-        ');
-        $this->class->givenTheClass_WithTheBody('referencingEntity\OtherEntity', '
-            /** @var int|OtherEntity-ID */
-            public $me = 73;
-            function __toString() { return "The Other"; }
-        ');
-
-        $this->class->givenTheClass_WithTheBody('referencingEntity\MyHandler', '
-            function myAction() {
-                return new SomeEntity(42);
-            }
-            function readOther() {
-                return new OtherEntity();
-            }
-        ');
-        $this->class->givenTheClass_WithTheBody('referencingEntity\ReadOther', 'function __construct($id) {}');
-
-        $this->dispatcher->givenIAddedTheClass_AsHandlerFor('referencingEntity\MyHandler', 'MyAction');
-
-        $this->dispatcher->givenIAddedTheClass_AsHandlerFor('referencingEntity\MyHandler', 'referencingEntity\ReadOther');
-        $this->registry->givenIRegisteredAnEntityRepresenterFor('referencingEntity\OtherEntity');
-        $this->registry->givenIHaveSet_AsTheReadActionFor('referencingEntity\ReadOther', 'referencingEntity\OtherEntity');
-
-        $this->whenIShowTheResultsOf('MyAction');
-        $this->thenThereShouldBe_Properties(4);
-        $this->thenProperty_ShouldHaveTheName_AndCaption(1, 'other', 'The Other');
-        $this->thenProperty_ShouldHaveTheName_AndCaption(2, 'otherNull', 'The Other');
-        $this->thenProperty_ShouldHaveTheName_AndCaption(3, 'reallyNull', '');
-        $this->thenProperty_ShouldHaveTheName_AndValue(4, 'others', array(array(
-            'caption' => 'The Other',
-            'actions' => array()
-        )));
-
-        $this->resource->givenTheActionArgument_Is('id', 12);
-        $this->whenIShowTheResultsOf('referencingEntity\ReadOther');
-        $this->thenThereShouldBe_Properties(1);
-        $this->thenProperty_ShouldHaveTheName_AndCaption(1, 'me', '73');
-    }
-
     ########################################################################################################
 
     private function whenIShowTheResultsOf($action) {
@@ -310,12 +252,6 @@ class ShowPropertiesTest extends Specification {
         $this->thenProperty_ShouldHaveTheName($int, $name);
         $int--;
         $this->resource->then_ShouldBe("entity/properties/item/$int/value/caption", $value);
-    }
-
-    private function thenProperty_ShouldHaveTheName_AndValue($int, $name, $value) {
-        $this->thenProperty_ShouldHaveTheName($int, $name);
-        $int--;
-        $this->resource->then_ShouldBe("entity/properties/item/$int/value", $value);
     }
 
     private function thenValue_OfProperty_ShouldHaveAction_WithTheLinkTarget($valuePos, $propertyPos, $actionPos, $target) {

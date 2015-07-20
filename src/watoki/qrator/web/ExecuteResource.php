@@ -21,9 +21,6 @@ use watoki\qrator\representer\ActionLink;
 use watoki\qrator\RepresenterRegistry;
 use watoki\qrator\RootAction;
 use watoki\reflect\Property;
-use watoki\reflect\type\ArrayType;
-use watoki\reflect\type\IdentifierType;
-use watoki\reflect\type\NullableType;
 use watoki\tempan\model\ListModel;
 
 class ExecuteResource extends Container {
@@ -79,7 +76,6 @@ class ExecuteResource extends Container {
      * @param string $action defaults to RootAction
      * @param \watoki\collections\Map|null $args
      * @throws \watoki\curir\error\HttpError
-     * @internal param bool $prepared
      * @return array
      */
     public function doGet($action = RootAction::class, Map $args = null) {
@@ -223,11 +219,9 @@ class ExecuteResource extends Container {
 
         $representer = $this->registry->getActionRepresenter($lastAction['action']);
 
-        $url = $representer->getResourceUrl();
-        $url->getParameters()->set('action', $lastAction['action']);
-        $url->getParameters()->set('args', new Map($lastAction['arguments']));
-
-        return $url;
+        return $representer->getResourceUrl()
+            ->withParameter('action', $lastAction['action'])
+            ->withParameter('args', new Map($lastAction['arguments']));
     }
 
     protected function assembleResult($result) {
@@ -297,21 +291,6 @@ class ExecuteResource extends Container {
     }
 
     protected function assembleValueWithActions($entity, Property $property, $value) {
-        $type = $property->type();
-        if ($type instanceof NullableType) {
-            $type = $type->getType();
-        } else if ($type instanceof ArrayType) {
-            $type = $type->getItemType();
-        }
-        if ($value && $type instanceof IdentifierType && $type->getTarget() != get_class($entity)) {
-            $targetRepresenter = $this->registry->getEntityRepresenter($type->getTarget());
-            $readActionLink = $targetRepresenter->getReadAction($value);
-            if ($readActionLink) {
-                $actionRepresenter = $this->registry->getActionRepresenter($readActionLink->getClass());
-                $value = $actionRepresenter->execute($actionRepresenter->create($readActionLink->getArguments()));
-            }
-        }
-
         if (is_object($value)) {
             $entityRepresenter = $this->registry->getEntityRepresenter($entity);
             $propertyRepresenter = $this->registry->getEntityRepresenter($value);
@@ -351,10 +330,9 @@ class ExecuteResource extends Container {
     protected function assembleAction(ActionLink $action) {
         $representer = $this->registry->getActionRepresenter($action->getClass());
 
-        $target = Url::fromString($representer->getResourceUrl());
-
-        $target->getParameters()->set('action', $action->getClass());
-        $target->getParameters()->set('args', $action->getArguments());
+        $target = Url::fromString($representer->getResourceUrl())
+            ->withParameter('action', $action->getClass())
+            ->withParameter('args', $action->getArguments());
 
         return [
             'caption' => $representer->render(),
@@ -415,9 +393,9 @@ class ExecuteResource extends Container {
                 list($caption, $action, $args) = $crumb;
                 $representer = $this->registry->getActionRepresenter($action);
 
-                $url = $representer->getResourceUrl();
-                $url->getParameters()->set('action', $action);
-                $url->getParameters()->set('args', new Map($args));
+                $url = $representer->getResourceUrl()
+                    ->withParameter('action', $action)
+                    ->withParameter('args', new Map($args));
                 return [
                     'caption' => $caption,
                     'link' => ['href' => $url->toString()]
@@ -433,10 +411,9 @@ class ExecuteResource extends Container {
     protected function urlOfAction(ActionLink $followUpAction) {
         $representer = $this->registry->getActionRepresenter($followUpAction->getClass());
 
-        $url = $representer->getResourceUrl();
-        $url->getParameters()->set('action', $followUpAction->getClass());
-        $url->getParameters()->set('args', $followUpAction->getArguments());
-        return $url;
+        return $representer->getResourceUrl()
+            ->withParameter('action', $followUpAction->getClass())
+            ->withParameter('args', $followUpAction->getArguments());
     }
 
 }

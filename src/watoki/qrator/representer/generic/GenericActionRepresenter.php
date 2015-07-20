@@ -193,7 +193,7 @@ class GenericActionRepresenter extends BasicActionRepresenter {
      */
     public function getResourceUrl() {
         if ($this->resourceUrl) {
-            return $this->resourceUrl->copy();
+            return $this->resourceUrl;
         }
         return parent::getResourceUrl();
     }

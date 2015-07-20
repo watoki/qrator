@@ -98,49 +98,6 @@ class PrepareActionsTest extends Specification {
         $this->class->then_ShouldBe('inflateArgs\MyHandler::$action->inflateMe->getTimestamp()', 1330874160);
     }
 
-    function testInflateIdentifierTypes() {
-        $this->class->givenTheClass('InflateIdentifierTypes\SomeEntity');
-        $this->class->givenTheClass_WithTheBody('InflateIdentifierTypes\SomeEntityId', '
-            function __construct($id) { $this->id = $id; }
-            function __toString() { return $this->id; }'
-        );
-        $this->class->givenTheClass_WithTheBody('InflateIdentifierTypes\SomeAction', '
-            /** @var string|SomeEntity-ID */
-            public $string;
-            /** @var SomeEntityId */
-            public $object;
-        ');
-
-        $this->class->givenTheClass_WithTheBody('InflateIdentifierTypes\SomeHandler', '
-            public static $action;
-            public function someAction($action) {
-                self::$action = $action;
-                return new \StdClass();
-            }
-            public function listAction() {
-                return [];
-            }
-        ');
-
-        $this->class->givenTheClass('InflateIdentifierTypes\ListAction');
-        $this->registry->givenIRegisteredAnEntityRepresenterFor('InflateIdentifierTypes\SomeEntity');
-        $this->registry->givenIHaveSet_AsTheListActionFor('InflateIdentifierTypes\ListAction', 'InflateIdentifierTypes\SomeEntity');
-        $this->dispatcher->givenIAddedTheClass_AsHandlerFor('InflateIdentifierTypes\SomeHandler', 'InflateIdentifierTypes\ListAction');
-
-        $this->dispatcher->givenIAddedTheClass_AsHandlerFor('InflateIdentifierTypes\SomeHandler', 'InflateIdentifierTypes\SomeAction');
-        $this->resource->givenTheActionArgument_Is('object', 'some ID');
-        $this->resource->givenTheActionArgument_Is('string', 'other ID');
-
-        $this->registry->givenIRegisteredAnActionRepresenterFor('InflateIdentifierTypes\SomeAction');
-
-        $this->whenIExecuteTheAction('InflateIdentifierTypes\SomeAction');
-
-        $this->class->then_ShouldBe('InflateIdentifierTypes\SomeHandler::$action->string', 'other ID');
-
-        $this->class->then_ShouldBe('InflateIdentifierTypes\SomeHandler::$action->object instanceof \InflateIdentifierTypes\SomeEntityId', true);
-        $this->class->then_ShouldBe('InflateIdentifierTypes\SomeHandler::$action->object->__toString()', 'some ID');
-    }
-
     ####################################################################################
 
     private function whenIExecuteTheAction($action) {

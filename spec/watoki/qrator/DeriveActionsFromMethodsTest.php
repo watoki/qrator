@@ -4,7 +4,7 @@ namespace spec\watoki\qrator;
 use watoki\collections\Map;
 use watoki\qrator\representer\MethodActionRepresenter;
 use watoki\qrator\web\ExecuteResource;
-use watoki\reflect\type\ClassType;
+use watoki\reflect\type\NullableType;
 use watoki\reflect\type\StringType;
 use watoki\scrut\Specification;
 
@@ -57,7 +57,7 @@ class DeriveActionsFromMethodsTest extends Specification {
     function testDetermineArgumentTypes() {
         $this->whenIConstructAnActionFromTheMethod_Of('someMethod', 'construct\SomeClass');
         $this->then_ShouldHaveTheType('one', StringType::class);
-        $this->then_ShouldHaveTheType('two', ClassType::class);
+        $this->then_ShouldHaveTheType('two', NullableType::class);
     }
 
     function testAbstractMethodWithImplementationProvidedByFactory() {

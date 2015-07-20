@@ -4,7 +4,6 @@ namespace spec\watoki\qrator\form;
 use watoki\qrator\form\fields\ArrayField;
 use watoki\qrator\form\fields\CheckboxField;
 use watoki\qrator\form\fields\DateTimeField;
-use watoki\qrator\form\fields\SelectEntityField;
 use watoki\qrator\form\fields\InputField;
 use watoki\qrator\representer\generic\GenericActionRepresenter;
 use watoki\scrut\Specification;
@@ -39,25 +38,6 @@ class MapPropertyTypesToFieldsTest extends Specification {
         $this->whenIGetTheFieldsOf('mapArray\Action');
         $this->then_ShouldBeA('array', ArrayField::class);
         $this->thenTheInnerFieldOf_ShouldBeA('array', InputField::class);
-    }
-
-    function testSelectEntity() {
-        $this->class->givenTheClass_WithTheBody('mapSelectEntity\Action', '
-            /** @var string|\DateTime-ID */
-            public $entity;
-        ');
-        $this->whenIGetTheFieldsOf('mapSelectEntity\Action');
-        $this->then_ShouldBeA('entity', SelectEntityField::class);
-        $this->thenTheTargetOf_ShouldBe('entity', \DateTime::class);
-    }
-
-    function testMultiProperty() {
-        $this->class->givenTheClass_WithTheBody('mapMulti\Action', '
-            /** @var \DateTime-ID|string */
-            public $multi;
-        ');
-        $this->whenIGetTheFieldsOf('mapMulti\Action');
-        $this->then_ShouldBeA('multi', SelectEntityField::class);
     }
     
     function testDateTime() {
@@ -108,13 +88,4 @@ class MapPropertyTypesToFieldsTest extends Specification {
         }
         $this->assertInstanceOf($fieldClass, $field->getInnerField());
     }
-
-    private function thenTheTargetOf_ShouldBe($property, $class) {
-        $field = $this->find($property);
-        if (!($field instanceof SelectEntityField)) {
-            $this->fail("No a SelectEntityField");
-        }
-        $this->assertEquals($class, $field->getEntityClass());
-    }
-
 }
